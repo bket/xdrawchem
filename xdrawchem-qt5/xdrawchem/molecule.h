@@ -115,6 +115,8 @@ public:
     void CleanUp();
     void SDG(bool);
     QString ToSMILES();
+    QString IUPACName();   // PubChem REST lookup
+    QStringList ValenceErrors(); // valence check on all atoms
     void FromSMILES(QString);
     QString ToInChI();
     void FromInChI(QString);

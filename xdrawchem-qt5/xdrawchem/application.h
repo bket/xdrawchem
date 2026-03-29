@@ -123,6 +123,10 @@ public slots:
     void reactivityRetro();
     void reactivityPC();
     void ToSMILES();
+    void GetIUPACName();    // PubChem IUPAC name lookup
+    void LookupPubChem();  // PubChem structure lookup by name
+    void CheckValence();   // valence validation
+    void ExportPDF();      // PDF export
     void ToInChI();
     void FromSMILES(); // defined in smilesdialog.cpp
     void setGroup_Reactant();

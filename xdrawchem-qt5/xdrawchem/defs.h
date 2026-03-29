@@ -128,6 +128,9 @@ const QString XDC_VERSION = QString::fromLatin1("MacDrawChem ") + VERSION;
 #define MODE_TOOL_CHARGES 672
 
 #define MODE_TOOL_TEST 669
+#define MODE_TOOL_IUPACNAME 700
+#define MODE_TOOL_PUBCHEM 701
+#define MODE_TOOL_VALENCE 702
 
 // reaction analysis
 #define RXN_ENTHALPY_ESTIMATE 1

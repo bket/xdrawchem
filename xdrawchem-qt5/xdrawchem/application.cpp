@@ -524,6 +524,7 @@ ApplicationWindow::ApplicationWindow()
     file->addAction( saveIcon, tr( "&Save" ), Qt::CTRL | Qt::Key_S, this, [this](){ save(); } );
     file->addAction( tr( "Save &as..." ), this, SLOT( saveAs() ) );
     file->addAction( tr( "Save picture..." ), this, SLOT( savePicture() ) );
+    file->addAction( tr( "Export PDF..." ), this, SLOT( ExportPDF() ) );
 
     file->addSeparator();
 
@@ -653,6 +654,9 @@ ApplicationWindow::ApplicationWindow()
     tools->addAction( tr( "Input InChI or SMILES" ), this, SLOT( FromSMILES() ) );
     tools->addAction( tr( "Output SMILES" ), this, SLOT( ToSMILES() ) );
     tools->addAction( tr( "Output InChI" ), this, SLOT( ToInChI() ) );
+    tools->addAction( tr( "Get IUPAC name" ), this, SLOT( GetIUPACName() ) );
+    tools->addAction( tr( "Look up on PubChem..." ), this, SLOT( LookupPubChem() ) );
+    tools->addAction( tr( "Check valence" ), this, SLOT( CheckValence() ) );
 
     tools->addSeparator();
 
@@ -2180,3 +2184,27 @@ void ApplicationWindow::setFontPoints( int fn1 )
 }
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;
+
+// ── New feature: IUPAC name via PubChem REST ─────────────────────────────────
+void ApplicationWindow::GetIUPACName()
+{
+    m_renderer->Tool( MODE_TOOL_IUPACNAME );
+}
+
+// ── New feature: PubChem structure lookup by name/CAS ────────────────────────
+void ApplicationWindow::LookupPubChem()
+{
+    m_renderer->Tool( MODE_TOOL_PUBCHEM );
+}
+
+// ── New feature: valence check ───────────────────────────────────────────────
+void ApplicationWindow::CheckValence()
+{
+    m_renderer->Tool( MODE_TOOL_VALENCE );
+}
+
+// ── New feature: PDF export ──────────────────────────────────────────────────
+void ApplicationWindow::ExportPDF()
+{
+    m_renderer->ExportPDF();
+}
