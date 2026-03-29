@@ -293,6 +293,7 @@ set(XDC_TS_FILES
     translation/xdrawchem_fr.ts
     translation/xdrawchem_it.ts
     translation/xdrawchem_jp.ts
+    translation/xdrawchem_ka.ts
     translation/xdrawchem_nl.ts
     translation/xdrawchem_pl.ts
     translation/xdrawchem_pt.ts
