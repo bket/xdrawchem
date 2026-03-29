@@ -104,6 +104,7 @@ public slots:
     void drawCurveArrow(QPoint, QPoint, QColor, QString);
     QPixmap MakePixmap(bool transp = false);
     QPixmap MakeFullPixmap();
+    void ExportPDF();         // PDF export
     // defined in render2d_text.cpp
     void InsertSymbol();
     void DrawText_returnPressed();

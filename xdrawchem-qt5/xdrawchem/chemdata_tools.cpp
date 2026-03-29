@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include <QMessageBox>
+#include <QDesktopServices>
+#include <QUrl>
 #include <QRegularExpression>
 #include <QClipboard>
 #include <QApplication>
@@ -218,6 +220,42 @@ void ChemData::Tool( DPoint *target, int mode )
         }
         QMessageBox::information( r, tr( "InChI string" ), tr( "InChI string for selected molecule:" ) + "\n\n" + tmpname );
         break;
+    case MODE_TOOL_IUPACNAME: {
+        emit SignalSetStatusBar( tr( "Looking up IUPAC name..." ) );
+        QString iupac = m->IUPACName();
+        if ( iupac.isEmpty() ) {
+            QMessageBox::warning( r, tr( "IUPAC Name" ),
+                tr( "Could not retrieve IUPAC name.\n"
+                    "Check that the molecule is valid and you have internet access." ) );
+        } else {
+            QMessageBox::information( r, tr( "IUPAC Name" ),
+                tr( "IUPAC name for selected molecule:" ) + "\n\n" + iupac );
+        }
+        break;
+    }
+    case MODE_TOOL_PUBCHEM: {
+        QString smiles = m->ToSMILES().trimmed();
+        if ( smiles.isEmpty() ) {
+            QMessageBox::warning( r, tr( "PubChem Lookup" ), tr( "Could not generate SMILES for this molecule." ) );
+        } else {
+            // Open PubChem structure page in the default browser
+            QString encoded = QUrl::toPercentEncoding( smiles );
+            QString url = "https://pubchem.ncbi.nlm.nih.gov/compound/" + encoded;
+            QDesktopServices::openUrl( QUrl( url ) );
+        }
+        break;
+    }
+    case MODE_TOOL_VALENCE: {
+        QStringList errors = m->ValenceErrors();
+        if ( errors.isEmpty() ) {
+            QMessageBox::information( r, tr( "Valence Check" ),
+                tr( "No valence errors found." ) );
+        } else {
+            QMessageBox::warning( r, tr( "Valence Errors" ),
+                tr( "Valence errors detected:" ) + "\n\n" + errors.join( "\n" ) );
+        }
+        break;
+    }
     case MODE_TOOL_CLEANUPMOL:
         m->CleanUp();
         break;

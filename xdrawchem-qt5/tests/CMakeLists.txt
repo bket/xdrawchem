@@ -110,3 +110,25 @@ xdc_test(tst_bond_enthalpy
     globals_stub.cpp
 )
 target_link_libraries(tst_bond_enthalpy PRIVATE xdrawchem_obj)
+
+# ── Test: ValenceErrors — atom over-bonding detection ────────────────────────
+# Pure molecule graph traversal — no network, no display.
+# QTEST_APPLESS_MAIN; links xdrawchem_obj for Molecule/Bond/MolData.
+xdc_test(tst_valence
+    tst_valence.cpp
+    globals_stub.cpp
+)
+target_link_libraries(tst_valence PRIVATE xdrawchem_obj)
+
+# ── Test: IUPAC naming and PubChem integration ────────────────────────────────
+# Unit tests run offline; network tests auto-skip when PubChem unreachable.
+# QTEST_MAIN (needs QApplication for QNetworkAccessManager event loop).
+xdc_test(tst_iupac_pubchem
+    tst_iupac_pubchem.cpp
+    globals_stub.cpp
+)
+target_link_libraries(tst_iupac_pubchem PRIVATE xdrawchem_obj)
+set_tests_properties(tst_iupac_pubchem PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+    TIMEOUT 60
+)

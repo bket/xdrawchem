@@ -105,6 +105,9 @@ set(XDC_SOURCES
     xdrawchem/molecule.cpp
     xdrawchem/molecule_obmol.cpp
     xdrawchem/molecule_smiles.cpp
+    xdrawchem/molecule_iupac.cpp
+    xdrawchem/molecule_valence.cpp
+    xdrawchem/render2d_pdf.cpp
     xdrawchem/molecule_sssr.cpp
     xdrawchem/molecule_tools_1.cpp
     xdrawchem/molecule_tools_2.cpp

@@ -546,6 +546,15 @@ void Render2D::Tool( int t )
     case MODE_TOOL_NAME:
         emit SignalSetStatusBar( tr( "Click on a molecule to guess its name" ) );
         break;
+    case MODE_TOOL_IUPACNAME:
+        emit SignalSetStatusBar( tr( "Click on a molecule to look up its IUPAC name (requires internet)" ) );
+        break;
+    case MODE_TOOL_PUBCHEM:
+        emit SignalSetStatusBar( tr( "Click on a molecule to look it up on PubChem" ) );
+        break;
+    case MODE_TOOL_VALENCE:
+        emit SignalSetStatusBar( tr( "Click on a molecule to check its valence" ) );
+        break;
     case MODE_TOOL_TOSMILES:
         emit SignalSetStatusBar( tr( "Click on a molecule to determine its SMILES string" ) );
         break;
