@@ -30,10 +30,10 @@ jobs:
               dnf install -y epel-release dnf-plugins-core
               dnf config-manager --set-enabled crb
               dnf install -y rpm-build rpmdevtools cmake ninja-build gcc-c++ \
-                qt6-qtbase-devel qt6-qttools-devel \
+                qt6-qtbase-devel qt6-qttools-devel qt6-qtsvg-devel \
                 openbabel-devel \
                 desktop-file-utils libGL-devel libEGL-devel \
-                pkgconfig
+                libxkbcommon-devel pkgconfig
 
     steps:
       - uses: actions/checkout@v5.0.1

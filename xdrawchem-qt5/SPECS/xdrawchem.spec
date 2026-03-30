@@ -30,8 +30,11 @@ BuildRequires:  pkgconfig(openbabel-3)
 BuildRequires:  desktop-file-utils
 BuildRequires:  libGL-devel
 BuildRequires:  libEGL-devel
+BuildRequires:  qt6-qtsvg-devel
+BuildRequires:  libxkbcommon-devel
 
 Requires:       qt6-qtbase%{?_isa}
+Requires:       qt6-qtsvg%{?_isa}
 Requires:       openbabel-libs%{?_isa} >= 3.0
 
 # Explicit Provides for the ring data directory path compiled in at build time
