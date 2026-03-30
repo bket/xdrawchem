@@ -48,6 +48,7 @@ public slots:
     void setMode_DrawUpLine();
     void setMode_DrawDownLine();
     void setMode_DrawWavyLine();
+    void setMode_DrawDativeLine();
     void setMode_DrawArrow(regularArrowType);
     void setMode_DrawCurveArrow(curveArrowType);
     void setMode_DrawBracket(bracketType);
@@ -105,6 +106,9 @@ public slots:
     QPixmap MakePixmap(bool transp = false);
     QPixmap MakeFullPixmap();
     void ExportPDF();         // PDF export
+    void ExportSVG();         // improved SVG export via QSvgGenerator
+    void CopyAsSVG();         // copy SVG to clipboard
+    void CopyAsPNG();         // copy PNG (300 dpi) to clipboard
     // defined in render2d_text.cpp
     void InsertSymbol();
     void DrawText_returnPressed();

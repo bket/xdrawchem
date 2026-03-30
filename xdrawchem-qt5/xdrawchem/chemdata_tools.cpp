@@ -247,6 +247,17 @@ void ChemData::Tool( DPoint *target, int mode )
         }
         break;
     }
+    case MODE_TOOL_CANONICAL_SMILES: {
+        QString can = m->ToCanonicalSMILES();
+        if ( can.isEmpty() ) {
+            QMessageBox::warning( r, tr( "Canonical SMILES" ),
+                tr( "Could not generate canonical SMILES for this molecule." ) );
+        } else {
+            QMessageBox::information( r, tr( "Canonical SMILES" ),
+                tr( "Canonical SMILES for selected molecule:" ) + "\n\n" + can );
+        }
+        break;
+    }
     case MODE_TOOL_VALENCE: {
         QStringList errors = m->ValenceErrors();
         if ( errors.isEmpty() ) {

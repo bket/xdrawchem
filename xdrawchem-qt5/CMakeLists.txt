@@ -24,6 +24,7 @@ find_package(Qt6 REQUIRED COMPONENTS
     Network
     PrintSupport
     Xml
+    Svg
     LinguistTools
 )
 
@@ -106,6 +107,8 @@ set(XDC_SOURCES
     xdrawchem/molecule_obmol.cpp
     xdrawchem/molecule_smiles.cpp
     xdrawchem/molecule_iupac.cpp
+    xdrawchem/molecule_smarts.cpp
+    xdrawchem/render2d_svg.cpp
     xdrawchem/molecule_valence.cpp
     xdrawchem/render2d_pdf.cpp
     xdrawchem/molecule_sssr.cpp
@@ -243,7 +246,7 @@ target_compile_definitions(xdrawchem_obj PUBLIC
     XDC_SERVER="https://www.woodsidelabs.com/chemistry"
 )
 target_link_libraries(xdrawchem_obj PUBLIC
-    Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::PrintSupport Qt6::Xml
+    Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::PrintSupport Qt6::Xml Qt6::Svg
     ${OpenBabel_LIBRARIES}
 )
 
@@ -281,6 +284,7 @@ target_link_libraries(xdrawchem PRIVATE
     Qt6::Network
     Qt6::PrintSupport
     Qt6::Xml
+    Qt6::Svg
     ${OpenBabel_LIBRARIES}
 )
 

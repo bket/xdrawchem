@@ -71,6 +71,8 @@ const QString XDC_VERSION = QString::fromLatin1("MacDrawChem ") + VERSION;
 
 #define MODE_DRAWWAVYLINE  250
 #define MODE_DRAWWAVYLINE_DRAWING 251
+#define MODE_DRAWLINE_DATIVE 260
+#define MODE_DRAWLINE_DATIVE_DRAWING 261
 
 #define MODE_DRAWARROW  260
 #define MODE_DRAWARROW_DRAWING 261
@@ -129,8 +131,10 @@ const QString XDC_VERSION = QString::fromLatin1("MacDrawChem ") + VERSION;
 
 #define MODE_TOOL_TEST 669
 #define MODE_TOOL_IUPACNAME 700
+#define MODE_TOOL_ACS_STYLE 703
 #define MODE_TOOL_PUBCHEM 701
-#define MODE_TOOL_VALENCE 702
+#define MODE_TOOL_VALENCE         702
+#define MODE_TOOL_CANONICAL_SMILES 704
 
 // tool id's fall between MODE_TOOL above and MODE_TOOL_MAX here:
 #define MODE_TOOL_MAX 799
