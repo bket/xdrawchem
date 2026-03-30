@@ -1,3 +1,18 @@
+xdrawchem (2:2.0~rc2-1) unstable; urgency=medium
+
+  * Qt6.2 compatibility: fix QMenu::addAction argument order in
+    application.cpp and helpwindow.cpp (keysequence must be last arg)
+  * New features: dative bond (order 9), ACS publication style preset,
+    improved SVG export (QSvgGenerator), copy as SVG/PNG to clipboard,
+    canonical SMILES output, IUPAC name lookup via PubChem REST,
+    PubChem browser integration, valence checking, PDF export
+  * Packaging: add build-essential, qt6-svg-dev/libqt6svg6-dev,
+    libxkbcommon-dev to Build-Depends
+  * Georgian translation (contributed by EkaterinePapava)
+  * 13 test suites (274 tests), all passing
+
+ -- Bryan Herger <bherger@users.sf.net>  Mon, 30 Mar 2026 00:00:00 +0000
+
 xdrawchem (2:2.0~rc1-1) unstable; urgency=medium
 
   * Qt6 + CMake port: zero build warnings/errors against Qt 6.2+
