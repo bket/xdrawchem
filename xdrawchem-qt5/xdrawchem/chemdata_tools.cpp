@@ -238,9 +238,11 @@ void ChemData::Tool( DPoint *target, int mode )
         if ( smiles.isEmpty() ) {
             QMessageBox::warning( r, tr( "PubChem Lookup" ), tr( "Could not generate SMILES for this molecule." ) );
         } else {
-            // Open PubChem structure page in the default browser
+            // Open PubChem search page with the SMILES as query.
+            // The compound page (/compound/{id}) requires a numeric CID;
+            // the search endpoint (#query=) accepts SMILES directly.
             QString encoded = QUrl::toPercentEncoding( smiles );
-            QString url = "https://pubchem.ncbi.nlm.nih.gov/compound/" + encoded;
+            QString url = "https://pubchem.ncbi.nlm.nih.gov/#query=" + encoded;
             QDesktopServices::openUrl( QUrl( url ) );
         }
         break;
