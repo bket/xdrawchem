@@ -9,6 +9,7 @@ Build-Depends:
  pkg-config,
  qt6-base-dev,
  qt6-tools-dev,
+ qt6-tools-dev-tools,
  libopenbabel-dev (>= 3.0),
  libgl-dev,
  libegl-dev,
