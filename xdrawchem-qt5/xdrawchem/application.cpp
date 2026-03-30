@@ -522,9 +522,9 @@ ApplicationWindow::ApplicationWindow()
     QMenu *file = menuBar()->addMenu( tr( "&File" ) );
 
     file->addAction( tr( "&New" ), this, SLOT( newDoc() ), Qt::CTRL | Qt::Key_N );
-    file->addAction( QIcon( RingDir + "fileopen.png" ), tr( "&Open" ), Qt::CTRL | Qt::Key_O, this, [this](){ load(); } );
+    file->addAction( QIcon( RingDir + "fileopen.png" ), tr( "&Open" ), this, [this](){ load(); }, Qt::CTRL | Qt::Key_O );
     file->addAction( tr( "&Find on Internet" ), this, SLOT( MakeNetDialog() ), Qt::CTRL | Qt::Key_F );
-    file->addAction( saveIcon, tr( "&Save" ), Qt::CTRL | Qt::Key_S, this, [this](){ save(); } );
+    file->addAction( saveIcon, tr( "&Save" ), this, [this](){ save(); }, Qt::CTRL | Qt::Key_S );
     file->addAction( tr( "Save &as..." ), this, SLOT( saveAs() ) );
     file->addAction( tr( "Save picture..." ), this, SLOT( savePicture() ) );
     file->addAction( tr( "Export PDF..." ), this, SLOT( ExportPDF() ) );
@@ -537,7 +537,7 @@ ApplicationWindow::ApplicationWindow()
     file->addSeparator();
 
     file->addAction( tr( "Pa&ge setup" ), this, SLOT( pageSetup() ) );
-    file->addAction( printIcon, tr( "&Print" ), Qt::CTRL | Qt::Key_P, this, [this](){ print(); } );
+    file->addAction( printIcon, tr( "&Print" ), this, [this](){ print(); }, Qt::CTRL | Qt::Key_P );
 
     file->addSeparator();
 
