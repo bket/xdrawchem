@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Bryan Herger <bherger@users.sf.net>
 Build-Depends:
  debhelper-compat (= 13),
+ build-essential,
  cmake (>= 3.16),
  ninja-build,
  pkg-config,
