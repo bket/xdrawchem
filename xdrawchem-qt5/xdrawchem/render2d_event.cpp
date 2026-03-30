@@ -723,7 +723,7 @@ void Render2D::mouseReleaseEvent( QMouseEvent *e1 )
         return;
     }
 
-    if ( ( mode > MODE_TOOL ) && ( mode < MODE_TOOL_RETRO_BONDNAME ) ) {
+    if ( ( mode > MODE_TOOL ) && ( mode < MODE_TOOL_MAX ) ) {
         tmp_pt = new DPoint( curqpt );
         c->Tool( tmp_pt, mode );
         //if (mode == MODE_TOOL_CLEANUPMOL) {
@@ -1249,7 +1249,7 @@ void Render2D::mouseMoveEvent( QMouseEvent * e1 )
     tmp_molecule = 0;
 
     // Tools
-    if ( ( mode >= 600 ) && ( mode < 698 ) ) {
+    if ( ( mode >= MODE_TOOL ) && ( mode < MODE_TOOL_MAX ) ) {
         tmp_molecule = c->insideMolecule( &tmp_pt );
         if ( tmp_molecule != 0 ) {
             QRect mr = tmp_molecule->BoundingBoxAll();
@@ -1928,7 +1928,7 @@ void Render2D::paintEvent( QPaintEvent * )
     }
 
     // draw box if over molecule in Tool modes
-    if ( ( mode >= 600 ) && ( mode < 698 ) ) {
+    if ( ( mode >= MODE_TOOL ) && ( mode < MODE_TOOL_MAX ) ) {
       if (tmp_molecule != 0) {
 	qDebug() << "tool mode";
 	drawBox( ( selectionBox.topLeft() ), ( selectionBox.bottomRight() ), QColor( 0, 0, 255 ) );

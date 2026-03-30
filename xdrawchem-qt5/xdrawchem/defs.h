@@ -132,6 +132,9 @@ const QString XDC_VERSION = QString::fromLatin1("MacDrawChem ") + VERSION;
 #define MODE_TOOL_PUBCHEM 701
 #define MODE_TOOL_VALENCE 702
 
+// tool id's fall between MODE_TOOL above and MODE_TOOL_MAX here:
+#define MODE_TOOL_MAX 799
+
 // reaction analysis
 #define RXN_ENTHALPY_ESTIMATE 1
 #define RXN_1HNMR 2
