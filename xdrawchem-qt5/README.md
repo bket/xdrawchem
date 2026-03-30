@@ -20,7 +20,7 @@ On **Debian/Ubuntu**:
 ```bash
 # Qt6 build (recommended)
 sudo apt install qt6-base-dev qt6-tools-dev qt6-tools-dev-tools \
-    qt6-svg-dev \
+    qt6-svg-dev \        # Ubuntu 24.04+; use libqt6svg6-dev on 22.04
     libqt6xml6t64 libqt6network6t64 libqt6printsupport6t64 \
     libopenbabel-dev libssl-dev cmake ninja-build \
     libxkbcommon-dev

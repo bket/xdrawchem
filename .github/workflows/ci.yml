@@ -27,10 +27,13 @@ jobs:
           sudo apt-get update -q
           sudo apt-get install -y --no-install-recommends \
             cmake ninja-build pkg-config \
-            qt6-base-dev qt6-tools-dev qt6-svg-dev \
+            qt6-base-dev qt6-tools-dev \
             libopenbabel-dev \
             libgl-dev libegl-dev \
             libxkbcommon-dev libxcb-icccm4-dev
+          # Qt6 SVG: Noble uses qt6-svg-dev, Jammy uses libqt6svg6-dev
+          sudo apt-get install -y qt6-svg-dev 2>/dev/null || \
+            sudo apt-get install -y libqt6svg6-dev
 
       - name: Configure
         run: |

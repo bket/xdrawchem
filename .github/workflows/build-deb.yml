@@ -30,12 +30,14 @@ jobs:
           sudo apt-get update -q
           sudo apt-get install -y --no-install-recommends \
             debhelper cmake ninja-build pkg-config \
-            qt6-base-dev qt6-tools-dev qt6-svg-dev \
+            qt6-base-dev qt6-tools-dev \
             libopenbabel-dev \
             libgl-dev libegl-dev \
             libxkbcommon-dev \
             desktop-file-utils \
             fakeroot lintian
+          sudo apt-get install -y qt6-svg-dev 2>/dev/null || \
+            sudo apt-get install -y libqt6svg6-dev
 
       # debhelper-compat 13 is handled by debian/compat; 
       # install the actual debhelper package
