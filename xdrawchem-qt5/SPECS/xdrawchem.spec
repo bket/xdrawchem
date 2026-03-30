@@ -1,6 +1,6 @@
 Name:           xdrawchem
 Version:        2.0
-Release:        0.1.rc1%{?dist}
+Release:        0.1.rc2%{?dist}
 Summary:        Two-dimensional chemical structure drawing program
 License:        GPL-2.0-only
 URL:            https://github.com/bryanherger/xdrawchem
