@@ -132,3 +132,15 @@ set_tests_properties(tst_iupac_pubchem PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
     TIMEOUT 60
 )
+
+# ── Test: ACS style, canonical SMILES, dative bond ────────────────────────────
+# Tests Preferences values (no display), ToCanonicalSMILES (needs OB),
+# and dative bond order storage. QTEST_APPLESS_MAIN.
+xdc_test(tst_drawing_styles
+    tst_drawing_styles.cpp
+    globals_stub.cpp
+)
+target_link_libraries(tst_drawing_styles PRIVATE xdrawchem_obj Qt6::Svg)
+set_tests_properties(tst_drawing_styles PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+)

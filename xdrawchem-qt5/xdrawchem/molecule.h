@@ -70,6 +70,7 @@ public:
     QList<Text *> AllLabels();
     QList<Molecule *> MakeSplit();
     int Members() { return bonds.count(); }
+    const QList<Bond *> &getBonds() const { return bonds; }
     QString ToXML( QString );
     QString ToCDXML( QString );
     QString ToMDLMolfile( int coords = 0 );
@@ -115,7 +116,8 @@ public:
     void CleanUp();
     void SDG(bool);
     QString ToSMILES();
-    QString IUPACName();   // PubChem REST lookup
+    QString IUPACName();            // PubChem REST lookup
+    QString ToCanonicalSMILES();    // canonical SMILES via OpenBabel "can" format
     QStringList ValenceErrors(); // valence check on all atoms
     void FromSMILES(QString);
     QString ToInChI();

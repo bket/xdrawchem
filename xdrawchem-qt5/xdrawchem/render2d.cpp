@@ -255,6 +255,22 @@ void Render2D::setMode_DrawWavyLine()
     update();
 }
 
+void Render2D::setMode_DrawDativeLine()
+{
+    if ( mode == MODE_TEXT )
+        CleanUpAfterTextTool();
+    if ( mode == MODE_RING )
+        smartplace = 0;
+    mode = MODE_DRAWLINE_DATIVE;
+    startpoint = 0;
+    endpoint = 0;
+    setCursor( Qt::CrossCursor );
+    c->DeselectAll();
+    emit SignalSetStatusBar( tr( "Dative bond mode: left click to draw, right click to edit" ) );
+    update();
+}
+
+
 void Render2D::setMode_DrawArrow( regularArrowType type )
 {
     bracket_type = 0;
@@ -554,6 +570,9 @@ void Render2D::Tool( int t )
         break;
     case MODE_TOOL_VALENCE:
         emit SignalSetStatusBar( tr( "Click on a molecule to check its valence" ) );
+        break;
+    case MODE_TOOL_CANONICAL_SMILES:
+        emit SignalSetStatusBar( tr( "Click on a molecule to output its canonical SMILES" ) );
         break;
     case MODE_TOOL_TOSMILES:
         emit SignalSetStatusBar( tr( "Click on a molecule to determine its SMILES string" ) );

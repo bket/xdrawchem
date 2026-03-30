@@ -110,6 +110,11 @@ void Bond::Render()
         r->drawWavyLine( start->toQPoint(), end->toQPoint(), c1 );
         return;
     }
+    // for dative (coordinate covalent) bonds — line with half-arrowhead at end
+    if ( order == 9 ) {
+        r->drawArrow( start->toQPoint(), end->toQPoint(), c1, ARROW_TOPHARPOON, thick );
+        return;
+    }
     // for stereo_down bonds
     if ( order == 7 ) {
         r->drawDownLine( start->toQPoint(), end->toQPoint(), c1 );

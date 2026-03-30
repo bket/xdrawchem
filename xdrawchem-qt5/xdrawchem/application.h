@@ -126,7 +126,13 @@ public slots:
     void GetIUPACName();    // PubChem IUPAC name lookup
     void LookupPubChem();  // PubChem structure lookup by name
     void CheckValence();   // valence validation
-    void ExportPDF();      // PDF export
+    void ExportPDF();              // PDF export
+    void ExportSVG();              // improved SVG export
+    void CopyAsSVG();              // copy SVG to clipboard
+    void CopyAsPNG();              // copy PNG (300 dpi) to clipboard
+    void ApplyACSStyle();          // set ACS publication drawing style
+    void FromSMARTS();             // import SMARTS/SMILES string
+    void ToCanonicalSMILES();      // output canonical SMILES
     void ToInChI();
     void FromSMILES(); // defined in smilesdialog.cpp
     void setGroup_Reactant();

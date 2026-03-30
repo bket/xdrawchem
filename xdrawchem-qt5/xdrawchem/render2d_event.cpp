@@ -491,7 +491,7 @@ void Render2D::mousePressEvent( QMouseEvent * e1 )
     }
     // MODE_DRAWWAVYLINE (draw line tool selected), and left button.
     // This means we start drawing a line
-    if ( ( mode == MODE_DRAWWAVYLINE ) && ( mouse1down ) ) {
+    if ( ( mode == MODE_DRAWWAVYLINE || mode == MODE_DRAWLINE_DATIVE ) && ( mouse1down ) ) {
         startpoint = highlightpoint;    // both 0 if nothing selected
         highlightpoint = 0;     // stop drawing highlight box
         if ( startpoint == 0 ) {
@@ -499,7 +499,7 @@ void Render2D::mousePressEvent( QMouseEvent * e1 )
             startpoint->set( curqpt );
             endpoint = 0;
         }
-        mode = MODE_DRAWWAVYLINE_DRAWING;
+        mode = ( mode == MODE_DRAWLINE_DATIVE ) ? MODE_DRAWLINE_DATIVE_DRAWING : MODE_DRAWWAVYLINE_DRAWING;
     }
     // MODE_DRAWCHAIN (draw chain tool selected), and left button.
     // This means we start drawing an aliphatic chain
@@ -955,22 +955,32 @@ void Render2D::mouseReleaseEvent( QMouseEvent *e1 )
     }
     // MODE_DRAWWAVYLINE_DRAWING (drawing line), and left button.
     // Finish line
-    if ( ( mode == MODE_DRAWWAVYLINE_DRAWING ) && ( !mouse1down ) ) {
+    if ( ( mode == MODE_DRAWWAVYLINE_DRAWING || mode == MODE_DRAWLINE_DATIVE_DRAWING ) && ( !mouse1down ) ) {
         if ( moved ) {
             if ( endpoint == 0 ) {
                 endpoint = new DPoint;
                 endpoint->set( curqpt );
             }
             // submit this line/bond to ChemData
-            evt = new XDC_Event( EVT_ADD_BOND_WAVY );
-            evt->setStart( startpoint );
-            evt->setEnd( endpoint );
-            evt->setColor( currentColor );
-            emit XDCEventSignal( evt );
+            if ( mode == MODE_DRAWLINE_DATIVE_DRAWING ) {
+                evt = new XDC_Event( EVT_ADD_BOND );
+                evt->setStart( startpoint );
+                evt->setEnd( endpoint );
+                evt->setParam1( thick );
+                evt->setParam2( 9 );   // order 9 = dative bond
+                evt->setColor( currentColor );
+                emit XDCEventSignal( evt );
+            } else {
+                evt = new XDC_Event( EVT_ADD_BOND_WAVY );
+                evt->setStart( startpoint );
+                evt->setEnd( endpoint );
+                evt->setColor( currentColor );
+                emit XDCEventSignal( evt );
+            }
         }
         startpoint = 0;
         endpoint = 0;
-        mode = MODE_DRAWWAVYLINE;
+        mode = ( mode == MODE_DRAWLINE_DATIVE_DRAWING ) ? MODE_DRAWLINE_DATIVE : MODE_DRAWWAVYLINE;
         update();
         return;
     }
@@ -1972,7 +1982,7 @@ void Render2D::paintEvent( QPaintEvent * )
       drawUpLine( startPoint, endPoint, currentColor );
     } else if ( mode == MODE_DRAWLINE_DOWN_DRAWING ) {
       drawDownLine( startPoint, endPoint, currentColor );
-    } else if ( mode == MODE_DRAWWAVYLINE_DRAWING ) {
+    } else if ( mode == MODE_DRAWWAVYLINE_DRAWING || mode == MODE_DRAWLINE_DATIVE_DRAWING ) {
       drawWavyLine( startPoint, endPoint, currentColor );
     } else if ( mode == MODE_DRAWARROW_DRAWING ) {
       drawArrow( startPoint, endPoint, currentColor, bracket_type, thick );

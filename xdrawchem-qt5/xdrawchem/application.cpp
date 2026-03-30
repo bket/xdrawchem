@@ -366,6 +366,9 @@ ApplicationWindow::ApplicationWindow()
 
     QAction *drawWavyLineAction = drawTools->addAction( QIcon( RingDir + "wavytool.png" ), tr( "Draw wavy bond" ),
                                                         m_renderer, SLOT( setMode_DrawWavyLine() ) );
+    QAction *drawDativeLineAction = drawTools->addAction( QIcon( RingDir + "dativetool.png" ), tr( "Draw dative (coordinate) bond" ),
+                                                          m_renderer, SLOT( setMode_DrawDativeLine() ) );
+    drawDativeLineAction->setWhatsThis( tr( "Dative bond: a coordinate covalent bond shown as an arrow from donor to acceptor" ) );
 
     drawWavyLineAction->setWhatsThis( wavyLineToolText );
 
@@ -525,6 +528,7 @@ ApplicationWindow::ApplicationWindow()
     file->addAction( tr( "Save &as..." ), this, SLOT( saveAs() ) );
     file->addAction( tr( "Save picture..." ), this, SLOT( savePicture() ) );
     file->addAction( tr( "Export PDF..." ), this, SLOT( ExportPDF() ) );
+    file->addAction( tr( "Export SVG..." ), this, SLOT( ExportSVG() ) );
 
     file->addSeparator();
 
@@ -553,6 +557,8 @@ ApplicationWindow::ApplicationWindow()
 
     edit->addAction( tr( "Cu&t" ), this, &ApplicationWindow::Cut, Qt::CTRL | Qt::Key_X );
     edit->addAction( tr( "&Copy" ), this, &ApplicationWindow::Copy, Qt::CTRL | Qt::Key_C );
+    edit->addAction( tr( "Copy as &SVG" ), this, SLOT( CopyAsSVG() ) );
+    edit->addAction( tr( "Copy as &PNG (300 dpi)" ), this, SLOT( CopyAsPNG() ) );
     edit->addAction( tr( "&Paste" ), this, &ApplicationWindow::Paste, Qt::CTRL | Qt::Key_V );
     edit->addAction( tr( "Clear" ), this, SLOT( Clear() ), Qt::Key_Delete );
 
@@ -616,6 +622,7 @@ ApplicationWindow::ApplicationWindow()
     format->addSeparator();
 
     format->addAction( tr( "&Drawing settings..." ), this, SLOT( ShowFixedDialog() ) );
+    format->addAction( tr( "Apply &ACS Style" ), this, SLOT( ApplyACSStyle() ) );
     format->addAction( tr( "&XDC settings..." ), this, SLOT( XDCSettings() ) );
 
     /**
@@ -654,6 +661,8 @@ ApplicationWindow::ApplicationWindow()
     tools->addAction( tr( "Input InChI or SMILES" ), this, SLOT( FromSMILES() ) );
     tools->addAction( tr( "Output SMILES" ), this, SLOT( ToSMILES() ) );
     tools->addAction( tr( "Output InChI" ), this, SLOT( ToInChI() ) );
+    tools->addAction( tr( "Input SMARTS / SMILES" ), this, SLOT( FromSMARTS() ) );
+    tools->addAction( tr( "Output canonical SMILES" ), this, SLOT( ToCanonicalSMILES() ) );
     tools->addAction( tr( "Get IUPAC name" ), this, SLOT( GetIUPACName() ) );
     tools->addAction( tr( "Look up on PubChem..." ), this, SLOT( LookupPubChem() ) );
     tools->addAction( tr( "Check valence" ), this, SLOT( CheckValence() ) );
@@ -2207,4 +2216,60 @@ void ApplicationWindow::CheckValence()
 void ApplicationWindow::ExportPDF()
 {
     m_renderer->ExportPDF();
+}
+
+// ── ACS publication drawing style ─────────────────────────────────────────────
+// ACS 2022 guidelines: bond length 0.508 cm, line width 0.6 pt, font Arial 10 pt.
+// At 72 dpi screen resolution, 0.508 cm ≈ 14.4 pt ≈ ~28 px; we map to ~38 px
+// which matches the typical 25 mm / 67 dpi screen standard used by ChemDraw.
+void ApplicationWindow::ApplyACSStyle()
+{
+    // Bond geometry
+    preferences.setBond_fixed( true );
+    preferences.setBond_fixedlength( 38.0 );   // ≈ 0.508 cm at 72 dpi
+    preferences.setBond_fixedangle( 15.0 );
+    preferences.setDoubleBondOffset( 2.5 );
+
+    // Arrow geometry (proportional to bond length)
+    preferences.setArrow_fixed( true );
+    preferences.setArrow_fixedlength( 57.0 );  // 1.5× bond length
+
+    // Font: Arial 10 pt (ACS standard)
+    QFont acsFont( QStringLiteral("Arial"), 10 );
+    if ( !QFontInfo(acsFont).exactMatch() )
+        acsFont = QFont( QStringLiteral("Helvetica"), 10 );
+    preferences.setMainFont( acsFont );
+
+    m_renderer->update();
+    statusBar()->showMessage( tr( "ACS style applied (bond 0.508 cm, Arial 10 pt)" ) );
+}
+
+// ── Improved SVG export via Qt6 QSvgGenerator ────────────────────────────────
+void ApplicationWindow::ExportSVG()
+{
+    m_renderer->ExportSVG();
+}
+
+// ── Copy as SVG to clipboard ──────────────────────────────────────────────────
+void ApplicationWindow::CopyAsSVG()
+{
+    m_renderer->CopyAsSVG();
+}
+
+// ── Copy as PNG (300 dpi) to clipboard ───────────────────────────────────────
+void ApplicationWindow::CopyAsPNG()
+{
+    m_renderer->CopyAsPNG();
+}
+
+// ── SMARTS / SMILES input ─────────────────────────────────────────────────────
+void ApplicationWindow::FromSMARTS()
+{
+    m_renderer->Tool( MODE_TOOL_FROMSMILES );  // reuses existing SMILES input dialog
+}
+
+// ── Canonical SMILES output ──────────────────────────────────────────────────
+void ApplicationWindow::ToCanonicalSMILES()
+{
+    m_renderer->Tool( MODE_TOOL_CANONICAL_SMILES );
 }
