@@ -20,8 +20,10 @@ On **Debian/Ubuntu**:
 ```bash
 # Qt6 build (recommended)
 sudo apt install qt6-base-dev qt6-tools-dev qt6-tools-dev-tools \
+    qt6-svg-dev \
     libqt6xml6t64 libqt6network6t64 libqt6printsupport6t64 \
-    libopenbabel-dev libssl-dev cmake ninja-build
+    libopenbabel-dev libssl-dev cmake ninja-build \
+    libxkbcommon-dev
 
 # Qt5 build (legacy)
 sudo apt install qt5-qmake qtbase5-dev qttools5-dev \
@@ -30,8 +32,9 @@ sudo apt install qt5-qmake qtbase5-dev qttools5-dev \
 
 On **Fedora/RHEL**:
 ```bash
-sudo dnf install qt6-qtbase-devel qt6-qttools-devel openbabel-devel \
-    openssl-devel cmake ninja-build
+sudo dnf install qt6-qtbase-devel qt6-qttools-devel qt6-qtsvg-devel \
+    openbabel-devel openssl-devel cmake ninja-build \
+    libxkbcommon-devel
 ```
 
 On **macOS** (Homebrew):
