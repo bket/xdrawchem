@@ -25,7 +25,9 @@
 #include "dyk.h"
 
 #include <cstdio>
+#if !defined(_WIN32) && !defined(_WIN64)
 #include <execinfo.h>
+#endif
 #include <signal.h>
 #include <stdlib.h>
 #if !defined(_WIN32) && !defined(_WIN64)
@@ -38,6 +40,7 @@ Preferences preferences;
 
 void usage();                 // defined below
 
+#if !defined(_WIN32) && !defined(_WIN64)
 void handler(int sig) {
   void *array[10];
   size_t size;
@@ -50,9 +53,12 @@ void handler(int sig) {
   backtrace_symbols_fd(array, size, STDERR_FILENO);
   exit(1);
 }
+#endif
 int main( int argc, char **argv )
 {
+#if !defined(_WIN32) && !defined(_WIN64)
     signal(SIGSEGV, handler);   // install handler for segmentation faults
+#endif
 
     int ae;
 
