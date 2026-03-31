@@ -64,8 +64,8 @@ jobs:
           cmake -S ob-src -B ob-build `
             -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_CXX_STANDARD=14 `
             -DCMAKE_INSTALL_PREFIX=C:\OpenBabel `
+            "-DCMAKE_CXX_FLAGS=/D_HAS_AUTO_PTR_ETC=1" `
             -DBUILD_GUI=OFF `
             -DENABLE_TESTS=OFF `
             -DWITH_INCHI=OFF `
