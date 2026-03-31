@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 3.19)
-project(xdrawchem VERSION 2.0 LANGUAGES CXX)
+
+# ── Single source of truth for the application version ─────────────────────
+# Edit the VERSION file at the repository root to bump the version.
+# CMake reads it here; configure_file stamps it into defs.h.
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION" APP_VERSION)
+string(STRIP "${APP_VERSION}" APP_VERSION)
+# CMake project() VERSION must be numeric; strip any rc/alpha/beta suffix
+string(REGEX REPLACE "[^0-9.].*$" "" APP_VERSION_NUMERIC "${APP_VERSION}")
+
+project(xdrawchem VERSION ${APP_VERSION_NUMERIC} LANGUAGES CXX)
 
 # ── C++ standard ───────────────────────────────────────────────────────────────
 set(CMAKE_CXX_STANDARD 17)
@@ -71,6 +80,13 @@ message(STATUS "OpenBabel libs:    ${OpenBabel_LIBRARIES}")
 if(NOT DEFINED RINGHOME)
     set(RINGHOME "${CMAKE_INSTALL_PREFIX}/share/xdrawchem")
 endif()
+
+# ── Generate defs.h from template (stamps in APP_VERSION) ─────────────────
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/xdrawchem/defs.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/xdrawchem/defs.h
+    @ONLY
+)
 
 # ── Source files ──────────────────────────────────────────────────────────────
 set(XDC_SOURCES
@@ -181,7 +197,7 @@ set(XDC_HEADERS
     xdrawchem/crings_dialog.h
     xdrawchem/cubicbezier.h
     xdrawchem/curvearrow.h
-    xdrawchem/defs.h
+    xdrawchem/defs.h.in
     xdrawchem/dpoint.h
     xdrawchem/drawable.h
     xdrawchem/dyk.h
@@ -248,6 +264,7 @@ add_library(xdrawchem_obj OBJECT
     ${XDC_HEADERS}
 )
 target_include_directories(xdrawchem_obj PUBLIC
+    ${CMAKE_CURRENT_BINARY_DIR}/xdrawchem
     ${CMAKE_CURRENT_SOURCE_DIR}/xdrawchem
     ${OpenBabel_INCLUDE_DIRS}
 )
