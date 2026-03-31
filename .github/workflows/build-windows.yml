@@ -76,19 +76,24 @@ jobs:
             }
           }
 
-          # Remove the xml formats subdir from ALL CMakeLists files.
-          # OB 3.1.1 may add it conditionally or unconditionally; patch
-          # every CMakeLists.txt that references add_subdirectory(xml) to
-          # avoid the libxml2 linker error. Use -replace (regex) not
-          # Where-Object so the line is deleted even mid-file.
-          Get-ChildItem ob-src -Recurse -Filter "CMakeLists.txt" | ForEach-Object {
-            $txt = Get-Content $_.FullName -Raw
-            if ($txt -match "add_subdirectory\s*\(\s*xml\s*\)") {
-              $txt = $txt -replace "(?m)^[^\n]*add_subdirectory\s*\(\s*xml\s*\)[^\n]*\n", ""
-              Set-Content $_.FullName $txt
-              Write-Host "Removed xml subdir from: $($_.FullName)"
-            }
+          # Delete the xml formats directory entirely to prevent it from being built.
+          # Libxml2 is not available on the runner, so formats_xml.obf fails to link.
+          # Step 1: Remove the source directory so cmake has nothing to compile.
+          if (Test-Path "ob-src/src/formats/xml") {
+            Remove-Item -Recurse -Force "ob-src/src/formats/xml"
+            Write-Host "Deleted ob-src/src/formats/xml directory"
           }
+          # Step 2: Remove any add_subdirectory(xml) line from formats CMakeLists.
+          # Print the formats CMakeLists.txt first so we can see what line to match.
+          $fmtcmake = "ob-src/src/formats/CMakeLists.txt"
+          Write-Host "--- formats CMakeLists.txt (xml lines) ---"
+          Get-Content $fmtcmake | Select-String -Pattern "xml" | ForEach-Object { Write-Host $_.Line }
+          Write-Host "---"
+          # Now filter out any line containing both "subdirectory" and "xml"
+          $lines = Get-Content $fmtcmake
+          $filtered = $lines | Where-Object { -not ($_ -match "subdirectory" -and $_ -match "xml") }
+          $filtered | Set-Content $fmtcmake
+          Write-Host "Filtered formats CMakeLists.txt: $($lines.Count) -> $($filtered.Count) lines"
 
           cmake -S ob-src -B ob-build `
             -G Ninja `
