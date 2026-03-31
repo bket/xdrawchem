@@ -61,16 +61,17 @@ jobs:
           git clone --depth 1 --branch openbabel-3-1-1 `
             https://github.com/openbabel/openbabel.git ob-src
 
-          # Patch all OB headers: std::binary_function was removed in C++17.
-          # Multiple headers in OB 3.1.1 inherit from it (plugin.h, inchiformat.h,
-          # obutil.h and possibly others). Do one broad recursive replace.
-          Get-ChildItem ob-src/include -Recurse -Filter "*.h" | ForEach-Object {
+          # Patch all OB sources: std::binary_function was removed in C++17.
+          # Affected files in OB 3.1.1 include headers AND .cpp files
+          # (e.g. plugin.h, inchiformat.h, src/ops/sort.cpp).
+          # Scan both include/ and src/ with one pass.
+          $pattern = ': public std::binary_function<[^>]+>'
+          Get-ChildItem ob-src -Recurse -Include "*.h","*.cpp" | ForEach-Object {
             $content = Get-Content $_.FullName -Raw
             if ($content -match "binary_function") {
-              $patched = $content -replace `
-                ': public std::binary_function<[^>]+>', ''
+              $patched = $content -replace $pattern, ''
               Set-Content $_.FullName $patched
-              Write-Host "Patched: $($_.Name)"
+              Write-Host "Patched: $($_.FullName.Replace((Get-Location).Path + `"\\\`", ''))"
             }
           }
 
