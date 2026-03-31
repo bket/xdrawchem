@@ -156,9 +156,11 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_PREFIX_PATH="$QT_DIR" `
             -DRINGHOME="ring" `
-            -DOpenBabel_ROOT="$OB_ROOT" `
-            -DOpenBabel_INCLUDE_DIRS="$OB_ROOT\include\openbabel3" `
-            -DOpenBabel_LIBRARIES="$OB_LIB"
+            -DOpenBabel_FOUND=TRUE `
+            "-DOpenBabel_INCLUDE_DIR=$OB_ROOT\include\openbabel3" `
+            "-DOpenBabel_INCLUDE_DIRS=$OB_ROOT\include\openbabel3" `
+            "-DOpenBabel_LIBRARY=$OB_LIB" `
+            "-DOpenBabel_LIBRARIES=$OB_LIB"
 
       - name: Build
         shell: pwsh
