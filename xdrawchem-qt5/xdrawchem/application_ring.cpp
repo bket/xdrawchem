@@ -212,7 +212,7 @@ QMenu *ApplicationWindow::BuildCustomRingMenu()
         customAction = userDefSub->addAction( QIcon( px1 ), ringlist[cc].left( ringlist[cc].length() - 4 ) );
         customAction->setData( cc );
     }
-    userDefSub->addAction( tr( "Add new..." ), this, SLOT( saveCustomRing() ), 0 );
+    userDefSub->addAction( tr( "Add new..." ), this, SLOT( saveCustomRing() ) );
 
     return userDefSub;
 }

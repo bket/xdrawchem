@@ -523,10 +523,10 @@ ApplicationWindow::ApplicationWindow()
      */
     QMenu *file = menuBar()->addMenu( tr( "&File" ) );
 
-    file->addAction( tr( "&New" ), this, SLOT( newDoc() ), Qt::CTRL | Qt::Key_N );
-    file->addAction( QIcon( RingDir + "fileopen.png" ), tr( "&Open" ), this, [this](){ load(); }, Qt::CTRL | Qt::Key_O );
-    file->addAction( tr( "&Find on Internet" ), this, SLOT( MakeNetDialog() ), Qt::CTRL | Qt::Key_F );
-    file->addAction( saveIcon, tr( "&Save" ), this, [this](){ save(); }, Qt::CTRL | Qt::Key_S );
+    file->addAction( tr( "&New" ), Qt::CTRL | Qt::Key_N, this, SLOT( newDoc() ) );
+    file->addAction( QIcon( RingDir + "fileopen.png" ), tr( "&Open" ), Qt::CTRL | Qt::Key_O, this, [this](){ load(); } );
+    file->addAction( tr( "&Find on Internet" ), Qt::CTRL | Qt::Key_F, this, SLOT( MakeNetDialog() ) );
+    file->addAction( saveIcon, tr( "&Save" ), Qt::CTRL | Qt::Key_S, this, [this](){ save(); } );
     file->addAction( tr( "Save &as..." ), this, SLOT( saveAs() ) );
     file->addAction( tr( "Save picture..." ), this, SLOT( savePicture() ) );
     file->addAction( tr( "Export PDF..." ), this, SLOT( ExportPDF() ) );
@@ -539,35 +539,35 @@ ApplicationWindow::ApplicationWindow()
     file->addSeparator();
 
     file->addAction( tr( "Pa&ge setup" ), this, SLOT( pageSetup() ) );
-    file->addAction( printIcon, tr( "&Print" ), this, [this](){ print(); }, Qt::CTRL | Qt::Key_P );
+    file->addAction( printIcon, tr( "&Print" ), Qt::CTRL | Qt::Key_P, this, [this](){ print(); } );
 
     file->addSeparator();
 
-    file->addAction( tr( "Close" ), this, SLOT( close() ), Qt::CTRL | Qt::Key_W );
-    file->addAction( tr( "Quit" ), qApp, &QApplication::closeAllWindows, Qt::CTRL | Qt::Key_Q );
+    file->addAction( tr( "Close" ), Qt::CTRL | Qt::Key_W, this, SLOT( close() ) );
+    file->addAction( tr( "Quit" ), Qt::CTRL | Qt::Key_Q, qApp, &QApplication::closeAllWindows );
 
     /**
      * edit menu
      */
     edit = menuBar()->addMenu( tr( "&Edit" ) );
 
-    edit->addAction( tr( "&Undo" ), m_renderer, &Render2D::Undo, Qt::CTRL | Qt::Key_Z );
+    edit->addAction( tr( "&Undo" ), Qt::CTRL | Qt::Key_Z, m_renderer, &Render2D::Undo );
     insertSymbolAction = edit->addAction( tr( "Insert s&ymbol" ), this, SLOT( InsertSymbol() ) );
     insertSymbolAction->setVisible( false );
 
     edit->addSeparator();
 
-    edit->addAction( tr( "Cu&t" ), this, &ApplicationWindow::Cut, Qt::CTRL | Qt::Key_X );
-    edit->addAction( tr( "&Copy" ), this, &ApplicationWindow::Copy, Qt::CTRL | Qt::Key_C );
+    edit->addAction( tr( "Cu&t" ), Qt::CTRL | Qt::Key_X, this, &ApplicationWindow::Cut );
+    edit->addAction( tr( "&Copy" ), Qt::CTRL | Qt::Key_C, this, &ApplicationWindow::Copy );
     edit->addAction( tr( "Copy as &SVG" ), this, SLOT( CopyAsSVG() ) );
     edit->addAction( tr( "Copy as &PNG (300 dpi)" ), this, SLOT( CopyAsPNG() ) );
-    edit->addAction( tr( "&Paste" ), this, &ApplicationWindow::Paste, Qt::CTRL | Qt::Key_V );
-    edit->addAction( tr( "Clear" ), this, SLOT( Clear() ), Qt::Key_Delete );
+    edit->addAction( tr( "&Paste" ), Qt::CTRL | Qt::Key_V, this, &ApplicationWindow::Paste );
+    edit->addAction( tr( "Clear" ), Qt::Key_Delete, this, SLOT( Clear() ) );
 
     edit->addSeparator();
 
-    edit->addAction( tr( "Select &All" ), m_renderer, &Render2D::SelectAll, Qt::CTRL | Qt::Key_A );
-    edit->addAction( tr( "&Deselect All" ), m_renderer, &Render2D::DeselectAll, Qt::CTRL | Qt::SHIFT | Qt::Key_A );
+    edit->addAction( tr( "Select &All" ), Qt::CTRL | Qt::Key_A, m_renderer, &Render2D::SelectAll );
+    edit->addAction( tr( "&Deselect All" ), Qt::CTRL | Qt::SHIFT | Qt::Key_A, m_renderer, &Render2D::DeselectAll );
 
     QMenu *rotateSub = new QMenu( tr( "&Rotate" ), this );
 
@@ -582,9 +582,9 @@ ApplicationWindow::ApplicationWindow()
 
     QMenu *zoomSub = new QMenu( tr( "&Zoom" ), this );
 
-    zoomSub->addAction( tr( "Normal (100%)" ), this, &ApplicationWindow::Magnify100, Qt::CTRL | Qt::Key_5 );
-    zoomSub->addAction( tr( "Zoom out" ), this, &ApplicationWindow::MagnifyMinus, Qt::CTRL | Qt::Key_1 );
-    zoomSub->addAction( tr( "Zoom in" ), this, &ApplicationWindow::MagnifyPlus, Qt::CTRL | Qt::Key_0 );
+    zoomSub->addAction( tr( "Normal (100%)" ), Qt::CTRL | Qt::Key_5, this, &ApplicationWindow::Magnify100 );
+    zoomSub->addAction( tr( "Zoom out" ), Qt::CTRL | Qt::Key_1, this, &ApplicationWindow::MagnifyMinus );
+    zoomSub->addAction( tr( "Zoom in" ), Qt::CTRL | Qt::Key_0, this, &ApplicationWindow::MagnifyPlus );
 
     edit->addMenu( rotateSub );
     edit->addMenu( flipSub );
@@ -619,7 +619,7 @@ ApplicationWindow::ApplicationWindow()
     format->addSeparator();
 
     format->addAction( tr( "Set background &color" ), this, SLOT( BackgroundColor() ) );
-    format->addAction( tr( "Toggle &grid" ), this, SLOT( toggleGrid() ), Qt::CTRL | Qt::Key_G );
+    format->addAction( tr( "Toggle &grid" ), Qt::CTRL | Qt::Key_G, this, SLOT( toggleGrid() ) );
 
     format->addSeparator();
 
@@ -633,12 +633,12 @@ ApplicationWindow::ApplicationWindow()
     QMenu *tools = menuBar()->addMenu( tr( "T&ools" ) );
 
     tools->addAction( tr( "Clean up molecule" ), this, SLOT( CleanUpMolecule() ) );
-    tools->addAction( tr( "Auto &layout" ), m_renderer, &Render2D::AutoLayout, Qt::CTRL | Qt::Key_L );
+    tools->addAction( tr( "Auto &layout" ), Qt::CTRL | Qt::Key_L, m_renderer, &Render2D::AutoLayout );
     tools->addAction( tr( "Create custom ring" ), this, SLOT( saveCustomRing() ) );
 
     tools->addSeparator();
 
-    tools->addAction( tr( "Molecule information..." ), this, SLOT( MoleculeInfo() ), Qt::CTRL | Qt::Key_I );
+    tools->addAction( tr( "Molecule information..." ), Qt::CTRL | Qt::Key_I, this, SLOT( MoleculeInfo() ) );
     tools->addAction( tr( "Predict 1H NMR" ), this, SLOT( Calc1HNMR() ) );
     tools->addAction( tr( "Predict 13C NMR" ), this, SLOT( Calc13CNMR() ) );
     tools->addAction( tr( "Predict IR" ), this, SLOT( CalcIR() ) );
@@ -678,7 +678,7 @@ ApplicationWindow::ApplicationWindow()
      */
     QMenu *help = menuBar()->addMenu( tr( "&Help" ) );
 
-    help->addAction( tr( "&Manual" ), this, SLOT( NewManual() ), Qt::Key_F1 );
+    help->addAction( tr( "&Manual" ), Qt::Key_F1, this, SLOT( NewManual() ) );
     help->addAction( tr( "&Did You Know?" ), this, SLOT( showDYK() ) );
     help->addAction( tr( "&About" ), this, SLOT( about() ) );
     help->addAction( tr( "&Support" ), this, SLOT( support() ) );
@@ -686,7 +686,7 @@ ApplicationWindow::ApplicationWindow()
 
     help->addSeparator();
 
-    help->addAction( tr( "What's &This" ), this, &QWidget::whatsThis, Qt::SHIFT | Qt::Key_F1 );
+    help->addAction( tr( "What's &This" ), Qt::SHIFT | Qt::Key_F1, this, &QWidget::whatsThis );
 
     /**
      * create data system
@@ -721,7 +721,16 @@ void ApplicationWindow::externalProgram()
     int sendto = 0, qbox, passfail = 0;
     QString exportFileName;
 
-    qbox = QMessageBox::question( this, tr( "Send to external program" ), tr( "This function will open a 3-D version of one molecule\nin an external modelling program.\n\nSend to program:" ), tr( "Ghemical" ), tr( "KryoMol" ), tr( "Cancel" ), 2 );
+    {
+        QMessageBox _mb( QMessageBox::Question, tr( "Send to external program" ),
+            tr( "This function will open a 3-D version of one molecule\nin an external modelling program.\n\nSend to program:" ),
+            QMessageBox::NoButton, this );
+        QPushButton *_b0 = _mb.addButton( tr( "Ghemical" ),  QMessageBox::AcceptRole );
+        QPushButton *_b1 = _mb.addButton( tr( "KryoMol" ),   QMessageBox::AcceptRole );
+        _mb.addButton( tr( "Cancel" ), QMessageBox::RejectRole );
+        _mb.exec();
+        qbox = ( _mb.clickedButton() == _b0 ) ? 0 : ( _mb.clickedButton() == _b1 ) ? 1 : 2;
+    }
     if ( qbox == 0 )
         sendto = 1;
     if ( qbox == 1 )
@@ -1532,18 +1541,18 @@ void ApplicationWindow::closeEvent( QCloseEvent * ce )
         return;
     }
 
-    switch ( QMessageBox::information( this, tr("Save before closing?"), tr("The document has been changed since the last save."), "Save Now", "Cancel", "Leave Anyway", 0, 1 ) ) {
-    case 0:
-        save();
-        ce->accept();
-        break;
-    case 1:
-    default:                   // just for sanity
-        ce->ignore();
-        break;
-    case 2:
-        ce->accept();
-        break;
+    {
+        QMessageBox _mb( QMessageBox::Information, tr("Save before closing?"),
+            tr("The document has been changed since the last save."),
+            QMessageBox::NoButton, this );
+        QPushButton *_bSave   = _mb.addButton( tr("Save Now"),     QMessageBox::AcceptRole );
+        QPushButton *_bCancel = _mb.addButton( tr("Cancel"),       QMessageBox::RejectRole );
+        QPushButton *_bLeave  = _mb.addButton( tr("Leave Anyway"), QMessageBox::DestructiveRole );
+        _mb.setDefaultButton( _bSave ); _mb.setEscapeButton( _bCancel );
+        _mb.exec();
+        if ( _mb.clickedButton() == _bSave ) { save(); ce->accept(); }
+        else if ( _mb.clickedButton() == _bLeave ) { ce->accept(); }
+        else { ce->ignore(); }
     }
 }
 
@@ -2154,33 +2163,22 @@ void ApplicationWindow::XDCSettings()
     bool ok;
     QFont font;
 
-    switch ( QMessageBox::information( this, tr( "XDC Settings" ), tr( "Change XDrawChem settings:" ), tr( "&Main font" ), tr( "&Ruler font" ), tr( "Cancel" ), 2,      // Enter == button 2
-                                       2 ) ) {  // Escape == button 2
-    case 0:
-        font = QFontDialog::getFont( &ok, preferences.getMainFont(), this );
-        if ( ok ) {
-            preferences.setMainFont( font );
-            setFont( font );
-            update();
-        } else {
-            return;
+    {
+        QMessageBox _mb2( QMessageBox::Information, tr( "XDC Settings" ),
+            tr( "Change XDrawChem settings:" ), QMessageBox::NoButton, this );
+        QPushButton *_bMain    = _mb2.addButton( tr( "&Main font" ),  QMessageBox::AcceptRole );
+        QPushButton *_bRuler   = _mb2.addButton( tr( "&Ruler font" ), QMessageBox::AcceptRole );
+        QPushButton *_bCancelS = _mb2.addButton( tr( "Cancel" ),      QMessageBox::RejectRole );
+        _mb2.setDefaultButton( _bCancelS ); _mb2.setEscapeButton( _bCancelS );
+        _mb2.exec();
+        if ( _mb2.clickedButton() == _bMain ) {
+            font = QFontDialog::getFont( &ok, preferences.getMainFont(), this );
+            if ( ok ) { preferences.setMainFont( font ); setFont( font ); update(); }
+        } else if ( _mb2.clickedButton() == _bRuler ) {
+            font = QFontDialog::getFont( &ok, preferences.getRulerFont(), this );
+            if ( ok ) { preferences.setRulerFont( font ); hruler->update(); vruler->update(); update(); }
         }
-        break;
-    case 1:
-        font = QFontDialog::getFont( &ok, preferences.getRulerFont(), this );
-        if ( ok ) {
-            preferences.setRulerFont( font );
-            //setFont(font);
-            hruler->update();
-            vruler->update();
-            update();
-        } else {
-            return;
-        }
-        break;
-    case 2:
-        return;
-        break;
+        // else Cancel: do nothing
     }
 }
 
