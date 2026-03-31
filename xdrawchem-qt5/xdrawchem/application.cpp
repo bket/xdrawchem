@@ -16,6 +16,8 @@
 #include <QWhatsThis>
 #include <QStatusBar>
 #include <QMenuBar>
+#include <QInputDialog>
+#include "molecule_nts.h"
 #include <QMessageBox>
 #include <QColorDialog>
 #include <QFontDialog>
@@ -666,6 +668,7 @@ ApplicationWindow::ApplicationWindow()
     tools->addAction( tr( "Input SMARTS / SMILES" ), this, SLOT( FromSMARTS() ) );
     tools->addAction( tr( "Output canonical SMILES" ), this, SLOT( ToCanonicalSMILES() ) );
     tools->addAction( tr( "Get IUPAC name" ), this, SLOT( GetIUPACName() ) );
+    tools->addAction( tr( "Name to structure..." ), this, SLOT( FromIUPACName() ) );
     tools->addAction( tr( "Look up on PubChem..." ), this, SLOT( LookupPubChem() ) );
     tools->addAction( tr( "Check valence" ), this, SLOT( CheckValence() ) );
 
@@ -2272,4 +2275,37 @@ void ApplicationWindow::FromSMARTS()
 void ApplicationWindow::ToCanonicalSMILES()
 {
     m_renderer->Tool( MODE_TOOL_CANONICAL_SMILES );
+}
+
+// ── Name-to-structure: resolve a chemical name to a drawn structure ──────────
+// Uses the PubChem REST API to convert the name to isomeric SMILES, then
+// feeds the SMILES into the existing fromSMILES / OpenBabel pipeline.
+// Accepts IUPAC names, common names, trade names, and CAS numbers.
+void ApplicationWindow::FromIUPACName()
+{
+    bool ok;
+    QString name = QInputDialog::getText(
+        this,
+        tr( "Name to Structure" ),
+        tr( "Enter a chemical name, IUPAC name, or CAS number:" ),
+        QLineEdit::Normal, QString(), &ok );
+
+    if ( !ok || name.trimmed().isEmpty() )
+        return;
+
+    QApplication::setOverrideCursor( Qt::WaitCursor );
+    QString smiles = nameToSMILES( name );
+    QApplication::restoreOverrideCursor();
+
+    if ( smiles.isEmpty() ) {
+        QMessageBox::warning( this, tr( "Name to Structure" ),
+            tr( "Could not find a structure for \"%1\".\n\n"
+                "Check the name spelling or try a different form.\n"
+                "(Requires internet access.)" ).arg( name ) );
+        return;
+    }
+
+    m_chemData->fromSMILES( smiles );
+    m_renderer->Inserted();
+    m_renderer->update();
 }

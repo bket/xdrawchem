@@ -116,6 +116,7 @@ set(XDC_SOURCES
     xdrawchem/molecule_obmol.cpp
     xdrawchem/molecule_smiles.cpp
     xdrawchem/molecule_iupac.cpp
+    xdrawchem/molecule_nts.cpp
     xdrawchem/molecule_smarts.cpp
     xdrawchem/render2d_svg.cpp
     xdrawchem/molecule_valence.cpp
@@ -219,6 +220,7 @@ set(XDC_HEADERS
     xdrawchem/sdg.h
     xdrawchem/setofrings.h
     xdrawchem/smilesdialog.h
+    xdrawchem/molecule_nts.h
     xdrawchem/sorf.h
     xdrawchem/sugar_xpm.h
     xdrawchem/symbol.h
