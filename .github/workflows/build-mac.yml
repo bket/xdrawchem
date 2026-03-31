@@ -37,12 +37,21 @@ jobs:
       - name: Configure CMake
         run: |
           export PATH="$(brew --prefix qt@6)/bin:$PATH"
+          OB_PREFIX="$(brew --prefix open-babel)"
+          # Homebrew OpenBabel puts headers under include/openbabel3
+          OB_INCLUDE="$OB_PREFIX/include/openbabel3"
+          OB_LIB="$OB_PREFIX/lib/libopenbabel.dylib"
+          echo "OB prefix: $OB_PREFIX"
+          echo "OB include: $OB_INCLUDE"
+          ls "$OB_INCLUDE" 2>/dev/null | head -5 || echo "OB include not found at expected path"
           cmake -S xdrawchem-qt5 -B build \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="$(brew --prefix qt@6)" \
+            -DCMAKE_PREFIX_PATH="$(brew --prefix qt@6);$OB_PREFIX" \
             -DRINGHOME=/Applications/XDrawChem.app/Contents/Resources \
-            -DOpenBabel_ROOT="$(brew --prefix open-babel)"
+            -DOpenBabel_ROOT="$OB_PREFIX" \
+            -DOpenBabel_INCLUDE_DIRS="$OB_INCLUDE" \
+            -DOpenBabel_LIBRARIES="$OB_LIB"
 
       - name: Build
         run: |
