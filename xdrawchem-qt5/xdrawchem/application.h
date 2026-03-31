@@ -135,6 +135,7 @@ public slots:
     void ToCanonicalSMILES();      // output canonical SMILES
     void ToInChI();
     void FromSMILES(); // defined in smilesdialog.cpp
+    void FromIUPACName();   // name-to-structure via PubChem REST (molecule_nts.cpp)
     void setGroup_Reactant();
     void setGroup_Product();
     void clearGroup();
