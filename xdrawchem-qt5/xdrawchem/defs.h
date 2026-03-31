@@ -9,16 +9,12 @@ extern QString RingDir, HomeDir;
 const QString VERSION = QString::fromLatin1("2.0rc1");
 
 // version string (makes updates easier :)
-#ifdef UNIX
-const QString XDC_VERSION = QString::fromLatin1("XDrawChem ") + VERSION;
-#endif
-
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
 const QString XDC_VERSION = QString::fromLatin1("WinDrawChem ") + VERSION;
-#endif
-
-#ifdef MACOSX
+#elif defined(MACOSX)
 const QString XDC_VERSION = QString::fromLatin1("MacDrawChem ") + VERSION;
+#else
+const QString XDC_VERSION = QString::fromLatin1("XDrawChem ") + VERSION;
 #endif
 
 // define XDC_SERVER default URL

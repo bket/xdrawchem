@@ -22,7 +22,9 @@
 #include <QScreen>
 #include <QLineEdit>
 #include <QBitmap>
+#if !defined(_WIN32) && !defined(_WIN64)
 #include <unistd.h>
+#endif
 
 #include "defs.h"
 #include "drawable.h"
