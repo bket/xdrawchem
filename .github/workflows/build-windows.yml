@@ -65,7 +65,8 @@ jobs:
           # Affected files in OB 3.1.1 include headers AND .cpp files
           # (e.g. plugin.h, inchiformat.h, src/ops/sort.cpp).
           # Scan both include/ and src/ with one pass.
-          $pattern = ': public std::binary_function<[^>]+>'
+          # Regex handles one level of nested <> (e.g. std::pair<double,T>):
+          $pattern = ': public std::binary_function<(?:[^<>]|<[^<>]*>)*>'
           Get-ChildItem ob-src -Recurse -Include "*.h","*.cpp" | ForEach-Object {
             $content = Get-Content $_.FullName -Raw
             if ($content -match "binary_function") {
