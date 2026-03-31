@@ -70,10 +70,16 @@ jobs:
             -DWITH_INCHI=OFF `
             -DWITH_MAEPARSER=OFF `
             -DWITH_COORDGEN=OFF `
-            -DBUILD_SHARED=ON
+            -DBUILD_SHARED=ON `
+            -DCMAKE_DISABLE_FIND_PACKAGE_LibXml2=TRUE `
+            -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=TRUE `
+            -DCMAKE_DISABLE_FIND_PACKAGE_Cairo=TRUE `
+            -DCMAKE_DISABLE_FIND_PACKAGE_Boost=TRUE
 
           cmake --build ob-build --config Release -j $env:NUMBER_OF_PROCESSORS
+          if ($LASTEXITCODE -ne 0) { throw "OpenBabel build failed" }
           cmake --install ob-build --config Release
+          if ($LASTEXITCODE -ne 0) { throw "OpenBabel install failed" }
 
           Write-Host "OpenBabel installed to C:\OpenBabel"
           Get-ChildItem C:\OpenBabel -Depth 2 | Select-Object FullName
@@ -90,10 +96,17 @@ jobs:
 
           $OB_ROOT = $env:OB_ROOT
           # Determine the correct lib name (may be openbabel or openbabel3)
-          $OB_LIB = if (Test-Path "$OB_ROOT\lib\openbabel3.lib") {
-            "$OB_ROOT\lib\openbabel3.lib"
-          } else {
-            "$OB_ROOT\lib\openbabel.lib"
+          # OB on Windows puts import libs in lib\ or bin\ depending on build
+          $OB_LIB = @(
+            "$OB_ROOT\lib\openbabel3.lib",
+            "$OB_ROOT\lib\openbabel.lib",
+            "$OB_ROOT\bin\openbabel3.lib",
+            "$OB_ROOT\bin\openbabel.lib"
+          ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $OB_LIB) {
+            Write-Host "ERROR: Could not find OpenBabel import lib. Contents of OB_ROOT:"
+            Get-ChildItem $OB_ROOT -Recurse -Filter "*.lib" | Select-Object FullName
+            throw "OpenBabel import lib not found"
           }
           Write-Host "Using OB lib: $OB_LIB"
           cmake -S xdrawchem-qt5 -B build `
