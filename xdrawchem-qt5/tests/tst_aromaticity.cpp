@@ -188,9 +188,11 @@ private slots:
 
         // Ring 1: 0-1-2-3-4-5-0 with alternating 1/2
         int orders1[] = {1,2,1,2,1,2};
+        int a1arr[] = {0,1,2,3,4,5};
+        int b1arr[] = {1,2,3,4,5,0};
         for (int i = 0; i < 6; ++i) {
-            int a = (int[]){0,1,2,3,4,5}[i];
-            int b = (int[]){1,2,3,4,5,0}[i];
+            int a = a1arr[i];
+            int b = b1arr[i];
             addEdge(atoms[a], atoms[b]);
             bonds.append(makeBond(atoms[a], atoms[b], orders1[i]));
         }
