@@ -1,13 +1,20 @@
+# ── Version: set by rpmbuild --define "xdcver X.Yrcz" or edit here ──────────
+%{!?xdcver: %global xdcver 2.0rc3}
+# Derive major.minor (numeric only) for the RPM Version: field
+%global xdcmajmin %(echo %{xdcver} | sed "s/[^0-9.].*$//")
+# Derive rc tag (everything after the numeric part) for Release:
+%global xdcrc    %(echo %{xdcver} | sed "s/^[0-9.]*//")
+
 Name:           xdrawchem
-Version:        2.0
-Release:        0.1.rc2%{?dist}
+Version:        %{xdcmajmin}
+Release:        0.1.%{xdcrc}%{?dist}
 Summary:        Two-dimensional chemical structure drawing program
 License:        GPL-2.0-only
 URL:            https://github.com/bryanherger/xdrawchem
-# Official GitHub release tarball (created by "git archive" in the release workflow)
-# For local builds: tar -czf ~/rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz \
-#   --transform='s|^xdrawchem-qt5|xdrawchem-2.0rc1|' xdrawchem-qt5
-Source0:        https://github.com/bryanherger/%{name}/archive/refs/tags/v%{version}rc1.tar.gz#/%{name}-%{version}rc1.tar.gz
+# Tarball created from the git tag v{xdcver} by the release workflow.
+# For local builds: tar -czf ~/rpmbuild/SOURCES/xdrawchem-%{xdcver}.tar.gz \
+#   --transform='s|^xdrawchem-qt5|xdrawchem-%{xdcver}|' xdrawchem-qt5
+Source0:        https://github.com/bryanherger/%{name}/archive/refs/tags/v%{xdcver}.tar.gz#/%{name}-%{xdcver}.tar.gz
 
 # ── RHEL 8 / CentOS Stream 8 / Rocky 8 / Alma 8 ──────────────────────────────
 # Requires EPEL 8 for:  qt6-qtbase  openbabel  cmake >= 3.16

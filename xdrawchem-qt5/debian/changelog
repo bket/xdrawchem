@@ -1,3 +1,13 @@
+xdrawchem (2:2.0~rc3-1) unstable; urgency=medium
+
+  * Name-to-structure via PubChem REST API (backlog 5.7)
+  * Fix macOS/Linux Qt6 addAction deprecations (use explicit QAction+setShortcut)
+  * Fix Windows NSIS installer: find makensis dynamically
+  * Replace ilammy/msvc-dev-cmd with inline vcvarsall.bat (no Node.js dep)
+  * Version now driven from single VERSION file at repo root
+
+ -- Bryan Herger <bherger@users.sf.net>  Tue, 31 Mar 2026 00:00:00 +0000
+
 xdrawchem (2:2.0~rc2-1) unstable; urgency=medium
 
   * Qt6.2 compatibility: fix QMenu::addAction argument order in

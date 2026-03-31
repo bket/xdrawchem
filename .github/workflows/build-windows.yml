@@ -217,9 +217,12 @@ jobs:
       - name: Write NSIS installer script
         shell: pwsh
         run: |
+          # Version: prefer git tag (strip leading v), fall back to VERSION file
           $VERSION = if ($env:GITHUB_REF_NAME -match '^v') {
             $env:GITHUB_REF_NAME.TrimStart('v')
-          } else { "2.0" }
+          } else {
+            (Get-Content "$env:GITHUB_WORKSPACE\VERSION" -Raw).Trim()
+          }
 
           @"
           !define APPNAME     "XDrawChem"

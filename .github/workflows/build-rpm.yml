@@ -41,13 +41,19 @@ jobs:
       # Prepare the source tree and spec on the host before entering the container
       - name: Prepare source tarball and spec
         run: |
+          # Version comes from the repo-root VERSION file (single source of truth).
+          # On a tag push the tag name is also available as GITHUB_REF_NAME.
+          XDCVER=$(cat VERSION)
+          echo "Building version: $XDCVER"
+
           mkdir -p rpmbuild/SOURCES rpmbuild/SPECS rpmbuild/RPMS rpmbuild/SRPMS
-          # Flat tarball: xdrawchem-2.0rc1/ contains xdrawchem-qt5 content directly
-          mkdir -p /tmp/xdrawchem-2.0rc1
-          cp -r xdrawchem-qt5/. /tmp/xdrawchem-2.0rc1/
-          tar -czf rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz \
-            -C /tmp xdrawchem-2.0rc1/
+          mkdir -p /tmp/xdrawchem-${XDCVER}
+          cp -r xdrawchem-qt5/. /tmp/xdrawchem-${XDCVER}/
+          tar -czf rpmbuild/SOURCES/xdrawchem-${XDCVER}.tar.gz \
+            -C /tmp xdrawchem-${XDCVER}/
           cp xdrawchem-qt5/SPECS/xdrawchem.spec rpmbuild/SPECS/
+          # Stash the version for subsequent steps
+          echo "XDCVER=${XDCVER}" >> $GITHUB_ENV
 
       # Run the entire build inside the distro container
       # Mount the repo into /workspace so we can use the prepared sources
@@ -57,6 +63,7 @@ jobs:
             -v "${{ github.workspace }}/rpmbuild:/github/home/rpmbuild" \
             -e QT_QPA_PLATFORM=offscreen \
             -e HOME=/github/home \
+            -e XDCVER="${{ env.XDCVER }}" \
             ${{ matrix.image }} \
             bash -exc '
               ${{ matrix.setup }}
@@ -65,7 +72,8 @@ jobs:
               rpmbuild -ba /github/home/rpmbuild/SPECS/xdrawchem.spec \
                 --define "_topdir /github/home/rpmbuild" \
                 --define "dist .$(echo ${{ matrix.name }} | tr '-' '_')" \
-                --define "_smp_mflags -j$(nproc)"
+                --define "_smp_mflags -j$(nproc)" \
+                --define "xdcver ${XDCVER}"
             '
 
       - name: Collect and list produced packages

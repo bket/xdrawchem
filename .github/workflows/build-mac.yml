@@ -118,8 +118,12 @@ jobs:
       - name: Create DMG
         run: |
           export PATH="$(brew --prefix qt@6)/bin:$PATH"
-          VERSION="${GITHUB_REF_NAME:-dev}"
-          VERSION="${VERSION#v}"
+          # Version: prefer git tag (strip leading v), fall back to VERSION file
+          if [[ "${GITHUB_REF_NAME}" =~ ^v ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION=$(cat "${GITHUB_WORKSPACE}/VERSION" 2>/dev/null || echo "dev")
+          fi
 
           create-dmg \
             --volname "XDrawChem $VERSION" \
