@@ -29,6 +29,13 @@ jobs:
     steps:
       - uses: actions/checkout@v5.0.1
 
+      # Set up MSVC environment first — required by both OpenBabel
+      # and XDrawChem cmake builds (provides cl.exe, nmake, ninja).
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Install Qt6 via aqtinstall
         run: |
           pip install aqtinstall
@@ -55,7 +62,7 @@ jobs:
             https://github.com/openbabel/openbabel.git ob-src
 
           cmake -S ob-src -B ob-build `
-            -G "NMake Makefiles" `
+            -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_INSTALL_PREFIX=C:\OpenBabel `
             -DBUILD_GUI=OFF `
@@ -76,11 +83,6 @@ jobs:
         run: |
           echo "OB_ROOT=C:\OpenBabel" >> $env:GITHUB_ENV
 
-      - name: Set up MSVC
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-
       - name: Configure CMake
         shell: pwsh
         run: |
@@ -95,7 +97,7 @@ jobs:
           }
           Write-Host "Using OB lib: $OB_LIB"
           cmake -S xdrawchem-qt5 -B build `
-            -G "NMake Makefiles" `
+            -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_PREFIX_PATH="$QT_DIR" `
             -DRINGHOME="ring" `
