@@ -728,7 +728,6 @@ void ApplicationWindow::externalProgram()
         QPushButton *_b0 = _mb.addButton( tr( "Ghemical" ),  QMessageBox::AcceptRole );
         QPushButton *_b1 = _mb.addButton( tr( "KryoMol" ),   QMessageBox::AcceptRole );
         _mb.addButton( tr( "Cancel" ), QMessageBox::RejectRole );
-        _mb.setDefaultButton( static_cast<QPushButton*>( _mb.button( QMessageBox::Cancel ) ) );
         _mb.exec();
         qbox = ( _mb.clickedButton() == _b0 ) ? 0 : ( _mb.clickedButton() == _b1 ) ? 1 : 2;
     }
@@ -1546,24 +1545,14 @@ void ApplicationWindow::closeEvent( QCloseEvent * ce )
         QMessageBox _mb( QMessageBox::Information, tr("Save before closing?"),
             tr("The document has been changed since the last save."),
             QMessageBox::NoButton, this );
-        QPushButton *_bSave  = _mb.addButton( tr("Save Now"),     QMessageBox::AcceptRole );
-        QPushButton *_bCancel= _mb.addButton( tr("Cancel"),       QMessageBox::RejectRole );
-        QPushButton *_bLeave = _mb.addButton( tr("Leave Anyway"), QMessageBox::DestructiveRole );
+        QPushButton *_bSave   = _mb.addButton( tr("Save Now"),     QMessageBox::AcceptRole );
+        QPushButton *_bCancel = _mb.addButton( tr("Cancel"),       QMessageBox::RejectRole );
+        QPushButton *_bLeave  = _mb.addButton( tr("Leave Anyway"), QMessageBox::DestructiveRole );
         _mb.setDefaultButton( _bSave ); _mb.setEscapeButton( _bCancel );
         _mb.exec();
-        int _r = ( _mb.clickedButton() == _bSave ) ? 0 : ( _mb.clickedButton() == _bLeave ) ? 2 : 1;
-        switch ( _r ) {
-    case 0:
-        save();
-        ce->accept();
-        break;
-    case 1:
-    default:                   // just for sanity
-        ce->ignore();
-        break;
-    case 2:
-        ce->accept();
-        break;
+        if ( _mb.clickedButton() == _bSave ) { save(); ce->accept(); }
+        else if ( _mb.clickedButton() == _bLeave ) { ce->accept(); }
+        else { ce->ignore(); }
     }
 }
 
@@ -2177,40 +2166,19 @@ void ApplicationWindow::XDCSettings()
     {
         QMessageBox _mb2( QMessageBox::Information, tr( "XDC Settings" ),
             tr( "Change XDrawChem settings:" ), QMessageBox::NoButton, this );
-        QPushButton *_bMain  = _mb2.addButton( tr( "&Main font" ),  QMessageBox::AcceptRole );
-        QPushButton *_bRuler = _mb2.addButton( tr( "&Ruler font" ), QMessageBox::AcceptRole );
-        QPushButton *_bCancelS = _mb2.addButton( tr( "Cancel" ),   QMessageBox::RejectRole );
+        QPushButton *_bMain    = _mb2.addButton( tr( "&Main font" ),  QMessageBox::AcceptRole );
+        QPushButton *_bRuler   = _mb2.addButton( tr( "&Ruler font" ), QMessageBox::AcceptRole );
+        QPushButton *_bCancelS = _mb2.addButton( tr( "Cancel" ),      QMessageBox::RejectRole );
         _mb2.setDefaultButton( _bCancelS ); _mb2.setEscapeButton( _bCancelS );
         _mb2.exec();
-        int _r2 = ( _mb2.clickedButton() == _bMain ) ? 0 : ( _mb2.clickedButton() == _bRuler ) ? 1 : 2;
-        switch ( _r2 ) {  // 0=Main font, 1=Ruler font, 2=Cancel
-    case 0:
-        font = QFontDialog::getFont( &ok, preferences.getMainFont(), this );
-        if ( ok ) {
-            preferences.setMainFont( font );
-            setFont( font );
-            update();
-        } else {
-            return;
-            }
-}
-        break;
-    case 1:
-        font = QFontDialog::getFont( &ok, preferences.getRulerFont(), this );
-        if ( ok ) {
-            preferences.setRulerFont( font );
-            //setFont(font);
-            hruler->update();
-            vruler->update();
-            update();
-        } else {
-            return;
-            }
-}
-        break;
-    case 2:
-        return;
-        break;
+        if ( _mb2.clickedButton() == _bMain ) {
+            font = QFontDialog::getFont( &ok, preferences.getMainFont(), this );
+            if ( ok ) { preferences.setMainFont( font ); setFont( font ); update(); }
+        } else if ( _mb2.clickedButton() == _bRuler ) {
+            font = QFontDialog::getFont( &ok, preferences.getRulerFont(), this );
+            if ( ok ) { preferences.setRulerFont( font ); hruler->update(); vruler->update(); update(); }
+        }
+        // else Cancel: do nothing
     }
 }
 
