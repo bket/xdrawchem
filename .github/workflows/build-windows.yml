@@ -76,14 +76,19 @@ jobs:
             }
           }
 
-          # Remove formats_xml from build — it requires libxml2 which is not
-          # available on the runner. The cmake disable flag suppresses the
-          # find_package warning but formats/CMakeLists.txt still adds the
-          # subdirectory unconditionally, causing linker errors.
-          (Get-Content "ob-src/src/formats/CMakeLists.txt") |
-            Where-Object { $_ -notmatch "add_subdirectory.*xml" } |
-            Set-Content "ob-src/src/formats/CMakeLists.txt"
-          Write-Host "Removed xml subdirectory from formats/CMakeLists.txt"
+          # Remove the xml formats subdir from ALL CMakeLists files.
+          # OB 3.1.1 may add it conditionally or unconditionally; patch
+          # every CMakeLists.txt that references add_subdirectory(xml) to
+          # avoid the libxml2 linker error. Use -replace (regex) not
+          # Where-Object so the line is deleted even mid-file.
+          Get-ChildItem ob-src -Recurse -Filter "CMakeLists.txt" | ForEach-Object {
+            $txt = Get-Content $_.FullName -Raw
+            if ($txt -match "add_subdirectory\s*\(\s*xml\s*\)") {
+              $txt = $txt -replace "(?m)^[^\n]*add_subdirectory\s*\(\s*xml\s*\)[^\n]*\n", ""
+              Set-Content $_.FullName $txt
+              Write-Host "Removed xml subdir from: $($_.FullName)"
+            }
+          }
 
           cmake -S ob-src -B ob-build `
             -G Ninja `
