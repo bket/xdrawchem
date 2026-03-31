@@ -76,6 +76,15 @@ jobs:
             }
           }
 
+          # Remove formats_xml from build — it requires libxml2 which is not
+          # available on the runner. The cmake disable flag suppresses the
+          # find_package warning but formats/CMakeLists.txt still adds the
+          # subdirectory unconditionally, causing linker errors.
+          (Get-Content "ob-src/src/formats/CMakeLists.txt") |
+            Where-Object { $_ -notmatch "add_subdirectory.*xml" } |
+            Set-Content "ob-src/src/formats/CMakeLists.txt"
+          Write-Host "Removed xml subdirectory from formats/CMakeLists.txt"
+
           cmake -S ob-src -B ob-build `
             -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
