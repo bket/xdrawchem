@@ -10,7 +10,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # On Apple/libc++ we can re-enable it with this define.
 # On GCC/libstdc++ it is silently available via <functional> until GCC 15.
 if(APPLE)
-    add_compile_definitions(_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES=1)
+    # _LIBCPP_ENABLE_CXX17_REMOVED_FEATURES no longer restores std::binary_function
+    # in Xcode 16 / libc++ 19+. Use a forced-include shim for OpenBabel compat.
+    add_compile_options(-include ${CMAKE_CURRENT_SOURCE_DIR}/xdrawchem/ob_compat.h)
 endif()
 
 # ── Build type default ─────────────────────────────────────────────────────────
