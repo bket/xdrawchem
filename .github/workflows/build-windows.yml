@@ -32,8 +32,10 @@ jobs:
       - name: Install Qt6 via aqtinstall
         run: |
           pip install aqtinstall
+          # Qt SVG is bundled in the Qt6 base desktop package since Qt 6.5;
+          # do not pass --modules (aqtinstall 3.x fails to find "qtsvg" by
+          # that name for 6.7.3 because it is already in the base archive).
           aqt install-qt windows desktop ${{ env.QT_VERSION }} ${{ env.QT_ARCH }} `
-            --modules qtsvg `
             --outputdir C:\Qt
         shell: pwsh
 

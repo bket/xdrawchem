@@ -6,6 +6,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# OpenBabel 3.x uses std::binary_function which was removed in C++17.
+# On Apple/libc++ we can re-enable it with this define.
+# On GCC/libstdc++ it is silently available via <functional> until GCC 15.
+if(APPLE)
+    add_compile_definitions(_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES=1)
+endif()
+
 # ── Build type default ─────────────────────────────────────────────────────────
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
