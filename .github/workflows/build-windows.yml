@@ -61,11 +61,17 @@ jobs:
           git clone --depth 1 --branch openbabel-3-1-1 `
             https://github.com/openbabel/openbabel.git ob-src
 
+          # Patch plugin.h: std::binary_function removed in C++17/MSVC2022
+          $plugin = "ob-src/include/openbabel/plugin.h"
+          (Get-Content $plugin) `
+            -replace ': public std::binary_function<const char\*,const char\*, bool>', '' `
+            | Set-Content $plugin
+          Write-Host "Patched plugin.h: removed std::binary_function base class"
+
           cmake -S ob-src -B ob-build `
             -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_INSTALL_PREFIX=C:\OpenBabel `
-            "-DCMAKE_CXX_FLAGS=/D_HAS_AUTO_PTR_ETC=1" `
             -DBUILD_GUI=OFF `
             -DENABLE_TESTS=OFF `
             -DWITH_INCHI=OFF `
