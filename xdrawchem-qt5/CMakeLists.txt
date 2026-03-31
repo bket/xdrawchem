@@ -348,6 +348,11 @@ install(FILES ring/xdrawchem-icon.png
     RENAME xdrawchem.png
 )
 
+# AppStream / Flathub metainfo
+install(FILES xdrawchem.metainfo.xml
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
+)
+
 # ── Tests ───────────────────────────────────────────────────────────────
 include(CTest)
 add_subdirectory(tests)

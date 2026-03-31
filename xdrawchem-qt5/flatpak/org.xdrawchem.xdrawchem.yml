@@ -1,0 +1,101 @@
+# Flatpak manifest for XDrawChem
+# Build locally:  flatpak-builder --force-clean build-dir flatpak/org.xdrawchem.xdrawchem.yml
+# Install:        flatpak-builder --user --install --force-clean build-dir flatpak/org.xdrawchem.xdrawchem.yml
+# Submit to Flathub: https://github.com/flathub/flathub/wiki/App-Submission
+
+app-id: org.xdrawchem.xdrawchem
+runtime: org.kde.Platform
+runtime-version: '6.7'
+sdk: org.kde.Sdk
+command: xdrawchem
+
+finish-args:
+  # X11 + Wayland display
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  # Network access for PubChem IUPAC name lookups and PubChem browser
+  - --share=network
+  # Read/write access to home for opening/saving molecular files
+  - --filesystem=home
+  # Allow D-Bus for system integration
+  - --socket=session-bus
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /lib/cmake
+  - /share/doc
+  - /share/man
+  - '*.la'
+  - '*.a'
+
+modules:
+
+  # ── Eigen3 (required by OpenBabel) ───────────────────────────────────────
+  - name: eigen3
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DBUILD_TESTING=OFF
+    cleanup:
+      - '*'
+    sources:
+      - type: archive
+        url: https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+        sha256: 8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72
+
+  # ── RapidJSON (required by OpenBabel) ─────────────────────────────────────
+  - name: rapidjson
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DRAPIDJSON_BUILD_DOC=OFF
+      - -DRAPIDJSON_BUILD_EXAMPLES=OFF
+      - -DRAPIDJSON_BUILD_TESTS=OFF
+    cleanup:
+      - '*'
+    sources:
+      - type: archive
+        url: https://github.com/Tencent/rapidjson/archive/v1.1.0.tar.gz
+        sha256: bf7ced29704a1e696fbccf2a2b4ea068e7774fa37f6d7dd4039d0787f095438e
+
+  # ── OpenBabel 3 ───────────────────────────────────────────────────────────
+  - name: openbabel
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DBUILD_GUI=OFF
+      - -DBUILD_SHARED=ON
+      - -DENABLE_TESTS=OFF
+      - -DWITH_INCHI=OFF
+      - -DWITH_MAEPARSER=OFF
+      - -DWITH_COORDGEN=OFF
+      - -DOPENBABEL_USE_SYSTEM_INCHI=OFF
+      - -DCMAKE_BUILD_TYPE=Release
+    sources:
+      - type: archive
+        url: https://github.com/openbabel/openbabel/releases/download/openbabel-3-1-1/openbabel-3.1.1.tar.bz2
+        sha256: c97023ac6300d26176c97d4ef39957f06e68848d64f1a04b0b284ccff2744f02
+
+  # ── XDrawChem ─────────────────────────────────────────────────────────────
+  - name: xdrawchem
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DRINGHOME=/app/share/xdrawchem
+      - -DCMAKE_BUILD_TYPE=Release
+    build-options:
+      env:
+        - RINGDIR=/app/share/xdrawchem
+    sources:
+      - type: git
+        url: https://github.com/bryanherger/xdrawchem.git
+        branch: master
+        subdir: xdrawchem-qt5
+      # Uncomment for a specific tagged release:
+      # - type: git
+      #   url: https://github.com/bryanherger/xdrawchem.git
+      #   tag: v2.0rc2
+      #   commit: HEAD
+      #   subdir: xdrawchem-qt5
