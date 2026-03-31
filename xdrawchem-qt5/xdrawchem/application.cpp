@@ -523,10 +523,10 @@ ApplicationWindow::ApplicationWindow()
      */
     QMenu *file = menuBar()->addMenu( tr( "&File" ) );
 
-    file->addAction( tr( "&New" ), Qt::CTRL | Qt::Key_N, this, SLOT( newDoc() ) );
-    file->addAction( QIcon( RingDir + "fileopen.png" ), tr( "&Open" ), Qt::CTRL | Qt::Key_O, this, [this](){ load(); } );
-    file->addAction( tr( "&Find on Internet" ), Qt::CTRL | Qt::Key_F, this, SLOT( MakeNetDialog() ) );
-    file->addAction( saveIcon, tr( "&Save" ), Qt::CTRL | Qt::Key_S, this, [this](){ save(); } );
+    { auto *_a = new QAction( tr( "&New" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_N ); connect( _a, &QAction::triggered, this, &ApplicationWindow::newDoc ); file->addAction( _a ); }
+    { auto *_a = new QAction( QIcon( RingDir + "fileopen.png" ), tr( "&Open" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_O ); connect( _a, &QAction::triggered, this, [this](){ load(); } ); file->addAction( _a ); }
+    { auto *_a = new QAction( tr( "&Find on Internet" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_F ); connect( _a, &QAction::triggered, this, &ApplicationWindow::MakeNetDialog ); file->addAction( _a ); }
+    { auto *_a = new QAction( QIcon(saveIcon), tr( "&Save" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_S ); connect( _a, &QAction::triggered, this, [this](){ save(); } ); file->addAction( _a ); }
     file->addAction( tr( "Save &as..." ), this, SLOT( saveAs() ) );
     file->addAction( tr( "Save picture..." ), this, SLOT( savePicture() ) );
     file->addAction( tr( "Export PDF..." ), this, SLOT( ExportPDF() ) );
@@ -539,35 +539,35 @@ ApplicationWindow::ApplicationWindow()
     file->addSeparator();
 
     file->addAction( tr( "Pa&ge setup" ), this, SLOT( pageSetup() ) );
-    file->addAction( printIcon, tr( "&Print" ), Qt::CTRL | Qt::Key_P, this, [this](){ print(); } );
+    { auto *_a = new QAction( QIcon(printIcon), tr( "&Print" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_P ); connect( _a, &QAction::triggered, this, [this](){ print(); } ); file->addAction( _a ); }
 
     file->addSeparator();
 
-    file->addAction( tr( "Close" ), Qt::CTRL | Qt::Key_W, this, SLOT( close() ) );
-    file->addAction( tr( "Quit" ), Qt::CTRL | Qt::Key_Q, qApp, &QApplication::closeAllWindows );
+    { auto *_a = new QAction( tr( "Close" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_W ); connect( _a, &QAction::triggered, this, &ApplicationWindow::close ); file->addAction( _a ); }
+    { auto *_a = new QAction( tr( "Quit" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_Q ); connect( _a, &QAction::triggered, qApp, &QApplication::closeAllWindows ); file->addAction( _a ); }
 
     /**
      * edit menu
      */
     edit = menuBar()->addMenu( tr( "&Edit" ) );
 
-    edit->addAction( tr( "&Undo" ), Qt::CTRL | Qt::Key_Z, m_renderer, &Render2D::Undo );
+    { auto *_a = new QAction( tr( "&Undo" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_Z ); connect( _a, &QAction::triggered, m_renderer, &Render2D::Undo ); edit->addAction( _a ); }
     insertSymbolAction = edit->addAction( tr( "Insert s&ymbol" ), this, SLOT( InsertSymbol() ) );
     insertSymbolAction->setVisible( false );
 
     edit->addSeparator();
 
-    edit->addAction( tr( "Cu&t" ), Qt::CTRL | Qt::Key_X, this, &ApplicationWindow::Cut );
-    edit->addAction( tr( "&Copy" ), Qt::CTRL | Qt::Key_C, this, &ApplicationWindow::Copy );
+    { auto *_a = new QAction( tr( "Cu&t" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_X ); connect( _a, &QAction::triggered, this, &ApplicationWindow::Cut ); edit->addAction( _a ); }
+    { auto *_a = new QAction( tr( "&Copy" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_C ); connect( _a, &QAction::triggered, this, &ApplicationWindow::Copy ); edit->addAction( _a ); }
     edit->addAction( tr( "Copy as &SVG" ), this, SLOT( CopyAsSVG() ) );
     edit->addAction( tr( "Copy as &PNG (300 dpi)" ), this, SLOT( CopyAsPNG() ) );
-    edit->addAction( tr( "&Paste" ), Qt::CTRL | Qt::Key_V, this, &ApplicationWindow::Paste );
-    edit->addAction( tr( "Clear" ), Qt::Key_Delete, this, SLOT( Clear() ) );
+    { auto *_a = new QAction( tr( "&Paste" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_V ); connect( _a, &QAction::triggered, this, &ApplicationWindow::Paste ); edit->addAction( _a ); }
+    { auto *_a = new QAction( tr( "Clear" ), this ); _a->setShortcut( Qt::Key_Delete ); connect( _a, &QAction::triggered, this, &ApplicationWindow::Clear ); edit->addAction( _a ); }
 
     edit->addSeparator();
 
-    edit->addAction( tr( "Select &All" ), Qt::CTRL | Qt::Key_A, m_renderer, &Render2D::SelectAll );
-    edit->addAction( tr( "&Deselect All" ), Qt::CTRL | Qt::SHIFT | Qt::Key_A, m_renderer, &Render2D::DeselectAll );
+    { auto *_a = new QAction( tr( "Select &All" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_A ); connect( _a, &QAction::triggered, m_renderer, &Render2D::SelectAll ); edit->addAction( _a ); }
+    { auto *_a = new QAction( tr( "&Deselect All" ), this ); _a->setShortcut( Qt::CTRL | Qt::SHIFT | Qt::Key_A ); connect( _a, &QAction::triggered, m_renderer, &Render2D::DeselectAll ); edit->addAction( _a ); }
 
     QMenu *rotateSub = new QMenu( tr( "&Rotate" ), this );
 
@@ -582,9 +582,9 @@ ApplicationWindow::ApplicationWindow()
 
     QMenu *zoomSub = new QMenu( tr( "&Zoom" ), this );
 
-    zoomSub->addAction( tr( "Normal (100%)" ), Qt::CTRL | Qt::Key_5, this, &ApplicationWindow::Magnify100 );
-    zoomSub->addAction( tr( "Zoom out" ), Qt::CTRL | Qt::Key_1, this, &ApplicationWindow::MagnifyMinus );
-    zoomSub->addAction( tr( "Zoom in" ), Qt::CTRL | Qt::Key_0, this, &ApplicationWindow::MagnifyPlus );
+    { auto *_a = new QAction( tr( "Normal (100%)" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_5 ); connect( _a, &QAction::triggered, this, &ApplicationWindow::Magnify100 ); zoomSub->addAction( _a ); }
+    { auto *_a = new QAction( tr( "Zoom out" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_1 ); connect( _a, &QAction::triggered, this, &ApplicationWindow::MagnifyMinus ); zoomSub->addAction( _a ); }
+    { auto *_a = new QAction( tr( "Zoom in" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_0 ); connect( _a, &QAction::triggered, this, &ApplicationWindow::MagnifyPlus ); zoomSub->addAction( _a ); }
 
     edit->addMenu( rotateSub );
     edit->addMenu( flipSub );
@@ -619,7 +619,7 @@ ApplicationWindow::ApplicationWindow()
     format->addSeparator();
 
     format->addAction( tr( "Set background &color" ), this, SLOT( BackgroundColor() ) );
-    format->addAction( tr( "Toggle &grid" ), Qt::CTRL | Qt::Key_G, this, SLOT( toggleGrid() ) );
+    { auto *_a = new QAction( tr( "Toggle &grid" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_G ); connect( _a, &QAction::triggered, this, &ApplicationWindow::toggleGrid ); format->addAction( _a ); }
 
     format->addSeparator();
 
@@ -633,12 +633,12 @@ ApplicationWindow::ApplicationWindow()
     QMenu *tools = menuBar()->addMenu( tr( "T&ools" ) );
 
     tools->addAction( tr( "Clean up molecule" ), this, SLOT( CleanUpMolecule() ) );
-    tools->addAction( tr( "Auto &layout" ), Qt::CTRL | Qt::Key_L, m_renderer, &Render2D::AutoLayout );
+    { auto *_a = new QAction( tr( "Auto &layout" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_L ); connect( _a, &QAction::triggered, m_renderer, &Render2D::AutoLayout ); tools->addAction( _a ); }
     tools->addAction( tr( "Create custom ring" ), this, SLOT( saveCustomRing() ) );
 
     tools->addSeparator();
 
-    tools->addAction( tr( "Molecule information..." ), Qt::CTRL | Qt::Key_I, this, SLOT( MoleculeInfo() ) );
+    { auto *_a = new QAction( tr( "Molecule information..." ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_I ); connect( _a, &QAction::triggered, this, &ApplicationWindow::MoleculeInfo ); tools->addAction( _a ); }
     tools->addAction( tr( "Predict 1H NMR" ), this, SLOT( Calc1HNMR() ) );
     tools->addAction( tr( "Predict 13C NMR" ), this, SLOT( Calc13CNMR() ) );
     tools->addAction( tr( "Predict IR" ), this, SLOT( CalcIR() ) );
@@ -678,7 +678,7 @@ ApplicationWindow::ApplicationWindow()
      */
     QMenu *help = menuBar()->addMenu( tr( "&Help" ) );
 
-    help->addAction( tr( "&Manual" ), Qt::Key_F1, this, SLOT( NewManual() ) );
+    { auto *_a = new QAction( tr( "&Manual" ), this ); _a->setShortcut( Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &ApplicationWindow::NewManual ); help->addAction( _a ); }
     help->addAction( tr( "&Did You Know?" ), this, SLOT( showDYK() ) );
     help->addAction( tr( "&About" ), this, SLOT( about() ) );
     help->addAction( tr( "&Support" ), this, SLOT( support() ) );
@@ -686,7 +686,7 @@ ApplicationWindow::ApplicationWindow()
 
     help->addSeparator();
 
-    help->addAction( tr( "What's &This" ), Qt::SHIFT | Qt::Key_F1, this, &QWidget::whatsThis );
+    { auto *_a = new QAction( tr( "What's &This" ), this ); _a->setShortcut( Qt::SHIFT | Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &QWidget::whatsThis ); help->addAction( _a ); }
 
     /**
      * create data system
