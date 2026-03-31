@@ -136,16 +136,19 @@ jobs:
           $OB_ROOT = $env:OB_ROOT
           # Determine the correct lib name (may be openbabel or openbabel3)
           # OB on Windows puts import libs in lib\ or bin\ depending on build
+          # Dump all .lib files to identify the correct name
+          Write-Host "All .lib files in OB_ROOT:"
+          Get-ChildItem $OB_ROOT -Recurse -Filter "*.lib" | Select-Object FullName
           $OB_LIB = @(
+            "$OB_ROOT\lib\openbabel-3.lib",
             "$OB_ROOT\lib\openbabel3.lib",
             "$OB_ROOT\lib\openbabel.lib",
+            "$OB_ROOT\bin\openbabel-3.lib",
             "$OB_ROOT\bin\openbabel3.lib",
             "$OB_ROOT\bin\openbabel.lib"
           ) | Where-Object { Test-Path $_ } | Select-Object -First 1
           if (-not $OB_LIB) {
-            Write-Host "ERROR: Could not find OpenBabel import lib. Contents of OB_ROOT:"
-            Get-ChildItem $OB_ROOT -Recurse -Filter "*.lib" | Select-Object FullName
-            throw "OpenBabel import lib not found"
+            throw "OpenBabel import lib not found in OB_ROOT (see lib listing above)"
           }
           Write-Host "Using OB lib: $OB_LIB"
           cmake -S xdrawchem-qt5 -B build `
