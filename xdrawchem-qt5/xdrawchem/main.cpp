@@ -28,7 +28,9 @@
 #include <execinfo.h>
 #include <signal.h>
 #include <stdlib.h>
+#if !defined(_WIN32) && !defined(_WIN64)
 #include <unistd.h>
+#endif
 
 QString RingDir, HomeDir;
 QTextStream out( stdout );
