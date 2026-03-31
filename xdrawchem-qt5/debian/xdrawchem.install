@@ -2,3 +2,4 @@ usr/bin/xdrawchem
 usr/share/xdrawchem/
 usr/share/applications/xdrawchem.desktop
 usr/share/pixmaps/xdrawchem.png
+usr/share/metainfo/xdrawchem.metainfo.xml

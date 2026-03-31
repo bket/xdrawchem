@@ -1,0 +1,221 @@
+# build-windows.yml — Windows installer build
+#
+# Builds XDrawChem on Windows using MSVC (via Qt6 official installer via aqtinstall)
+# and OpenBabel pre-built binaries, then packages with NSIS into a .exe installer.
+# Runs on tag pushes (for releases) and PRs (smoke-testing).
+
+name: Build Windows Installer
+
+on:
+  push:
+    tags:
+      - 'v*'
+  pull_request:
+    paths:
+      - 'xdrawchem-qt5/**'
+      - '.github/workflows/build-windows.yml'
+  workflow_dispatch:
+
+env:
+  QT_VERSION: '6.7.3'
+  QT_ARCH: win64_msvc2019_64
+  OPENBABEL_VERSION: '3.1.1'
+
+jobs:
+  build-windows:
+    name: Build Windows installer
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v5.0.1
+
+      - name: Install Qt6 via aqtinstall
+        run: |
+          pip install aqtinstall
+          aqt install-qt windows desktop ${{ env.QT_VERSION }} ${{ env.QT_ARCH }} `
+            --modules qtsvg `
+            --outputdir C:\Qt
+        shell: pwsh
+
+      - name: Download OpenBabel Windows binaries
+        shell: pwsh
+        run: |
+          $OB_URL = "https://github.com/openbabel/openbabel/releases/download/openbabel-3-1-1/OpenBabel3.1.1_Windows-x64.exe"
+          Invoke-WebRequest -Uri $OB_URL -OutFile ob-installer.exe
+          # Run installer silently to C:\OpenBabel
+          Start-Process ob-installer.exe -ArgumentList '/S /D=C:\OpenBabel' -Wait
+          if (Test-Path 'C:\OpenBabel\include\openbabel3') {
+            Write-Host "OpenBabel installed successfully"
+          } else {
+            Write-Host "OpenBabel dir contents:"
+            Get-ChildItem 'C:\OpenBabel' -Recurse -Depth 2 | Select-Object FullName
+          }
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure CMake
+        shell: pwsh
+        run: |
+          $QT_DIR = "C:\Qt\${{ env.QT_VERSION }}\msvc2019_64"
+          $OB_DIR = "C:\OpenBabel"
+
+          # Locate OpenBabel include path
+          $OB_INCLUDE = if (Test-Path "$OB_DIR\include\openbabel3") {
+            "$OB_DIR\include\openbabel3"
+          } elseif (Test-Path "$OB_DIR\include") {
+            "$OB_DIR\include"
+          } else { "" }
+
+          cmake -S xdrawchem-qt5 -B build `
+            -G "NMake Makefiles" `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_PREFIX_PATH="$QT_DIR" `
+            -DRINGHOME="ring" `
+            -DOpenBabel_INCLUDE_DIRS="$OB_INCLUDE" `
+            -DOpenBabel_LIBRARIES="$OB_DIR\lib\openbabel.lib" `
+            -DOpenBabel_FOUND=ON
+
+      - name: Build
+        shell: pwsh
+        run: |
+          cmake --build build --config Release -j $env:NUMBER_OF_PROCESSORS
+
+      - name: Gather runtime dependencies (windeployqt)
+        shell: pwsh
+        run: |
+          $QT_BIN = "C:\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin"
+          $OB_BIN = "C:\OpenBabel\bin"
+
+          New-Item -ItemType Directory -Force -Path dist\xdrawchem | Out-Null
+
+          # Copy built binary
+          Copy-Item build\xdrawchem.exe dist\xdrawchem\
+
+          # Copy ring data
+          New-Item -ItemType Directory -Force -Path dist\xdrawchem\ring | Out-Null
+          Copy-Item xdrawchem-qt5\ring\* dist\xdrawchem\ring\ -Recurse
+
+          # Copy Qt runtime DLLs
+          & "$QT_BIN\windeployqt.exe" `
+            --release `
+            --no-translations `
+            dist\xdrawchem\xdrawchem.exe
+
+          # Copy OpenBabel runtime DLLs
+          if (Test-Path $OB_BIN) {
+            Copy-Item "$OB_BIN\*.dll" dist\xdrawchem\ -ErrorAction SilentlyContinue
+          }
+          # Also try lib directory
+          $OB_LIB = "C:\OpenBabel\lib"
+          if (Test-Path "$OB_LIB\*.dll") {
+            Copy-Item "$OB_LIB\*.dll" dist\xdrawchem\ -ErrorAction SilentlyContinue
+          }
+
+          # Copy MSVC runtime (if present)
+          Get-ChildItem "C:\Windows\System32\vcruntime*.dll" |
+            Copy-Item -Destination dist\xdrawchem\ -ErrorAction SilentlyContinue
+          Get-ChildItem "C:\Windows\System32\msvcp*.dll" |
+            Copy-Item -Destination dist\xdrawchem\ -ErrorAction SilentlyContinue
+
+          Write-Host "=== dist\xdrawchem contents ==="
+          Get-ChildItem dist\xdrawchem -Recurse | Select-Object FullName
+
+      - name: Install NSIS
+        run: choco install nsis --no-progress -y
+        shell: pwsh
+
+      - name: Write NSIS installer script
+        shell: pwsh
+        run: |
+          $VERSION = if ($env:GITHUB_REF_NAME -match '^v') {
+            $env:GITHUB_REF_NAME.TrimStart('v')
+          } else { "2.0" }
+
+          @"
+          !define APPNAME     "XDrawChem"
+          !define APPVERSION  "$VERSION"
+          !define PUBLISHER   "Bryan Herger"
+          !define APPURL      "https://github.com/bryanherger/xdrawchem"
+          !define INSTALLEREXE "XDrawChem-$VERSION-windows-x64.exe"
+
+          Name "`${APPNAME} `${APPVERSION}"
+          OutFile "`${INSTALLEREXE}"
+          InstallDir "`$PROGRAMFILES64\XDrawChem"
+          InstallDirRegKey HKLM "Software\XDrawChem" "InstallDir"
+          RequestExecutionLevel admin
+          SetCompressor /SOLID lzma
+
+          !include "MUI2.nsh"
+          !insertmacro MUI_PAGE_WELCOME
+          !insertmacro MUI_PAGE_DIRECTORY
+          !insertmacro MUI_PAGE_INSTFILES
+          !insertmacro MUI_PAGE_FINISH
+          !insertmacro MUI_UNPAGE_CONFIRM
+          !insertmacro MUI_UNPAGE_INSTFILES
+          !insertmacro MUI_LANGUAGE "English"
+
+          Section "XDrawChem" SecMain
+            SetOutPath "`$INSTDIR"
+            File /r "dist\xdrawchem\*.*"
+
+            ; Registry entries
+            WriteRegStr HKLM "Software\XDrawChem" "InstallDir" "`$INSTDIR"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem" \
+              "DisplayName"          "XDrawChem `${APPVERSION}"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem" \
+              "UninstallString"      "`$INSTDIR\uninstall.exe"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem" \
+              "Publisher"            "`${PUBLISHER}"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem" \
+              "URLInfoAbout"         "`${APPURL}"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem" \
+              "DisplayVersion"       "`${APPVERSION}"
+
+            ; Uninstaller
+            WriteUninstaller "`$INSTDIR\uninstall.exe"
+
+            ; Start Menu shortcut
+            CreateDirectory "`$SMPROGRAMS\XDrawChem"
+            CreateShortCut  "`$SMPROGRAMS\XDrawChem\XDrawChem.lnk" \
+              "`$INSTDIR\xdrawchem.exe"
+            CreateShortCut  "`$SMPROGRAMS\XDrawChem\Uninstall.lnk" \
+              "`$INSTDIR\uninstall.exe"
+
+            ; Desktop shortcut
+            CreateShortCut "`$DESKTOP\XDrawChem.lnk" "`$INSTDIR\xdrawchem.exe"
+
+            ; File associations
+            WriteRegStr HKCR ".mol"  "" "XDrawChem.molfile"
+            WriteRegStr HKCR "XDrawChem.molfile" "" "Chemical Structure (MDL Molfile)"
+            WriteRegStr HKCR "XDrawChem.molfile\shell\open\command" "" \
+              '"`$INSTDIR\xdrawchem.exe" "%1"'
+          SectionEnd
+
+          Section "Uninstall"
+            RMDir /r "`$INSTDIR"
+            Delete "`$SMPROGRAMS\XDrawChem\XDrawChem.lnk"
+            Delete "`$SMPROGRAMS\XDrawChem\Uninstall.lnk"
+            RMDir  "`$SMPROGRAMS\XDrawChem"
+            Delete "`$DESKTOP\XDrawChem.lnk"
+            DeleteRegKey HKLM "Software\XDrawChem"
+            DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem"
+            DeleteRegKey HKCR ".mol"
+            DeleteRegKey HKCR "XDrawChem.molfile"
+          SectionEnd
+          "@ | Out-File -Encoding UTF8 installer.nsi
+
+      - name: Build installer with NSIS
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\NSIS\makensis.exe" installer.nsi
+          Get-ChildItem *.exe | Select-Object Name, Length
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v7.0.0
+        with:
+          name: release-windows
+          path: XDrawChem-*-windows-x64.exe
+          retention-days: 14

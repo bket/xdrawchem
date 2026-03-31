@@ -66,8 +66,10 @@ jobs:
           while [ $ELAPSED -lt $MAX_WAIT ]; do
             DEB_ID=$(fetch_artifact "release-deb-noble")
             RPM_ID=$(fetch_artifact "release-rpm-rocky-9")
-            echo "  DEB id=${DEB_ID:-(pending)}  RPM id=${RPM_ID:-(pending)}  (${ELAPSED}s elapsed)"
-            if [ -n "$DEB_ID" ] && [ -n "$RPM_ID" ]; then
+            MAC_ID=$(fetch_artifact "release-mac")
+            WIN_ID=$(fetch_artifact "release-windows")
+            echo "  DEB=${DEB_ID:-(pending)} RPM=${RPM_ID:-(pending)} MAC=${MAC_ID:-(pending)} WIN=${WIN_ID:-(pending)}  (${ELAPSED}s elapsed)"
+            if [ -n "$DEB_ID" ] && [ -n "$RPM_ID" ] && [ -n "$MAC_ID" ] && [ -n "$WIN_ID" ]; then
               break
             fi
             sleep $INTERVAL
@@ -75,7 +77,7 @@ jobs:
           done
 
           # Download whatever we found (partial release is still useful)
-          for NAME in release-deb-noble release-rpm-rocky-9; do
+          for NAME in release-deb-noble release-rpm-rocky-9 release-mac release-windows; do
             ART_ID=$(fetch_artifact "$NAME")
             if [ -n "$ART_ID" ]; then
               echo "Downloading artifact $NAME (id=$ART_ID)..."

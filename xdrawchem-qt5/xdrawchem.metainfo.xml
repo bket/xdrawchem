@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.xdrawchem.xdrawchem</id>
+
+  <name>XDrawChem</name>
+  <summary>Two-dimensional chemical structure drawing program</summary>
+
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-2.0-or-later</project_license>
+
+  <description>
+    <p>
+      XDrawChem is a full-featured two-dimensional molecule drawing program for
+      Linux and other Unix-like systems. It is similar in functionality to
+      commercial tools such as ChemDraw and provides file compatibility with
+      many chemical formats through OpenBabel.
+    </p>
+    <p>Features include:</p>
+    <ul>
+      <li>Fixed-length, fixed-angle bond drawing with automatic figure alignment</li>
+      <li>Ring library including amino acids, nucleic acids, aromatics, and sugars</li>
+      <li>Stereo bonds (wedge-up, wedge-down, wavy) and dative (coordinate covalent) bonds</li>
+      <li>Curved arrows and Bézier arrows for reaction mechanism drawing</li>
+      <li>MDL Molfile, CML, and ChemDraw XML format support</li>
+      <li>OpenBabel integration for 20+ additional chemical file formats</li>
+      <li>SMILES, canonical SMILES, and InChI string generation</li>
+      <li>IUPAC name lookup via PubChem REST API</li>
+      <li>PubChem structure browser integration</li>
+      <li>Valence checking and molecular formula calculation</li>
+      <li>13C NMR and IR spectrum prediction</li>
+      <li>ACS publication style preset for journal-ready figures</li>
+      <li>Export to PNG, PDF, and SVG; copy as SVG or high-DPI PNG to clipboard</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">xdrawchem.desktop</launchable>
+
+  <url type="homepage">https://github.com/bryanherger/xdrawchem</url>
+  <url type="bugtracker">https://github.com/bryanherger/xdrawchem/issues</url>
+  <url type="vcs-browser">https://github.com/bryanherger/xdrawchem</url>
+
+  <developer id="net.sourceforge.xdrawchem">
+    <name>Bryan Herger</name>
+  </developer>
+
+  <content_rating type="oars-1.1" />
+
+  <categories>
+    <category>Education</category>
+    <category>Science</category>
+    <category>Chemistry</category>
+  </categories>
+
+  <keywords>
+    <keyword>chemistry</keyword>
+    <keyword>molecule</keyword>
+    <keyword>chemical structure</keyword>
+    <keyword>drawing</keyword>
+    <keyword>cheminformatics</keyword>
+    <keyword>SMILES</keyword>
+    <keyword>InChI</keyword>
+    <keyword>reaction</keyword>
+  </keywords>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Drawing organic molecules with ring templates and stereo bonds</caption>
+      <image>https://raw.githubusercontent.com/bryanherger/xdrawchem/master/xdrawchem-qt5/ring/xdrawchem-icon.png</image>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="2.0~rc2" date="2026-03-30">
+      <description>
+        <p>Second release candidate for XDrawChem 2.0.</p>
+        <ul>
+          <li>Qt6 + CMake build system (requires Qt 6.2+)</li>
+          <li>New: dative (coordinate covalent) bond type</li>
+          <li>New: ACS publication style preset</li>
+          <li>New: improved SVG export via Qt6 QSvgGenerator</li>
+          <li>New: copy as SVG or 300 dpi PNG to clipboard</li>
+          <li>New: canonical SMILES output via OpenBabel</li>
+          <li>New: IUPAC name lookup via PubChem REST API</li>
+          <li>New: PubChem structure browser integration</li>
+          <li>New: valence checking</li>
+          <li>New: PDF export</li>
+          <li>New: Georgian translation</li>
+          <li>Fixed: double bond geometry, molecule orientation on clean-up,
+              curved arrow tip alignment, Bézier arrow drawing, SMILES output</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.0~rc1" date="2026-03-26">
+      <description>
+        <p>First release candidate for XDrawChem 2.0 with Qt6 and CMake support.</p>
+      </description>
+    </release>
+  </releases>
+
+  <provides>
+    <binary>xdrawchem</binary>
+    <mediatype>chemical/x-mdl-molfile</mediatype>
+    <mediatype>chemical/x-cml</mediatype>
+  </provides>
+
+  <update_contact>bherger@users.sf.net</update_contact>
+</component>
