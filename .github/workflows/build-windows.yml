@@ -39,19 +39,23 @@ jobs:
             --outputdir C:\Qt
         shell: pwsh
 
-      - name: Download OpenBabel Windows binaries
+      - name: Install OpenBabel via vcpkg
         shell: pwsh
         run: |
-          $OB_URL = "https://github.com/openbabel/openbabel/releases/download/openbabel-3-1-1/OpenBabel3.1.1_Windows-x64.exe"
-          Invoke-WebRequest -Uri $OB_URL -OutFile ob-installer.exe
-          # Run installer silently to C:\OpenBabel
-          Start-Process ob-installer.exe -ArgumentList '/S /D=C:\OpenBabel' -Wait
-          if (Test-Path 'C:\OpenBabel\include\openbabel3') {
-            Write-Host "OpenBabel installed successfully"
+          # vcpkg is pre-installed on windows-latest at $env:VCPKG_INSTALLATION_ROOT
+          # Bootstrap if needed, then install openbabel
+          $VCPKG = "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe"
+          Write-Host "vcpkg at: $VCPKG"
+          & $VCPKG install openbabel:x64-windows
+          $OB_ROOT = "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows"
+          if (Test-Path "$OB_ROOT\include\openbabel3") {
+            Write-Host "OpenBabel installed successfully via vcpkg"
           } else {
-            Write-Host "OpenBabel dir contents:"
-            Get-ChildItem 'C:\OpenBabel' -Recurse -Depth 2 | Select-Object FullName
+            Write-Host "vcpkg installed root contents:"
+            Get-ChildItem "$OB_ROOT" -Depth 2 | Select-Object FullName
           }
+          # Export path for subsequent steps
+          echo "OB_ROOT=$OB_ROOT" >> $env:GITHUB_ENV
 
       - name: Set up MSVC
         uses: ilammy/msvc-dev-cmd@v1
@@ -62,23 +66,19 @@ jobs:
         shell: pwsh
         run: |
           $QT_DIR = "C:\Qt\${{ env.QT_VERSION }}\msvc2019_64"
-          $OB_DIR = "C:\OpenBabel"
 
-          # Locate OpenBabel include path
-          $OB_INCLUDE = if (Test-Path "$OB_DIR\include\openbabel3") {
-            "$OB_DIR\include\openbabel3"
-          } elseif (Test-Path "$OB_DIR\include") {
-            "$OB_DIR\include"
-          } else { "" }
-
+          $VCPKG_TOOLCHAIN = "$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
+          $OB_ROOT = $env:OB_ROOT
           cmake -S xdrawchem-qt5 -B build `
             -G "NMake Makefiles" `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_PREFIX_PATH="$QT_DIR" `
+            -DCMAKE_TOOLCHAIN_FILE="$VCPKG_TOOLCHAIN" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows `
             -DRINGHOME="ring" `
-            -DOpenBabel_INCLUDE_DIRS="$OB_INCLUDE" `
-            -DOpenBabel_LIBRARIES="$OB_DIR\lib\openbabel.lib" `
-            -DOpenBabel_FOUND=ON
+            -DOpenBabel_ROOT="$OB_ROOT" `
+            -DOpenBabel_INCLUDE_DIRS="$OB_ROOT\include\openbabel3" `
+            -DOpenBabel_LIBRARIES="$OB_ROOT\lib\openbabel3.lib"
 
       - name: Build
         shell: pwsh
@@ -89,7 +89,7 @@ jobs:
         shell: pwsh
         run: |
           $QT_BIN = "C:\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin"
-          $OB_BIN = "C:\OpenBabel\bin"
+          $OB_BIN = "$env:OB_ROOT\bin"
 
           New-Item -ItemType Directory -Force -Path dist\xdrawchem | Out-Null
 
@@ -106,14 +106,16 @@ jobs:
             --no-translations `
             dist\xdrawchem\xdrawchem.exe
 
-          # Copy OpenBabel runtime DLLs
+          # Copy OpenBabel runtime DLLs from vcpkg
+          $OB_BIN = "$env:OB_ROOT\bin"
           if (Test-Path $OB_BIN) {
             Copy-Item "$OB_BIN\*.dll" dist\xdrawchem\ -ErrorAction SilentlyContinue
           }
-          # Also try lib directory
-          $OB_LIB = "C:\OpenBabel\lib"
-          if (Test-Path "$OB_LIB\*.dll") {
-            Copy-Item "$OB_LIB\*.dll" dist\xdrawchem\ -ErrorAction SilentlyContinue
+          # Copy OB format plugins
+          $OB_PLUGINS = "$env:OB_ROOT\bin\openbabel"
+          if (Test-Path $OB_PLUGINS) {
+            New-Item -ItemType Directory -Force -Path dist\xdrawchem\openbabel | Out-Null
+            Copy-Item "$OB_PLUGINS\*.obf" dist\xdrawchem\openbabel\ -ErrorAction SilentlyContinue
           }
 
           # Copy MSVC runtime (if present)
