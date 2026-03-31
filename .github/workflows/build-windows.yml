@@ -39,23 +39,42 @@ jobs:
             --outputdir C:\Qt
         shell: pwsh
 
-      - name: Install OpenBabel via vcpkg
+      - name: Cache OpenBabel build
+        id: cache-openbabel
+        uses: actions/cache@v4
+        with:
+          path: C:\OpenBabel
+          key: openbabel-3.1.1-msvc-x64
+
+      - name: Build OpenBabel from source
+        if: steps.cache-openbabel.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          # vcpkg is pre-installed on windows-latest at $env:VCPKG_INSTALLATION_ROOT
-          # Bootstrap if needed, then install openbabel
-          $VCPKG = "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe"
-          Write-Host "vcpkg at: $VCPKG"
-          & $VCPKG install openbabel:x64-windows
-          $OB_ROOT = "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows"
-          if (Test-Path "$OB_ROOT\include\openbabel3") {
-            Write-Host "OpenBabel installed successfully via vcpkg"
-          } else {
-            Write-Host "vcpkg installed root contents:"
-            Get-ChildItem "$OB_ROOT" -Depth 2 | Select-Object FullName
-          }
-          # Export path for subsequent steps
-          echo "OB_ROOT=$OB_ROOT" >> $env:GITHUB_ENV
+          # Clone the 3.1.1 release tag (shallow)
+          git clone --depth 1 --branch openbabel-3-1-1 `
+            https://github.com/openbabel/openbabel.git ob-src
+
+          cmake -S ob-src -B ob-build `
+            -G "NMake Makefiles" `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_INSTALL_PREFIX=C:\OpenBabel `
+            -DBUILD_GUI=OFF `
+            -DENABLE_TESTS=OFF `
+            -DWITH_INCHI=OFF `
+            -DWITH_MAEPARSER=OFF `
+            -DWITH_COORDGEN=OFF `
+            -DBUILD_SHARED=ON
+
+          cmake --build ob-build --config Release -j $env:NUMBER_OF_PROCESSORS
+          cmake --install ob-build --config Release
+
+          Write-Host "OpenBabel installed to C:\OpenBabel"
+          Get-ChildItem C:\OpenBabel -Depth 2 | Select-Object FullName
+
+      - name: Export OpenBabel path
+        shell: pwsh
+        run: |
+          echo "OB_ROOT=C:\OpenBabel" >> $env:GITHUB_ENV
 
       - name: Set up MSVC
         uses: ilammy/msvc-dev-cmd@v1
@@ -67,18 +86,22 @@ jobs:
         run: |
           $QT_DIR = "C:\Qt\${{ env.QT_VERSION }}\msvc2019_64"
 
-          $VCPKG_TOOLCHAIN = "$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
           $OB_ROOT = $env:OB_ROOT
+          # Determine the correct lib name (may be openbabel or openbabel3)
+          $OB_LIB = if (Test-Path "$OB_ROOT\lib\openbabel3.lib") {
+            "$OB_ROOT\lib\openbabel3.lib"
+          } else {
+            "$OB_ROOT\lib\openbabel.lib"
+          }
+          Write-Host "Using OB lib: $OB_LIB"
           cmake -S xdrawchem-qt5 -B build `
             -G "NMake Makefiles" `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_PREFIX_PATH="$QT_DIR" `
-            -DCMAKE_TOOLCHAIN_FILE="$VCPKG_TOOLCHAIN" `
-            -DVCPKG_TARGET_TRIPLET=x64-windows `
             -DRINGHOME="ring" `
             -DOpenBabel_ROOT="$OB_ROOT" `
             -DOpenBabel_INCLUDE_DIRS="$OB_ROOT\include\openbabel3" `
-            -DOpenBabel_LIBRARIES="$OB_ROOT\lib\openbabel3.lib"
+            -DOpenBabel_LIBRARIES="$OB_LIB"
 
       - name: Build
         shell: pwsh
