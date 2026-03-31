@@ -296,7 +296,21 @@ jobs:
       - name: Build installer with NSIS
         shell: pwsh
         run: |
-          & "C:\Program Files (x86)\NSIS\makensis.exe" installer.nsi
+          # Locate makensis — it may be pre-installed or installed by choco
+          $makensis = @(
+            "C:\Program Files (x86)\NSIS\makensis.exe",
+            "C:\Program Files\NSIS\makensis.exe"
+          ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $makensis) {
+            $makensis = (Get-Command makensis -ErrorAction SilentlyContinue)?.Source
+          }
+          if (-not $makensis) {
+            Write-Host "makensis not found, reinstalling NSIS..."
+            choco install nsis --no-progress -y --force
+            $makensis = "C:\Program Files (x86)\NSIS\makensis.exe"
+          }
+          Write-Host "Using makensis: $makensis"
+          & $makensis installer.nsi
           Get-ChildItem *.exe | Select-Object Name, Length
 
       - name: Upload installer artifact
