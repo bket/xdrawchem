@@ -287,6 +287,7 @@ set_target_properties(xdrawchem PROPERTIES AUTOMOC OFF AUTOUIC OFF AUTORCC OFF)
 
 # ── Include paths ─────────────────────────────────────────────────────────────
 target_include_directories(xdrawchem PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/xdrawchem
     ${CMAKE_CURRENT_SOURCE_DIR}/xdrawchem
     ${OpenBabel_INCLUDE_DIRS}
 )
