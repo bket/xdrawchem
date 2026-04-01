@@ -1782,8 +1782,8 @@ void Render2D::mouseMoveEvent( QMouseEvent * e1 )
         //    painter->end();
         return;
     }
-    // MODE_DRAWWAVYLINE_DRAWING: draw temporary line
-    if ( ( mode == MODE_DRAWWAVYLINE_DRAWING ) && mouse1down ) {
+    // MODE_DRAWWAVYLINE_DRAWING / MODE_DRAWLINE_DATIVE_DRAWING: draw temporary line
+    if ( ( mode == MODE_DRAWWAVYLINE_DRAWING || mode == MODE_DRAWLINE_DATIVE_DRAWING ) && mouse1down ) {
         // if within range of existing point AND the end point is not the same
         // as the start point, snap to that point
         if ( ( dist < 6.0 ) && ( startpoint != nearestPoint ) ) {
