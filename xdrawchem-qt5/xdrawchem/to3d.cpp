@@ -2,6 +2,7 @@
 // this code derives from BUILD3D supplied by Thomas Shattuck
 
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include "graphdialog.h"
 #include "molinfodialog.h"
