@@ -84,7 +84,7 @@ endif()
 # ── Generate defs.h from template (stamps in APP_VERSION) ─────────────────
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/xdrawchem/defs.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/xdrawchem/defs.h
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/defs.h
     @ONLY
 )
 
@@ -264,7 +264,7 @@ add_library(xdrawchem_obj OBJECT
     ${XDC_HEADERS}
 )
 target_include_directories(xdrawchem_obj PUBLIC
-    ${CMAKE_CURRENT_BINARY_DIR}/xdrawchem
+    ${CMAKE_CURRENT_BINARY_DIR}/generated
     ${CMAKE_CURRENT_SOURCE_DIR}/xdrawchem
     ${OpenBabel_INCLUDE_DIRS}
 )
@@ -287,7 +287,7 @@ set_target_properties(xdrawchem PROPERTIES AUTOMOC OFF AUTOUIC OFF AUTORCC OFF)
 
 # ── Include paths ─────────────────────────────────────────────────────────────
 target_include_directories(xdrawchem PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}/xdrawchem
+    ${CMAKE_CURRENT_BINARY_DIR}/generated
     ${CMAKE_CURRENT_SOURCE_DIR}/xdrawchem
     ${OpenBabel_INCLUDE_DIRS}
 )

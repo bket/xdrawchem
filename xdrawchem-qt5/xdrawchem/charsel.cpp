@@ -19,9 +19,9 @@ void CharSelLabel::mousePressEvent( QMouseEvent * e1 )
 {
     int c1;
 
-    c1 = ( int ) ( ( double ) e1->y() / 16.0 );
+    c1 = ( int ) ( ( double ) e1->position().y() / 16.0 );
     c1 *= 32;
-    c1 += ( int ) ( ( double ) e1->x() / 16.0 );
+    c1 += ( int ) ( ( double ) e1->position().x() / 16.0 );
 
     emit thisChar( c1 );
 }
