@@ -15,11 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "ob_compat.h"
+OB_COMPAT_BEGIN
 #include <openbabel/atom.h>
 #include <openbabel/bond.h>
 #include <openbabel/math/vector3.h>
 #include <openbabel/mol.h>
 #include <openbabel/obconversion.h>
+OB_COMPAT_END
 using namespace OpenBabel;
 
 #include <vector>

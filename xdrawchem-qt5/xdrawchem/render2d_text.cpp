@@ -251,8 +251,8 @@ void Render2D::DrawText_mouseMoveEvent( QMouseEvent * e1 )
     DPoint *e = new DPoint;
     DPoint *np = 0;
 
-    e->x = e1->x();
-    e->y = e1->y();
+    e->x = qRound( e1->position().x() );
+    e->y = qRound( e1->position().y() );
     double dist, distobj;
 
     // Get DPoint of nearest point

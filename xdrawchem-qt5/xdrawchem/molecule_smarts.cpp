@@ -10,8 +10,11 @@
 
 #include <sstream>
 
+#include "ob_compat.h"
+OB_COMPAT_BEGIN
 #include <openbabel/mol.h>
 #include <openbabel/obconversion.h>
+OB_COMPAT_END
 using namespace OpenBabel;
 
 #include "molecule.h"

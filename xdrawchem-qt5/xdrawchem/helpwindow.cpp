@@ -51,9 +51,9 @@ HelpWindow::HelpWindow( const QString & home_, const QString & _path, QWidget * 
 
     QMenu *file = new QMenu( tr( "&File" ), this );
 
-    file->addAction( tr( "&Print" ), this, &HelpWindow::print, Qt::CTRL | Qt::Key_P );
+    { auto *_a = new QAction( tr( "&Print" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_P ); connect( _a, &QAction::triggered, this, &HelpWindow::print ); file->addAction( _a ); }
     file->addSeparator();
-    file->addAction( tr( "&Close" ), this, &QWidget::close, Qt::CTRL | Qt::Key_W );
+    { auto *_a = new QAction( tr( "&Close" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_W ); connect( _a, &QAction::triggered, this, &QWidget::close ); file->addAction( _a ); }
 
     // The same three icons are used twice each.
     QIcon icon_back( QPixmap( RingDir + "back.xpm" ) );
@@ -62,8 +62,8 @@ HelpWindow::HelpWindow( const QString & home_, const QString & _path, QWidget * 
 
     QMenu *go = new QMenu( tr( "&Go" ), this );
 
-    backwardAction = go->addAction( icon_back, tr( "&Backward" ), browser, &QTextBrowser::backward, Qt::CTRL | Qt::Key_Left );
-    forwardAction = go->addAction( icon_forward, tr( "&Forward" ), browser, &QTextBrowser::forward, Qt::CTRL | Qt::Key_Right );
+    { auto *_a = new QAction( icon_back, tr( "&Backward" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_Left ); connect( _a, &QAction::triggered, browser, &QTextBrowser::backward ); go->addAction( _a ); backwardAction = _a; }
+    { auto *_a = new QAction( icon_forward, tr( "&Forward" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_Right ); connect( _a, &QAction::triggered, browser, &QTextBrowser::forward ); go->addAction( _a ); forwardAction = _a; }
     homeAction = go->addAction( icon_home, tr( "&Home" ), browser, &QTextBrowser::home );
 
     QMenu *help = new QMenu( tr( "&Help" ), this );

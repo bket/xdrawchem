@@ -1147,7 +1147,7 @@ QPixmap Render2D::MakePixmap( bool transp )
     if ( transp ) {
         QBitmap bm( r.size() );
 
-        bm = pm;
+        bm = QBitmap::fromPixmap( pm );
         QImage bi;
 
         bi = bm.toImage();
