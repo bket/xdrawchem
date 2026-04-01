@@ -1,9 +1,18 @@
 cmake_minimum_required(VERSION 3.19)
 
 # ── Single source of truth for the application version ─────────────────────
-# Edit the VERSION file at the repository root to bump the version.
-# CMake reads it here; configure_file stamps it into defs.h.
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION" APP_VERSION)
+# Priority: -DAPP_VERSION=x.y (cmake -D) > repo-root VERSION file > source-
+# dir VERSION file (tarball installs) > fallback "dev".
+# Edit VERSION at the repo root to bump; the spec/workflow passes it via -D.
+if(NOT DEFINED APP_VERSION OR APP_VERSION STREQUAL "")
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION")
+        file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../VERSION" APP_VERSION)
+    elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION")
+        file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" APP_VERSION)
+    else()
+        set(APP_VERSION "dev")
+    endif()
+endif()
 string(STRIP "${APP_VERSION}" APP_VERSION)
 # CMake project() VERSION must be numeric; strip any rc/alpha/beta suffix
 string(REGEX REPLACE "[^0-9.].*$" "" APP_VERSION_NUMERIC "${APP_VERSION}")

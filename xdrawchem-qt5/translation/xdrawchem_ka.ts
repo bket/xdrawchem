@@ -1148,7 +1148,7 @@ Bryan Herger
 bherger@users.sourceforge.net
 
 Please subscribe to the mailing list for information about future releases.
-Send a message to xdrawchem-announce-request@lists.sourceforge.net with 'subscribe' as the subject.
+Send a message to https://github.com/bryanherger/xdrawchem/issues with 'subscribe' as the subject.
 
 XDrawChem is copyright (C) 2004 Bryan Herger.
 Portions copyright (C) 1997-2000 Dr. Christoph Steinbeck and the JChemPaint project
@@ -1159,7 +1159,7 @@ Bryan Herger
 bherger@users.sourceforge.net
 
 მომავალი ვერსიების შესახებ ინფორმაციის მისაღებად გამოიწერეთ დაგზავნის სია.
-გამოაგზავნეთ ელფოსტა მისამართზე xdrawchem-announce-request@lists.sourceforge.net სათაურად 'subscribe'.
+გამოაგზავნეთ ელფოსტა მისამართზე https://github.com/bryanherger/xdrawchem/issues სათაურად 'subscribe'.
 
 XDrawChem is copyright (C) 2004 Bryan Herger.
 Portions copyright (C) 1997-2000 Dr. Christoph Steinbeck and the JChemPaint project
@@ -1168,30 +1168,30 @@ OpenBabel code copyright (C) 2003 by the OpenBabel project team.
     </message>
     <message>
         <source>Current information on XDrawChem can always be found at
-http://xdrawchem.sourceforge.net/
+https://github.com/bryanherger/xdrawchem
 The latest release will be posted here, as well as links to mailing lists and the bug tracker.
 
-Please submit bugs using the SourceForge tracker: http://www.sourceforge.net/tracker/?group_id=34518
+Please submit bugs using the SourceForge tracker: https://github.com/bryanherger/xdrawchem/issues
 
 There are two mailing lists:  xdrawchem-announce, where new releases will be announced,
 and xdrawchem-user, for open discussion among XDrawChem users.
 Subscribe by sending a blank e-mail with subject "subscribe" to 
-"xdrawchem-announce-request@lists.sourceforge.net" or
-"xdrawchem-user-request@lists.sourceforge.net"
+"https://github.com/bryanherger/xdrawchem/issues" or
+"https://github.com/bryanherger/xdrawchem/issues"
 
 You can contact the author directly at
 bherger@users.sourceforge.net</source>
         <translation>Current information on XDrawChem can always be found at
-http://xdrawchem.sourceforge.net/
+https://github.com/bryanherger/xdrawchem
 The latest release will be posted here, as well as links to mailing lists and the bug tracker.
 
-Please submit bugs using the SourceForge tracker: http://www.sourceforge.net/tracker/?group_id=34518
+Please submit bugs using the SourceForge tracker: https://github.com/bryanherger/xdrawchem/issues
 
 There are two mailing lists:  xdrawchem-announce, where new releases will be announced,
 and xdrawchem-user, for open discussion among XDrawChem users.
 Subscribe by sending a blank e-mail with subject "subscribe" to 
-"xdrawchem-announce-request@lists.sourceforge.net" or
-"xdrawchem-user-request@lists.sourceforge.net"
+"https://github.com/bryanherger/xdrawchem/issues" or
+"https://github.com/bryanherger/xdrawchem/issues"
 
 You can contact the author directly at
 bherger@users.sourceforge.net</translation>
@@ -1690,9 +1690,9 @@ amino acids from N-terminal to C-terminal
     </message>
     <message>
         <source>Be sure to check for updates at
-http://xdrawchem.sourceforge.net/</source>
+https://github.com/bryanherger/xdrawchem</source>
         <translation>განახლებებისთვის იხილეთ მისამართი
-http://xdrawchem.sourceforge.net/</translation>
+https://github.com/bryanherger/xdrawchem</translation>
     </message>
     <message>
         <source>XDrawChem can draw over 100,000 substances using

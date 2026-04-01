@@ -71,6 +71,7 @@ Features:
 %cmake \
     -GNinja \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DAPP_VERSION=%{xdcver} \
     -DRINGHOME=%{_datadir}/%{name} \
     -DCMAKE_INSTALL_PREFIX=%{_prefix}
 %cmake_build
