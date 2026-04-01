@@ -1979,7 +1979,9 @@ void Render2D::paintEvent( QPaintEvent * )
       drawUpLine( startPoint, endPoint, currentColor );
     } else if ( mode == MODE_DRAWLINE_DOWN_DRAWING ) {
       drawDownLine( startPoint, endPoint, currentColor );
-    } else if ( mode == MODE_DRAWWAVYLINE_DRAWING || mode == MODE_DRAWLINE_DATIVE_DRAWING ) {
+    } else if ( mode == MODE_DRAWWAVYLINE_DRAWING ) {
+      drawWavyLine( startPoint, endPoint, currentColor );
+    } else if ( mode == MODE_DRAWLINE_DATIVE_DRAWING ) {
       drawWavyLine( startPoint, endPoint, currentColor );
     } else if ( mode == MODE_DRAWARROW_DRAWING ) {
       drawArrow( startPoint, endPoint, currentColor, bracket_type, thick );
