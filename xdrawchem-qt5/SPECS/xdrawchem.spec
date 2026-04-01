@@ -65,7 +65,7 @@ Features:
 
 %prep
 # Source tarball top-level directory is xdrawchem-2.0rc1/
-%autosetup -n %{name}-2.0rc1
+%autosetup -n %{name}-%{xdcver}
 
 %build
 %cmake \
