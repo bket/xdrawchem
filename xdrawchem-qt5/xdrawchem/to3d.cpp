@@ -11,7 +11,6 @@
 #include "molecule.h"
 #include "dpoint.h"
 #include "defs.h"
-#include "netaccess.h"
 
 // Preferences
 extern Preferences preferences;
@@ -256,6 +255,18 @@ void Molecule::Make3DVersion( QString fn3d )
     qDebug() << buildfile;
     qDebug();
 
+    // Build3D used to call the defunct SourceForge CGI endpoint
+    // (https://xdrawchem.sourceforge.net/cgi-bin/runbuild).  That server
+    // is gone; the feature is disabled until a local OpenBabel-based
+    // 3D coordinate generator is implemented (see backlog item).
+    QMessageBox::information(
+        getRender2D(),
+        tr( "3D model not available" ),
+        tr( "The 3D coordinate generation service is currently unavailable.\n"
+            "This feature will be restored in a future release using\n"
+            "a local OpenBabel-based generator." ) );
+    return;
+#if 0   // dead code — kept for reference until local 3D generator is implemented
     NetAccess na;
     int ge1;
 
@@ -270,6 +281,7 @@ void Molecule::Make3DVersion( QString fn3d )
         qDebug() << "Build3D failed!";
         return;
     }
+#endif
 
     // if a filename was passed in, copy to that
     if ( fn3d.length() > 1 ) {
