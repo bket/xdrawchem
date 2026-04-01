@@ -1806,9 +1806,8 @@ void Render2D::mouseMoveEvent( QMouseEvent * e1 )
         //    painter->begin(this);
         startPoint = startpoint->toQPoint();
         endPoint = endpoint->toQPoint();
-//        drawWavyLine( startpoint->toQPoint(), endpoint->toQPoint(), currentColor );
         directdraw = false;
-        //    painter->end();
+        update();  // ensure rubber-band repaints with correct endpoints
         return;
     }
     // MODE_DRAWARROW_DRAWING: draw temporary arrow
@@ -1819,12 +1818,10 @@ void Render2D::mouseMoveEvent( QMouseEvent * e1 )
         if ( preferences.getArrow_fixed() ) { // fix endpoint if fixed set
             CorrectEndpoint_arrow();
         }
-        //    painter->begin(this);
         startPoint = startpoint->toQPoint();
         endPoint = endpoint->toQPoint();
-//        drawArrow( startpoint->toQPoint(), endpoint->toQPoint(), currentColor, bracket_type, thick );
         directdraw = false;
-        //    painter->end();
+        update();  // ensure rubber-band repaints with correct endpoints
         return;
     }
     // MODE_DRAWCURVEARROW_DRAWING: draw temporary curve arrow
