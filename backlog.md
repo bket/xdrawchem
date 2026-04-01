@@ -1,19 +1,34 @@
 # XDrawChem — Consolidated Backlog
 *Compiled from all session history, GitHub issues, Debian tracker, and competitive analysis*
-*As of v2.0rc2 — March 2026*
+*As of v2.0rc3 — April 2026*
 
 [BryanH - I will work on some or all of these eventually, but if anything here should be a priority, copy the item and create an issue]
 
 ---
 
-## Status at v2.0rc2
+## Status at v2.0rc3
 
-**Completed this cycle:**
+**Completed in rc2→rc3 cycle:**
+- Windows CI build (MSVC + NSIS installer, produces `.exe`)
+- macOS CI build (Homebrew Qt6, produces `.dmg`)
+- All four platform builds integrated into the release workflow
+- Fixed Qt 6.4 `addAction` deprecations across `application.cpp`, `helpwindow.cpp`, `application_ring.cpp`
+- Fixed Qt 6.2 `QMessageBox` multi-string-button deprecations (items 2.1 / backlog complete)
+- Fixed `QMouseEvent::x()/y()` → `position()` deprecations in `charsel.cpp`, `render2d_text.cpp`
+- Fixed `QBitmap::operator=(QPixmap)` → `fromPixmap()` in `render2d_draw.cpp`
+- Suppressed OpenBabel `std::binary_function` deprecation warnings on GCC 13+ via `ob_compat.h`
+- AppStream `xdrawchem.metainfo.xml` confirmed installed and packaged in RPM (item 3.3 complete)
+- Name-to-structure via PubChem REST API — Tools → "Name to structure..." (item 5.7 complete)
+- InChI input confirmed working via existing SMILES dialog (item 5.8 complete)
+- Single `VERSION` file at repo root as source of truth for all platforms
+- About/Support dialogs updated with GitHub URLs; all 13 translation files updated to match
+
+**Completed previously (rc1/rc2):**
 - Qt6 + CMake port (zero warnings/errors)
 - 13 test suites, 274 tests, 100% passing
 - Bugs fixed: #9 double bond geometry, #10 clean-up orientation, #13 curved arrow tips, #14 Bézier arrows, #15 SMILES `**`, #18 OpenBabel 3, #19 Georgian translation
-- Features added: IUPAC naming (PubChem REST), PubChem browser, valence checking, PDF export, Fusion/light-palette startup fix, dative bond (order 9), ACS style preset, SVG export (QSvgGenerator), copy as SVG/PNG, canonical SMILES
-- CI/CD: GitHub Actions for CI, DEB (Ubuntu 22.04 + 24.04), RPM (Rocky 9), Release
+- Features added: IUPAC naming (PubChem REST), PubChem browser, valence checking, PDF export, Fusion/light-palette startup fix, dative bond (order 9), ACS style preset, SVG export, copy as SVG/PNG, canonical SMILES
+- CI/CD: GitHub Actions for DEB (Ubuntu 24.04), RPM (Rocky 9), Windows, macOS, Release
 
 ---
 
@@ -23,14 +38,12 @@ These were open on the tracker at the start of the session. Check https://github
 
 | # | Title | Notes |
 |---|---|---|
-| Open | Any issues filed after rc2 ships | Monitor after release |
+| Open | Any issues filed after rc3 ships | Monitor after release |
 
 ---
 
 ## SECTION 2 — Code Quality / Technical Debt
 *Low risk, relatively small scope — good for a maintenance sprint*
-
-**2.1 Deprecated QMessageBox overloads** — 3 warnings in `application.cpp` at lines 722, 1533, 2155. All use the old multi-string `question()`/`information()` signatures deprecated in Qt5 and producing warnings in Qt6. Should be replaced with the `StandardButtons` overload. Easy, self-contained.
 
 **2.2 Dead `CalcName()` CGI endpoint** — The old name-lookup pathway calls a dead CGI script on woodsidelabs.com. It should be removed or redirected to the new `IUPACName()` PubChem pathway. The menu item may still be wired to the old code.
 
@@ -51,15 +64,9 @@ These were open on the tracker at the start of the session. Check https://github
 
 **3.2 Fedora 40 RPM re-enablement** — Disabled in `build-rpm.yml` during initial CI setup. Could be re-added now that the Rocky 9 build is stable.
 
-**3.3 AppStream / metainfo XML** — The Debian tracker flags an AppStream warning. An `xdrawchem.metainfo.xml` file in `/usr/share/metainfo/` would enable proper display in GNOME Software, KDE Discover, and Flathub. Required format: AppStream 0.12+. Content: name, summary, description, screenshots, URL, licence, categories (`Education;Science;Chemistry`), releases block.
-
 **3.4 `debian/watch` file** — The Debian tracker flags a `uscan` error. Adding a `debian/watch` file pointing to the GitHub releases API would let Debian maintainers track upstream automatically.
 
-**3.5 Flathub submission** — A `org.xdrawchem.XDrawChem.yml` Flatpak manifest would allow distribution via Flathub, reaching users on any Linux distro without distro packaging. Dependencies (Qt6, OpenBabel) are available in Flathub's SDK. Requires the AppStream metainfo file (3.3) first.
-
-**3.6 macOS build** — Homebrew has `qt@6` and `open-babel`. No CI runner configured. A `build-mac.yml` using `macos-latest` with `brew install qt@6 open-babel cmake ninja` and a `macdeployqt`-produced `.dmg` would cover macOS users.
-
-**3.7 Windows native build** — MinGW cross-compile or MSVC. Qt6 for Windows can be installed via `aqtinstall` in GitHub Actions. OpenBabel Windows builds are available. More involved than macOS but achievable with a dedicated workflow.
+**3.5 Flathub submission** — A `org.xdrawchem.XDrawChem.yml` Flatpak manifest would allow distribution via Flathub, reaching users on any Linux distro without distro packaging. Dependencies (Qt6, OpenBabel) are available in Flathub's SDK. Requires the AppStream metainfo file (done) first.
 
 **3.8 Repository screenshot** — No screenshot in the repo. GNOME Software, Flathub, and most software directories require at least one screenshot. A 1280×800 PNG of a typical molecule drawing session would suffice.
 
@@ -99,10 +106,6 @@ These were open on the tracker at the start of the session. Check https://github
 
 **5.6 SMARTS input** — SMARTS format (`FindFormat("sma")`) is not compiled into the system OpenBabel package on Ubuntu/Rocky. However, OB's SMILES reader silently accepts SMARTS atoms, so reading SMARTS strings through the existing SMILES input dialog already works for most cases. True SMARTS output (for substructure query export) requires OB's SMARTS writer, which may need a custom OB build. Low value unless specifically requested.
 
-**5.7 Name-to-structure (NTS)** — Convert an IUPAC name to a drawn structure. ChemDraw and MarvinSketch both offer this. OPSIN (Open Parser for Systematic IUPAC Nomenclature) is a Java library available under the MIT licence that handles this well and is used by ChemDoodle Web. Integrating it requires either a Java subprocess call or using the OPSIN REST API. Medium effort.
-
-**5.8 InChI input (structure from InChI string)** — Currently XDrawChem can output InChI but not read it back. OpenBabel can convert InChI → Molfile, so this is a small addition to the existing SMILES/InChI input dialog. Low effort.
-
 ---
 
 ## SECTION 6 — CI/CD & Infrastructure Improvements
@@ -137,20 +140,18 @@ These were open on the tracker at the start of the session. Check https://github
 
 | Priority | Item | Effort | Impact |
 |---|---|---|---|
-| 🔴 High | 2.1 Fix deprecated QMessageBox warnings | Low | Eliminates build warnings |
 | 🔴 High | 4.1 CIP R/S, E/Z labels | Medium | Major feature gap vs all competitors |
-| 🔴 High | 3.3 AppStream metainfo XML | Low | Required for Flathub/GNOME Software |
+| 🔴 High | 2.2 Remove dead CalcName CGI | Low | Dead code removal |
+| 🔴 High | 2.3 Remove/replace dead "Find on Internet" | Low | Dead code removal |
 | 🟡 Medium | 4.3 SDF / RXN file support | Medium | Opens compound database workflows |
 | 🟡 Medium | 4.4 Formal charges + isotopes on atoms | Medium | Needed for mechanisms and NMR |
 | 🟡 Medium | 4.5 Live property panel | Medium | High usability payoff |
 | 🟡 Medium | 3.5 Flathub submission | Low-Med | Reaches all Linux users |
 | 🟡 Medium | 5.3 Lone pair display | Low | Mechanism drawing quality |
-| 🟡 Medium | 5.8 InChI input | Low | Completes InChI round-trip |
 | 🟡 Medium | 2.4 Proper dative bond icon | Low | Polish |
 | 🟢 Lower | 4.2 Reaction atom mapping | High | Important for reaction DBs |
 | 🟢 Lower | 4.6 Fragment template browser | Medium | Organic chemistry workflows |
-| 🟢 Lower | 3.6 macOS build | Medium | New platform |
-| 🟢 Lower | 5.7 Name-to-structure (OPSIN) | Medium | Power feature |
+| 🟢 Lower | 3.1 Ubuntu 22.04 DEB re-enable | Low | Wider DEB coverage |
+| 🟢 Lower | 3.2 Fedora 40 RPM | Low | Wider RPM coverage |
 | 🟢 Lower | 6.1 GPG-signed packages | Medium | Security/trust |
-| 🟢 Lower | 3.7 Windows build | High | New platform |
 | 🟢 Lower | 5.1 OSRA image OCR | High | Very useful but large integration |
