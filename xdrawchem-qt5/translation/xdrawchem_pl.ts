@@ -2265,12 +2265,8 @@ To clear highlights, select Undo from the Edit menu, or press Ctrl+Z.</source>
 <context>
     <name>NetDialog</name>
     <message>
-        <source>Find structure via Internet</source>
+        <source>Find structure on PubChem</source>
         <translation>Znajdź strukturę przez internet</translation>
-    </message>
-    <message>
-        <source>XDC database server:</source>
-        <translation>Serwer bazy danych XDC:</translation>
     </message>
     <message>
         <source>Search type:</source>
@@ -2583,10 +2579,6 @@ skróty trójliterowe:</translation>
     </message>
     <message>
         <source>Click on a molecule to generate 3-D coordinates</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Click on a molecule to guess its name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

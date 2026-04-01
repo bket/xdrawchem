@@ -2226,12 +2226,8 @@ To clear highlights, select Undo from the Edit menu, or press Ctrl+Z.</source>
 <context>
     <name>NetDialog</name>
     <message>
-        <source>Find structure via Internet</source>
+        <source>Find structure on PubChem</source>
         <translation>სტრუქტურის პოვნა ინტერნეტში</translation>
-    </message>
-    <message>
-        <source>XDC database server:</source>
-        <translation>XDC მონაცემთა ბაზის სერვერი:</translation>
     </message>
     <message>
         <source>Search type:</source>
@@ -2539,10 +2535,6 @@ three-letter abbreviations:</source>
     <message>
         <source>Click on a molecule to generate 3-D coordinates</source>
         <translation>დააწკაპუნეთ მოლეკულაზე 3D კოორდინატების გენერაციისთვის</translation>
-    </message>
-    <message>
-        <source>Click on a molecule to guess its name</source>
-        <translation>დააწკაპუნეთ მოლეკულაზე მისი სახელის გამოსაცნობად</translation>
     </message>
     <message>
         <source>Click on a molecule</source>

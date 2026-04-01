@@ -527,7 +527,7 @@ ApplicationWindow::ApplicationWindow()
 
     { auto *_a = new QAction( tr( "&New" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_N ); connect( _a, &QAction::triggered, this, &ApplicationWindow::newDoc ); file->addAction( _a ); }
     { auto *_a = new QAction( QIcon( RingDir + "fileopen.png" ), tr( "&Open" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_O ); connect( _a, &QAction::triggered, this, [this](){ load(); } ); file->addAction( _a ); }
-    { auto *_a = new QAction( tr( "&Find on Internet" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_F ); connect( _a, &QAction::triggered, this, &ApplicationWindow::MakeNetDialog ); file->addAction( _a ); }
+    { auto *_a = new QAction( tr( "&Find on PubChem..." ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_F ); connect( _a, &QAction::triggered, this, &ApplicationWindow::MakeNetDialog ); file->addAction( _a ); }
     { auto *_a = new QAction( QIcon(saveIcon), tr( "&Save" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_S ); connect( _a, &QAction::triggered, this, [this](){ save(); } ); file->addAction( _a ); }
     file->addAction( tr( "Save &as..." ), this, SLOT( saveAs() ) );
     file->addAction( tr( "Save picture..." ), this, SLOT( savePicture() ) );
@@ -1673,7 +1673,7 @@ void ApplicationWindow::MakeNetDialog() {
   NetAccess na;
   setCursor(Qt::WaitCursor);
   m_renderer->setWaitCursor();
-  QStringList choices = na.getChoices(n.getServer(), n.getKey(), n.getValue(),
+  QStringList choices = na.getChoices(QString(), n.getKey(), n.getValue(),
                                       n.getExact() );
   setCursor(Qt::ArrowCursor);
   m_renderer->setArrowCursor();
@@ -1945,11 +1945,6 @@ void ApplicationWindow::CalcpKa()
 void ApplicationWindow::CalcKOW()
 {
     m_renderer->Tool( MODE_TOOL_KOW );
-}
-
-void ApplicationWindow::CalcName()
-{
-    m_renderer->Tool( MODE_TOOL_NAME );
 }
 
 void ApplicationWindow::ToSMILES()
