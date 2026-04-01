@@ -93,6 +93,7 @@ QT_QPA_PLATFORM=offscreen ctest --output-on-failure -j$(nproc)
 %{_datadir}/%{name}/
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/pixmaps/%{name}.png
+%{_datadir}/metainfo/%{name}.metainfo.xml
 
 %changelog
 * Thu Mar 26 2026 Bryan Herger <bherger@users.sf.net> - 2.0-0.1.rc1
