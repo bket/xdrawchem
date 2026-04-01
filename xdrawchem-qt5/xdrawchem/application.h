@@ -22,6 +22,7 @@
 #include <QPrinter>
 #include <QToolBar>
 #include <QMainWindow>
+#include "defs.h"
 
 class RenderArea;
 class Render2D;
@@ -211,6 +212,7 @@ private:
     QMenu *regularArrowMenu;
     QAction *regularArrowAction, *topharpoonArrowAction, * bottomharpoonAction, * middleArrowAction,
             *didntworkArrowAction, * dashedArrowAction, * bi1ArrowAction, * bi2ArrowAction, * retroArrowAction;
+    regularArrowType m_currentArrowType = regularArrow;  // tracks last arrow type picked from menu
 
     /// curve arrows
     QToolButton *drawCurveArrowButton;

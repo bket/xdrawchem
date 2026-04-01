@@ -50,6 +50,7 @@ Render2D::Render2D( QWidget * parent )
     thick = 1;
     savedBondOrder = -1;
     zoomFactor = 1.0;
+    bracket_type = ARROW_REGULAR;  // default arrow style; also covers bracket tools
 
     currentFont = QFont( "Helvetica", 12 );
     currentColor = QColor( 0, 0, 0 );
