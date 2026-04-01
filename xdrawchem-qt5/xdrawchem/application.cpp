@@ -980,6 +980,13 @@ void ApplicationWindow::setSymbolAction( QAction *action )
 
 void ApplicationWindow::FromArrowMenu( QAction *action )
 {
+    // When action is nullptr the user clicked the main button face (not the
+    // dropdown arrow).  Re-activate the last-used arrow type so the button
+    // behaves as a simple repeat of the previous selection.
+    if ( action == nullptr ) {
+        m_renderer->setMode_DrawArrow( m_currentArrowType );
+        return;
+    }
     if ( action == regularArrowAction ) {
         m_renderer->setMode_DrawArrow( regularArrow );
     } else if ( action == topharpoonArrowAction ) {
@@ -999,51 +1006,39 @@ void ApplicationWindow::FromArrowMenu( QAction *action )
     } else if ( action == retroArrowAction ) {
         m_renderer->setMode_DrawArrow( retroArrow );
     } else {
-        qDebug() << "unknown action";
+        qDebug() << "FromArrowMenu: unknown action";
     }
 }
 
 void ApplicationWindow::setRegularArrowAction( QAction * action )
 {
-    if ( action == regularArrowAction ) {
-        m_renderer->setMode_DrawArrow( regularArrow );
-        drawArrowButton->setDefaultAction( regularArrowAction );
-        drawArrowButton->setIcon( QIcon( QPixmap( arrow_regular_xpm ) ) );
-    } else if ( action == topharpoonArrowAction ) {
-        m_renderer->setMode_DrawArrow( topharpoonArrow );
-        drawArrowButton->setDefaultAction( topharpoonArrowAction );
-        drawArrowButton->setIcon( QIcon( QPixmap( arrow_topharpoon_xpm ) ) );
-    } else if ( action == bottomharpoonAction ) {
-        m_renderer->setMode_DrawArrow( bottomharpoonArrow );
-        drawArrowButton->setDefaultAction( bottomharpoonAction );
-        drawArrowButton->setIcon( QIcon( QPixmap( arrow_bottomharpoon_xpm ) ) );
-    } else if ( action == middleArrowAction ) {
-        m_renderer->setMode_DrawArrow( middleArrow );
-        drawArrowButton->setDefaultAction( middleArrowAction );
-        drawArrowButton->setIcon( QIcon( QPixmap( arrow_middle_xpm ) ) );
-    } else if ( action == didntworkArrowAction ) {
-        m_renderer->setMode_DrawArrow( didntworkArrow );
-        drawArrowButton->setDefaultAction( didntworkArrowAction );
-        drawArrowButton->setIcon( QIcon( QPixmap( arrow_didnt_work_xpm ) ) );
-    } else if ( action == dashedArrowAction ) {
-        m_renderer->setMode_DrawArrow( dashedArrow );
-        drawArrowButton->setDefaultAction( dashedArrowAction );
-        drawArrowButton->setIcon( QIcon( QPixmap( arrow_dash_xpm ) ) );
-    } else if ( action == bi1ArrowAction ) {
-        m_renderer->setMode_DrawArrow( bi1Arrow );
-        drawArrowButton->setDefaultAction( bi1ArrowAction );
-        drawArrowButton->setIcon( QIcon( QPixmap( arrow_bi1_xpm ) ) );
-    } else if ( action == bi2ArrowAction ) {
-        m_renderer->setMode_DrawArrow( bi2Arrow );
-        drawArrowButton->setDefaultAction( bi2ArrowAction );
-        drawArrowButton->setIcon( QIcon( QPixmap( arrow_bi2_xpm ) ) );
-    } else if ( action == retroArrowAction ) {
-        m_renderer->setMode_DrawArrow( retroArrow );
-        drawArrowButton->setDefaultAction( retroArrowAction );
-        drawArrowButton->setIcon( QIcon( QPixmap( arrow_retro_xpm ) ) );
-    } else {
-        qDebug() << "unknown action";
-    }
+    // Map action → enum value, then record + apply in one place.
+    regularArrowType type = regularArrow;
+    if      ( action == regularArrowAction )    type = regularArrow;
+    else if ( action == topharpoonArrowAction )  type = topharpoonArrow;
+    else if ( action == bottomharpoonAction )    type = bottomharpoonArrow;
+    else if ( action == middleArrowAction )      type = middleArrow;
+    else if ( action == didntworkArrowAction )   type = didntworkArrow;
+    else if ( action == dashedArrowAction )      type = dashedArrow;
+    else if ( action == bi1ArrowAction )         type = bi1Arrow;
+    else if ( action == bi2ArrowAction )         type = bi2Arrow;
+    else if ( action == retroArrowAction )       type = retroArrow;
+    else { qDebug() << "setRegularArrowAction: unknown action"; return; }
+
+    m_currentArrowType = type;   // persist so button-click (nullptr) can repeat it
+    m_renderer->setMode_DrawArrow( type );
+
+    // Update button face to show the newly selected arrow type.
+    drawArrowButton->setDefaultAction( action );
+    if      ( type == regularArrow )      drawArrowButton->setIcon( QIcon( QPixmap( arrow_regular_xpm ) ) );
+    else if ( type == topharpoonArrow )   drawArrowButton->setIcon( QIcon( QPixmap( arrow_topharpoon_xpm ) ) );
+    else if ( type == bottomharpoonArrow) drawArrowButton->setIcon( QIcon( QPixmap( arrow_bottomharpoon_xpm ) ) );
+    else if ( type == middleArrow )       drawArrowButton->setIcon( QIcon( QPixmap( arrow_middle_xpm ) ) );
+    else if ( type == didntworkArrow )    drawArrowButton->setIcon( QIcon( QPixmap( arrow_didnt_work_xpm ) ) );
+    else if ( type == dashedArrow )       drawArrowButton->setIcon( QIcon( QPixmap( arrow_dash_xpm ) ) );
+    else if ( type == bi1Arrow )          drawArrowButton->setIcon( QIcon( QPixmap( arrow_bi1_xpm ) ) );
+    else if ( type == bi2Arrow )          drawArrowButton->setIcon( QIcon( QPixmap( arrow_bi2_xpm ) ) );
+    else if ( type == retroArrow )        drawArrowButton->setIcon( QIcon( QPixmap( arrow_retro_xpm ) ) );
 }
 
 void ApplicationWindow::FromCurveArrowMenu( QAction * action )
