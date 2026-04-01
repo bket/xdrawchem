@@ -370,7 +370,7 @@ ApplicationWindow::ApplicationWindow()
 
     QAction *drawWavyLineAction = drawTools->addAction( QIcon( RingDir + "wavytool.png" ), tr( "Draw wavy bond" ),
                                                         m_renderer, SLOT( setMode_DrawWavyLine() ) );
-    QAction *drawDativeLineAction = drawTools->addAction( QIcon( RingDir + "dativetool.png" ), tr( "Draw dative (coordinate) bond" ),
+    QAction *drawDativeLineAction = drawTools->addAction( QIcon( QPixmap( dativetool_xpm ) ), tr( "Draw dative (coordinate) bond" ),
                                                           m_renderer, SLOT( setMode_DrawDativeLine() ) );
     drawDativeLineAction->setWhatsThis( tr( "Dative bond: a coordinate covalent bond shown as an arrow from donor to acceptor" ) );
 
