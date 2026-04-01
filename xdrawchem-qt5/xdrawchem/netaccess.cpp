@@ -44,7 +44,8 @@ QString NetAccess::httpGet(const QString &url)
     QEventLoop loop;
     QString result;
 
-    QNetworkRequest req(QUrl(url));
+    QUrl reqUrl(url);
+    QNetworkRequest req(reqUrl);
     req.setHeader(QNetworkRequest::UserAgentHeader,
                   QStringLiteral("XDrawChem/2.0 (https://github.com/bryanherger/xdrawchem)"));
 
@@ -67,7 +68,8 @@ QString NetAccess::httpPost(const QString &url, const QString &body)
     QEventLoop loop;
     QString result;
 
-    QNetworkRequest req(QUrl(url));
+    QUrl reqUrl(url);
+    QNetworkRequest req(reqUrl);
     req.setHeader(QNetworkRequest::ContentTypeHeader,
                   QStringLiteral("application/x-www-form-urlencoded"));
     req.setHeader(QNetworkRequest::UserAgentHeader,
