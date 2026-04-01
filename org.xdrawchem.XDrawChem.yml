@@ -1,0 +1,74 @@
+# Flatpak manifest for XDrawChem
+# Submission target: https://github.com/flathub/flathub
+#
+# Build locally:
+#   flatpak-builder --install --force-clean build-dir org.xdrawchem.XDrawChem.yml
+# Test:
+#   flatpak run org.xdrawchem.XDrawChem
+
+app-id: org.xdrawchem.XDrawChem
+runtime: org.kde.Platform
+runtime-version: '6.8'
+sdk: org.kde.Sdk
+
+command: xdrawchem
+
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  # Network access for PubChem lookups (name-to-structure, Find on PubChem, Molecule Info)
+  - --share=network
+
+modules:
+  # ── OpenBabel ────────────────────────────────────────────────────────────────
+  # Not in the KDE SDK; build from source using the same version as Rocky 9 EPEL.
+  - name: openbabel
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DBUILD_GUI=OFF
+      - -DBUILD_TESTING=OFF
+      - -DENABLE_TESTS=OFF
+      - -DWITH_INCHI=ON
+    sources:
+      - type: archive
+        url: https://github.com/openbabel/openbabel/archive/refs/tags/openbabel-3-1-1.tar.gz
+        sha256: c97023ac6300d26176c97d4ef39957f06e68848d64f9a0edd73d13de22d7b74c
+    cleanup:
+      - /include
+      - /lib/cmake
+      - /lib/pkgconfig
+      - /share/doc
+      - /share/man
+      - '*.la'
+      - '*.a'
+
+  # ── XDrawChem ────────────────────────────────────────────────────────────────
+  - name: xdrawchem
+    buildsystem: cmake-ninja
+    subdir: xdrawchem-qt5
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DRINGHOME=/app/share/xdrawchem
+    sources:
+      - type: git
+        url: https://github.com/bryanherger/xdrawchem.git
+        # Pin to a specific tag for reproducible Flathub builds.
+        # Update this tag when submitting a new release.
+        tag: v2.0rc4
+        commit: HEAD
+    post-install:
+      # Install the ring library to the correct data directory
+      - install -d ${FLATPAK_DEST}/share/xdrawchem
+      - cp -r ring/* ${FLATPAK_DEST}/share/xdrawchem/
+      # Install .desktop file
+      - install -Dm644 xdrawchem.desktop
+          ${FLATPAK_DEST}/share/applications/org.xdrawchem.XDrawChem.desktop
+      # Install icon
+      - install -Dm644 ring/xdrawchem-icon.png
+          ${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/org.xdrawchem.XDrawChem.png
+      # Install AppStream metainfo
+      - install -Dm644 xdrawchem.metainfo.xml
+          ${FLATPAK_DEST}/share/metainfo/org.xdrawchem.XDrawChem.metainfo.xml

@@ -1,0 +1,54 @@
+# build-flatpak.yml — validates the Flatpak manifest and produces a test bundle.
+# A full Flathub submission requires a separate PR to https://github.com/flathub/flathub.
+# This workflow just ensures the manifest builds cleanly on each push.
+
+name: Build Flatpak
+
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+jobs:
+  flatpak:
+    name: Flatpak (KDE 6.8)
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-builder-lint:latest
+      options: --privileged
+
+    steps:
+      - uses: actions/checkout@v5.0.1
+
+      - name: Install flatpak-builder
+        run: |
+          apt-get update -q
+          apt-get install -y flatpak flatpak-builder
+
+      - name: Add Flathub remote
+        run: |
+          flatpak remote-add --if-not-exists \
+            flathub https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Install KDE SDK
+        run: |
+          flatpak install -y flathub \
+            org.kde.Platform//6.8 \
+            org.kde.Sdk//6.8
+
+      - name: Build Flatpak bundle
+        run: |
+          flatpak-builder --repo=flatpak-repo --force-clean \
+            build-dir org.xdrawchem.XDrawChem.yml
+
+      - name: Export bundle
+        run: |
+          flatpak build-bundle flatpak-repo \
+            XDrawChem.flatpak org.xdrawchem.XDrawChem
+
+      - name: Upload Flatpak bundle
+        uses: actions/upload-artifact@v7.0.0
+        with:
+          name: xdrawchem-flatpak
+          path: XDrawChem.flatpak
+          retention-days: 30

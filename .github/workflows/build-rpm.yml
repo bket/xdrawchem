@@ -34,6 +34,14 @@ jobs:
                 openbabel-devel \
                 desktop-file-utils libGL-devel libEGL-devel \
                 libxkbcommon-devel pkgconfig
+          - name: fedora-41
+            image: fedora:41
+            setup: |
+              dnf install -y rpm-build rpmdevtools cmake ninja-build gcc-c++ \
+                qt6-qtbase-devel qt6-qttools-devel qt6-qtsvg-devel \
+                openbabel-devel \
+                desktop-file-utils mesa-libGL-devel mesa-libEGL-devel \
+                libxkbcommon-devel pkgconf-pkg-config
 
     steps:
       - uses: actions/checkout@v5.0.1

@@ -21,6 +21,8 @@ jobs:
         include:
           - os: ubuntu-24.04
             codename: noble
+          - os: ubuntu-22.04
+            codename: jammy
 
     steps:
       - uses: actions/checkout@v5.0.1

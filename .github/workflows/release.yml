@@ -77,7 +77,7 @@ jobs:
           done
 
           # Download whatever we found (partial release is still useful)
-          for NAME in release-deb-noble release-rpm-rocky-9 release-mac release-windows; do
+          for NAME in release-deb-noble release-deb-jammy release-rpm-rocky-9 release-rpm-fedora-41 release-mac release-windows; do
             ART_ID=$(fetch_artifact "$NAME")
             if [ -n "$ART_ID" ]; then
               echo "Downloading artifact $NAME (id=$ART_ID)..."
