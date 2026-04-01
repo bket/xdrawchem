@@ -1,8 +1,15 @@
 #ifndef NETDIALOG_H
 #define NETDIALOG_H
 
+// netdialog.h — "Find structure on PubChem" dialog.
+//
+// The server URL field has been removed: PubChem is the fixed backend
+// and is not user-configurable.  The getServer() method is retained as
+// a no-op so callers compile without changes.
+
 #include <QDialog>
 #include <QComboBox>
+#include <QCheckBox>
 
 class QLineEdit;
 
@@ -11,24 +18,24 @@ class NetDialog : public QDialog
 public:
     NetDialog( QWidget *parent );
 
-    QString getKey()
+    QString getKey() const
     {
-        QString ret;
-        if ( keylist->currentIndex() == 0 ) ret = "name";
-        else if ( keylist->currentIndex() == 1 ) ret = "cas";
-        else if ( keylist->currentIndex() == 2 ) ret = "formula";
-        return ret;
+        switch ( keylist->currentIndex() ) {
+        case 1:  return QStringLiteral("cas");
+        case 2:  return QStringLiteral("formula");
+        default: return QStringLiteral("name");
+        }
     }
 
-    QString getValue() { return searchkey->text(); }
-    QString getServer() { return serverkey->text(); }
-    bool getExact() { return emcheck->isChecked(); }
+    QString getValue() const { return searchkey->text().trimmed(); }
+    // Server is always PubChem — kept for API compatibility.
+    QString getServer() const { return QString(); }
+    bool    getExact()  const { return emcheck->isChecked(); }
 
 private:
-    QString fn;
-    QComboBox *dblist, *keylist;
+    QComboBox *keylist;
     QCheckBox *emcheck;
-    QLineEdit *searchkey, *serverkey;
+    QLineEdit *searchkey;
 };
 
 #endif

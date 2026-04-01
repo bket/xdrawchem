@@ -195,9 +195,6 @@ void ChemData::Tool( DPoint *target, int mode )
     case MODE_TOOL_2D3D:
         m->Make3DVersion();
         break;
-    case MODE_TOOL_NAME:
-        m->CalcName();
-        break;
     case MODE_TOOL_CUSTOMRING:
         cr1.setMolecule( m );
         if ( cr1.exec() == QDialog::Accepted )

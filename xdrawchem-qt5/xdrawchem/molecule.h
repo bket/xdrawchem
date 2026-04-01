@@ -91,7 +91,6 @@ public:
     Text *CalcElementalAnalysis( bool show_dialog = true );
     QStringList Calc13CNMR( bool show_dialog = true );
     void CalcIR();
-    QString CalcName();  // actually returns canonical SMILES
     //QString GetCASNumber();
     //QString IUPAC_Name();
     void AllNeighbors();

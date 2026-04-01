@@ -100,7 +100,6 @@ const QString XDC_VERSION = QString::fromLatin1("XDrawChem ") + VERSION;
 #define MODE_TOOL_CALCEA 604
 #define MODE_TOOL_1HNMR  605
 #define MODE_TOOL_IR     606
-#define MODE_TOOL_NAME   607
 #define MODE_TOOL_TOSMILES 608
 #define MODE_TOOL_FROMSMILES 609
 #define MODE_TOOL_CLEANUPMOL 610

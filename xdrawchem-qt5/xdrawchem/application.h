@@ -104,7 +104,6 @@ public slots:
     void CalcpKa();
     void CalcKOW();
     void To3D();
-    void CalcName();
     void AutoLayout();
     void PeptideBuilder();
     void saveCustomRing();

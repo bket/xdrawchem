@@ -748,10 +748,6 @@
         <translation type="obsolete">Molekyle-info</translation>
     </message>
     <message>
-        <source>XDC database server:</source>
-        <translation type="obsolete">XDC databaseserver:</translation>
-    </message>
-    <message>
         <source>Clean up molecule</source>
         <translation type="obsolete">Ryd op i molekylet</translation>
     </message>
@@ -1522,7 +1518,7 @@ Se filen COPYRIGHT.txt for flere detaljer</translation>
         <translation type="obsolete">Klik her for at kopiere det markerede.&lt;br&gt;&lt;br&gt;Du kan også kopiere med menupunktet Kopiér fra Redigér-menuen, eller trykke Ctrl+C.</translation>
     </message>
     <message>
-        <source>Find structure via Internet</source>
+        <source>Find structure on PubChem</source>
         <translation type="obsolete">Find strukturen via internettet</translation>
     </message>
     <message>
@@ -3812,12 +3808,8 @@ To clear highlights, select Undo from the Edit menu, or press Ctrl+Z.</source>
 <context>
     <name>NetDialog</name>
     <message>
-        <source>Find structure via Internet</source>
+        <source>Find structure on PubChem</source>
         <translation type="unfinished">Find strukturen via internettet</translation>
-    </message>
-    <message>
-        <source>XDC database server:</source>
-        <translation type="unfinished">XDC databaseserver:</translation>
     </message>
     <message>
         <source>Search type:</source>
@@ -4069,10 +4061,6 @@ forkortelse på 3 bogstaver:</translation>
     <message>
         <source>Click on a molecule to generate 3-D coordinates</source>
         <translation type="unfinished">Klik på et molekyle for at generere dets 3-D koordinater</translation>
-    </message>
-    <message>
-        <source>Click on a molecule to guess its name</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Click on a molecule to determine its SMILES string</source>

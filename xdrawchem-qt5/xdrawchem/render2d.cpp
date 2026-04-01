@@ -559,9 +559,6 @@ void Render2D::Tool( int t )
     case MODE_TOOL_2D3D:
         emit SignalSetStatusBar( tr( "Click on a molecule to generate 3-D coordinates" ) );
         break;
-    case MODE_TOOL_NAME:
-        emit SignalSetStatusBar( tr( "Click on a molecule to guess its name" ) );
-        break;
     case MODE_TOOL_IUPACNAME:
         emit SignalSetStatusBar( tr( "Click on a molecule to look up its IUPAC name (requires internet)" ) );
         break;

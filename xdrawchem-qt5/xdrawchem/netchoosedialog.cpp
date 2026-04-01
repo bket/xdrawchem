@@ -38,43 +38,18 @@ NetChooseDialog::NetChooseDialog( QWidget * parent, QStringList r1 )
 //  lv->setSorting(0); ///TODO; this should be set after loading data anyways.
     mygrid->addWidget( tw, 1, 0, 3, 4 );
 
-    int i1, iRow = 0;
-    QString tmp_str, tcas, tformula, tformat, tname, taltname;
-    //QListWidgetItem *lvi;
-
-    for ( QStringList::Iterator ir = r1.begin(); ir != r1.end(); ++ir ) {
-        tmp_str = *ir;
-        tmp_str.replace( "\",\"", "~" );
-        i1 = tmp_str.indexOf( "~" );
-        tcas = tmp_str.mid( 1, i1 - 1 );
-        tmp_str.remove( 0, i1 + 1 );
-        i1 = tmp_str.indexOf( "~" );
-        tcas = tmp_str.mid( 0, i1 );
-        tmp_str.remove( 0, i1 + 1 );
-        i1 = tmp_str.indexOf( "~" );
-        tname = tmp_str.mid( 0, i1 );
-        tmp_str.remove( 0, i1 + 1 );
-        i1 = tmp_str.indexOf( "~" );
-        tformula = tmp_str.mid( 0, i1 );
-        tmp_str.remove( 0, i1 + 1 );
-        i1 = tmp_str.indexOf( "~" );
-        taltname = tmp_str.mid( 0, i1 );
-        tmp_str.remove( 0, i1 + 1 );
-        i1 = tmp_str.indexOf( "~" );
-        tformat = tmp_str.mid( 0, i1 );
-        tmp_str.remove( 0, i1 + 1 );
-        //qDebug() << tcas << "," << tname <<","<< tformula << ",";
-        tname.replace( "\"", "" );
-        tcas.replace( "\"", "" );
-        tformat.replace( "\"", "" );
-        taltname.replace( "\"", "" );
-        tformula.replace( "\"", "" );
-	tw->setItem(iRow, 0, new QTableWidgetItem( tcas ));
-	tw->setItem(iRow, 1, new QTableWidgetItem( tname ));
-	tw->setItem(iRow, 2, new QTableWidgetItem( tformula ));
-	tw->setItem(iRow, 3, new QTableWidgetItem( taltname ));
-	tw->setItem(iRow, 4, new QTableWidgetItem( tformat ));
-	iRow++;
+    // Parse pipe-separated rows produced by NetAccess::getChoices():
+    //   cas|iupacname|formula|synonyms|smiles
+    int iRow = 0;
+    for ( const QString &row : r1 ) {
+        QStringList fields = row.split( QLatin1Char('|') );
+        while (fields.size() < 5) fields << QString();
+        tw->setItem(iRow, 0, new QTableWidgetItem( fields[0] ));  // CAS
+        tw->setItem(iRow, 1, new QTableWidgetItem( fields[1] ));  // IUPAC name
+        tw->setItem(iRow, 2, new QTableWidgetItem( fields[2] ));  // formula
+        tw->setItem(iRow, 3, new QTableWidgetItem( fields[3] ));  // synonyms
+        tw->setItem(iRow, 4, new QTableWidgetItem( fields[4] ));  // SMILES
+        ++iRow;
         /*lvi = new QListWidgetItem( lv );
         lvi->setText( tcas );
         lvi->setText( tname );

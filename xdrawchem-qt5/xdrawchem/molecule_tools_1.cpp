@@ -58,26 +58,6 @@ Bond *Molecule::FindBond( DPoint * e1, DPoint * e2 )
     return 0;
 }
 
-QString Molecule::CalcName()
-{
-    QString nom = ToSMILES();
-
-    nom = nom.simplified();
-    /* canonical SMILES no longer available  :(
-       // compose Python command (hopefully this function only gets called
-       // when the Python test passes in application.cpp :)
-       NetAccess na1;
-       QString serverName = getenv("XDC_SERVER");
-       if (serverName.length() < 2)
-       serverName = XDC_SERVER;
-       nom = na1.getCanonicalSmiles(serverName, nom);
-
-       nom = nom.stripWhiteSpace();
-       qDebug() << nom;
-     */
-    return nom;
-}
-
 QStringList Molecule::Calc13CNMR( bool show_dialog )
 {
     BremserOneSphereHOSECodePredictor boshcp;
