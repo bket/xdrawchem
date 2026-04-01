@@ -1565,14 +1565,14 @@ void ApplicationWindow::about()
     QMessageBox::about( this, XDC_VERSION,
                         QString( XDC_VERSION ) +
                         tr
-                        ( "\nBryan Herger\nbherger@users.sourceforge.net\n\nPlease subscribe to the mailing list for information about future releases.\nSend a message to xdrawchem-announce-request@lists.sourceforge.net with 'subscribe' as the subject.\n\nXDrawChem is copyright (C) 2004 Bryan Herger.\nPortions copyright (C) 1997-2000 Dr. Christoph Steinbeck and the JChemPaint project\nOpenBabel code copyright (C) 2003 by the OpenBabel project team.\nSee file COPYRIGHT.txt for more details" ) );
+                        ( "\nBryan Herger\nbherger@users.sourceforge.net\nhttps://github.com/bryanherger/xdrawchem\n\nXDrawChem is copyright (C) 2004 Bryan Herger.\nPortions copyright (C) 1997-2000 Dr. Christoph Steinbeck and the JChemPaint project\nOpenBabel code copyright (C) 2003 by the OpenBabel project team.\nSee file COPYRIGHT.txt for more details" ) );
 }
 
 void ApplicationWindow::support()
 {
     QMessageBox::information( 0, tr( "How to get help" ),
                               tr
-                              ( "Current information on XDrawChem can always be found at\nhttps://xdrawchem.sourceforge.net/\nThe latest release will be posted here, as well as links to mailing lists and the bug tracker.\n\nPlease submit bugs using the SourceForge tracker: http://www.sourceforge.net/tracker/?group_id=34518\n\nThere are two mailing lists:  xdrawchem-announce, where new releases will be announced,\nand xdrawchem-user, for open discussion among XDrawChem users.\nSubscribe by sending a blank e-mail with subject \"subscribe\" to \n\"xdrawchem-announce-request@lists.sourceforge.net\" or\n\"xdrawchem-user-request@lists.sourceforge.net\"\n\nYou can contact the author directly at\nbherger@users.sourceforge.net" ) );
+                              ( "Current information on XDrawChem can always be found at\nhttps://github.com/bryanherger/xdrawchem\n\nPlease report bugs and feature requests at:\nhttps://github.com/bryanherger/xdrawchem/issues\n\nYou can contact the author directly at\nbherger@users.sourceforge.net" ) );
 }
 
 void ApplicationWindow::whatsThis()

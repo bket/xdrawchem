@@ -1133,7 +1133,7 @@ Bryan Herger
 herger@chemistry.gatech.edu
 
 Please subscribe to the mailing list for information about future releases.
-Send a message to xdrawchem-announce-request@lists.sourceforge.net with &apos;subscribe&apos; as the subject.
+Send a message to https://github.com/bryanherger/xdrawchem/issues with &apos;subscribe&apos; as the subject.
 
 XDrawChem is copyright (C) 2002 Bryan Herger.
 Portions copyright (C) 1997-2000 Dr. Christoph Steinbeck and the JChemPaint project
@@ -1144,7 +1144,7 @@ Bryan Herger
 herger@chemistry.gatech.edu
 
 Tilmeld dig til postlisten, hvis du vil have oplysninger om fremtidige udgivelser.
-Send en mail til: xdrawchem-announce-request@lists.sourceforge.net med &apos;subscribe&apos; i emnefeltet.
+Send en mail til: https://github.com/bryanherger/xdrawchem/issues med &apos;subscribe&apos; i emnefeltet.
 
 XDrawChem is copyright (C) 2002 Bryan Herger.
 Enkeltdele copyright (C) 1997-2000 Dr. Christoph Steinbeck og the JChemPaint project
@@ -1675,8 +1675,8 @@ The latest release will be posted here.
 There are two mailing lists:  xdrawchem-announce, where new releases will be announced,
 and xdrawchem-user, for open discussion among XDrawChem users.
 Subscribe by sending a blank e-mail with subject &quot;subscribe&quot; to 
-&quot;xdrawchem-announce-request@lists.sourceforge.net&quot; or
-&quot;xdrawchem-user-request@lists.sourceforge.net&quot;
+&quot;https://github.com/bryanherger/xdrawchem/issues&quot; or
+&quot;https://github.com/bryanherger/xdrawchem/issues&quot;
 
 You can contact the author directly at
 herger@chemistry.gatech.edu</source>
@@ -1687,8 +1687,8 @@ Den seneste version vil altid kunne findes her.
 Der er to postlister:  xdrawchem-announce, hvor nye versionerannonceres,
 og xdrawchem-user, for åben diskussion blandt brugere af XDrawChem.
 Tilmeld dig ved at sende en blank e-mail med emnet &quot;subscribe&quot; til
-&quot;xdrawchem-announce-request@lists.sourceforge.net&quot; eller
-&quot;xdrawchem-user-request@lists.sourceforge.net&quot;
+&quot;https://github.com/bryanherger/xdrawchem/issues&quot; eller
+&quot;https://github.com/bryanherger/xdrawchem/issues&quot;
 
 Du kan kontakte forfatteren direkte via
 herger@chemistry.gatech.edu</translation>
@@ -2480,9 +2480,7 @@ Please verify that it is installed correctly.</source>
         <source>
 Bryan Herger
 bherger@users.sourceforge.net
-
-Please subscribe to the mailing list for information about future releases.
-Send a message to xdrawchem-announce-request@lists.sourceforge.net with &apos;subscribe&apos; as the subject.
+https://github.com/bryanherger/xdrawchem
 
 XDrawChem is copyright (C) 2004 Bryan Herger.
 Portions copyright (C) 1997-2000 Dr. Christoph Steinbeck and the JChemPaint project
@@ -2496,16 +2494,10 @@ See file COPYRIGHT.txt for more details</source>
     </message>
     <message>
         <source>Current information on XDrawChem can always be found at
-http://xdrawchem.sourceforge.net/
-The latest release will be posted here, as well as links to mailing lists and the bug tracker.
+https://github.com/bryanherger/xdrawchem
 
-Please submit bugs using the SourceForge tracker: http://www.sourceforge.net/tracker/?group_id=34518
-
-There are two mailing lists:  xdrawchem-announce, where new releases will be announced,
-and xdrawchem-user, for open discussion among XDrawChem users.
-Subscribe by sending a blank e-mail with subject &quot;subscribe&quot; to 
-&quot;xdrawchem-announce-request@lists.sourceforge.net&quot; or
-&quot;xdrawchem-user-request@lists.sourceforge.net&quot;
+Please report bugs and feature requests at:
+https://github.com/bryanherger/xdrawchem/issues
 
 You can contact the author directly at
 bherger@users.sourceforge.net</source>
@@ -3305,7 +3297,7 @@ amino acids from N-terminal to C-terminal
     </message>
     <message>
         <source>Be sure to check for updates at
-http://xdrawchem.sourceforge.net/</source>
+https://github.com/bryanherger/xdrawchem</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
