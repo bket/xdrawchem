@@ -17,7 +17,7 @@ ninja
 ```
 
 Requires **Qt 6.4+**, **OpenBabel 3.x**, and **CMake 3.19+**.
-See `xdrawchem-qt5/README.md` for full build instructions and dependencies.
+See [xdrawchem-qt5/README.md](xdrawchem-qt5/README.md) for full build instructions and dependencies.
 
 ## Repository layout
 
@@ -31,5 +31,6 @@ See `xdrawchem-qt5/README.md` for full build instructions and dependencies.
 
 - Releases: here on the right side of the page, and https://sourceforge.net/projects/xdrawchem/files/xdrawchem/
 - Issues & PRs: here on GitHub, https://github.com/bryanherger/xdrawchem
+- Backlog: See the [backlog](backlog.md) for known issues and possible enhancements.  Open an issue to add to the list.
 
 Bryan Herger — bherger@users.sf.net
