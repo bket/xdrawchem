@@ -23,6 +23,7 @@
 #include <QToolBar>
 #include <QMainWindow>
 #include "defs.h"
+#include "propertypanel.h"
 
 class RenderArea;
 class Render2D;
@@ -47,6 +48,7 @@ protected:
     void closeEvent( QCloseEvent * );
 
 public slots:
+    void updatePropertyPanel();
     void newDoc();
     void load();
     void load( QString );
@@ -196,6 +198,7 @@ private:
     RenderArea *m_renderArea;
     Render2D *m_renderer;
     ChemData *m_chemData;
+    PropertyPanel *m_propertyPanel = nullptr;
     QToolBar *fileTools, *drawTools, *ringTools, *bioTools;
     QString filename, filefilter;
     QToolButton *Bold, *TextUnderline, *Italic, *Underline, *superScript, *subScript,

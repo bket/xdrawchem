@@ -225,6 +225,7 @@ set(XDC_HEADERS
     xdrawchem/molecule.h
     xdrawchem/molecule_sssr.h
     xdrawchem/molinfodialog.h
+    xdrawchem/propertypanel.h
     xdrawchem/myfiledialog.h
     xdrawchem/na_xpm.h
     xdrawchem/netaccess.h

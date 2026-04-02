@@ -674,6 +674,8 @@ ApplicationWindow::ApplicationWindow()
 
     tools->addSeparator();
 
+    tools->addAction( m_propertyPanel->toggleViewAction() );
+
     tools->addAction( tr( "Build 3D model of molecule" ), this, SLOT( To3D() ) );
 
     /**
@@ -695,6 +697,12 @@ ApplicationWindow::ApplicationWindow()
      * create data system
      */
     m_chemData = new ChemData;
+
+    // ── Live property panel ───────────────────────────────────────────────
+    m_propertyPanel = new PropertyPanel( this );
+    addDockWidget( Qt::RightDockWidgetArea, m_propertyPanel );
+    connect( m_chemData, &ChemData::SignalMoleculeChanged,
+             this,       &ApplicationWindow::updatePropertyPanel );
     m_chemData->setClipboard( 0 );
 
     /// connect (non-Qt) data center and render widget
@@ -1985,6 +1993,38 @@ void ApplicationWindow::AutoLayout()
 void ApplicationWindow::DrawRegularArrow()
 {
     m_renderer->setMode_DrawArrow( regularArrow );
+}
+
+// ── Live property panel ───────────────────────────────────────────────────
+// Called via ChemData::SignalMoleculeChanged after every structural edit.
+void ApplicationWindow::updatePropertyPanel()
+{
+    if ( !m_propertyPanel || !m_propertyPanel->isVisible() )
+        return;
+
+    Molecule *m = m_chemData->firstMolecule();
+    if ( !m ) {
+        m_propertyPanel->clear();
+        return;
+    }
+
+    // CalcMW() calls CalcEmpiricalFormula() internally and stores the
+    // formula string in Molecule::ef_string for us to retrieve.
+    Text *tt_mw = m->CalcMW();
+    Text *tt_ef = m->CalcEmpiricalFormula();
+
+    m_propertyPanel->setMW( tt_mw ? tt_mw->getText() : tr( "MW: —" ) );
+    m_propertyPanel->setFormula( tt_ef ? QString( "Formula: " ) + tt_ef->getText()
+                                       : tr( "Formula: —" ) );
+
+    // CalcMW/CalcEmpiricalFormula return heap-allocated Text (Drawable) objects.
+    // The rest of the codebase never deletes them directly — they hold internal
+    // DPoint pointers and have no defined destructor.  Parent them to a temporary
+    // QObject so Qt deletes the whole tree when the scope exits.
+    QObject tmp_owner;
+    if ( tt_mw ) tt_mw->setParent( &tmp_owner );
+    if ( tt_ef ) tt_ef->setParent( &tmp_owner );
+    // tmp_owner goes out of scope here and Qt deletes both objects cleanly.
 }
 
 void ApplicationWindow::DrawSquareBracket()

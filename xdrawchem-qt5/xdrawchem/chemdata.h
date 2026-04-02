@@ -145,6 +145,9 @@ signals:
     void SignalSetStatusBar( QString );
     void SignalHelpTopic( QString );
     void SignalUpdateCustomRingMenu();
+    // Emitted after any structural change (bond/atom/text added, deleted, edited).
+    // Connect to ApplicationWindow::updatePropertyPanel() for the live panel.
+    void SignalMoleculeChanged();
 
 private:
     // the Render2D widget this ChemData is linked to

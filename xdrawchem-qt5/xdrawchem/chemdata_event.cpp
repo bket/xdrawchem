@@ -63,6 +63,9 @@ void ChemData::XDCEventHandler( XDC_Event *evt )
 
     // delete the event!
     delete evt;
+
+    // Notify listeners (e.g. the live property panel) that the molecule changed.
+    emit SignalMoleculeChanged();
 }
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;
