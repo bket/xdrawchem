@@ -702,6 +702,7 @@ ApplicationWindow::ApplicationWindow()
     // ── Live property panel ───────────────────────────────────────────────
     m_propertyPanel = new PropertyPanel( this );
     addDockWidget( Qt::RightDockWidgetArea, m_propertyPanel );
+    m_propertyPanel->hide();  // hidden by default; enable via Tools menu
     connect( m_chemData, &ChemData::SignalMoleculeChanged,
              this,       &ApplicationWindow::updatePropertyPanel );
 
