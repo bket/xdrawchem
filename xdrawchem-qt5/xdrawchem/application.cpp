@@ -878,6 +878,7 @@ void ApplicationWindow::FromRingMenu( int x )
     fname.replace( fname.length() - 3, 3, QString( "cml" ) );
     m_chemData->load( preferences.getCustomRingDir() + fname );
     m_renderer->Inserted();
+    updatePropertyPanel();
 }
 
 void ApplicationWindow::updateCustomRingMenu()
@@ -1633,6 +1634,7 @@ void ApplicationWindow::MakeRingDialog() {
   m_chemData->SetTopLeft(sv->viewportToContents(QPoint(0,0)));
   m_chemData->load( RingDir + t.getFile() );
   m_renderer->Inserted();
+  updatePropertyPanel();
 }
 */
 
@@ -1718,6 +1720,7 @@ void ApplicationWindow::MakeNetDialog() {
   m_chemData->fromSMILES(nc.getFile());
   m_renderer->Inserted();
   m_renderer->update();
+  updatePropertyPanel();
 
   /*
   if (nc.getFile().contains(".mol")) {
@@ -1749,6 +1752,7 @@ void ApplicationWindow::slotChoicesFinished( const QStringList & choices )
        m_chemData->SetTopLeft(sv->viewportToContents(QPoint(0,0)));
        m_chemData->ProcessMDL(wf);
        m_renderer->Inserted();
+    updatePropertyPanel();
        return;
        }
      */
@@ -1760,6 +1764,7 @@ void ApplicationWindow::slotChoicesFinished( const QStringList & choices )
     // TODO: insert SMILES string returned by database
     m_chemData->fromSMILES( nc.getFile() );
     m_renderer->Inserted();
+    updatePropertyPanel();
     m_renderer->update();
 
     /*
@@ -1768,6 +1773,7 @@ void ApplicationWindow::slotChoicesFinished( const QStringList & choices )
        m_chemData->SetTopLeft(sv->viewportToContents(QPoint(0,0)));
        m_chemData->ProcessMDL(wf);
        m_renderer->Inserted();
+    updatePropertyPanel();
        return;
        }
      */
@@ -2352,5 +2358,6 @@ void ApplicationWindow::FromIUPACName()
 
     m_chemData->fromSMILES( smiles );
     m_renderer->Inserted();
+    updatePropertyPanel();
     m_renderer->update();
 }

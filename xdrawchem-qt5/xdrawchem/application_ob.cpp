@@ -118,6 +118,7 @@ void ApplicationWindow::OBNewLoad( QString infile, QString infilter )
         m_chemData->DeselectAll();
         m_renderer->update();
         m_chemData->saved();
+        updatePropertyPanel();
         return;
     }
     /* end XDC/CDX code */
@@ -165,6 +166,7 @@ void ApplicationWindow::OBNewLoad( QString infile, QString infilter )
     m_renderer->update();
     m_renderer->setMode_Select();
     m_chemData->saved();
+    updatePropertyPanel();
     setWindowTitle( QString( XDC_VERSION ) + QString( " - " ) + filename );
     statusBar()->showMessage( tr( "Loaded document " ) + filename );
 }
