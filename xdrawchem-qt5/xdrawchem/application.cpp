@@ -674,7 +674,8 @@ ApplicationWindow::ApplicationWindow()
 
     tools->addSeparator();
 
-    tools->addAction( m_propertyPanel->toggleViewAction() );
+    // Property panel toggle is added after m_propertyPanel is constructed (see below).
+    // Placeholder stored in m_propertyPanelAction and inserted into the menu there.
 
     tools->addAction( tr( "Build 3D model of molecule" ), this, SLOT( To3D() ) );
 
@@ -703,6 +704,20 @@ ApplicationWindow::ApplicationWindow()
     addDockWidget( Qt::RightDockWidgetArea, m_propertyPanel );
     connect( m_chemData, &ChemData::SignalMoleculeChanged,
              this,       &ApplicationWindow::updatePropertyPanel );
+
+    // Now that m_propertyPanel exists, find the Tools menu and insert the toggle.
+    for ( QMenu *menu : menuBar()->findChildren<QMenu *>() ) {
+        if ( menu->title() == tr( "T&ools" ) ) {
+            // Insert before "Build 3D model" — find that action
+            for ( QAction *a : menu->actions() ) {
+                if ( a->text() == tr( "Build 3D model of molecule" ) ) {
+                    menu->insertAction( a, m_propertyPanel->toggleViewAction() );
+                    break;
+                }
+            }
+            break;
+        }
+    }
     m_chemData->setClipboard( 0 );
 
     /// connect (non-Qt) data center and render widget
