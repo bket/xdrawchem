@@ -82,7 +82,28 @@ jobs:
             if [ -n "$ART_ID" ]; then
               echo "Downloading artifact $NAME (id=$ART_ID)..."
               gh api "repos/$REPO/actions/artifacts/$ART_ID/zip" > /tmp/art.zip
-              unzip -q /tmp/art.zip -d release-assets/
+              # Extract to a per-artifact staging directory to avoid filename
+              # collisions (e.g. noble and jammy both produce *_amd64.deb).
+              mkdir -p /tmp/art-stage
+              rm -rf /tmp/art-stage/*
+              unzip -q /tmp/art.zip -d /tmp/art-stage/
+              # Rename DEB/RPM files to include the distro codename before moving.
+              for f in /tmp/art-stage/*.deb /tmp/art-stage/*.rpm; do
+                [ -f "$f" ] || continue
+                base=$(basename "$f")
+                ext="${base##*.}"
+                stem="${base%.*}"
+                # Insert the artifact name (e.g. noble, jammy, rocky-9, fedora-41)
+                # between the stem and extension: foo_1.0_amd64.deb → foo_1.0_amd64.noble.deb
+                distro=$(echo "$NAME" | sed -e "s/release-deb-//" -e "s/release-rpm-//")
+                mv "$f" "release-assets/${stem}.${distro}.${ext}"
+              done
+              # Non-DEB/RPM files (DMG, EXE) have unique names — copy as-is.
+              for f in /tmp/art-stage/*; do
+                [ -f "$f" ] || continue
+                ext="${f##*.}"
+                case "$ext" in deb|rpm) ;; *) cp "$f" release-assets/ ;; esac
+              done
               rm /tmp/art.zip
             else
               echo "Artifact $NAME not found after ${ELAPSED}s — skipping."
