@@ -210,11 +210,8 @@ jobs:
           Write-Host "=== dist\xdrawchem contents ==="
           Get-ChildItem dist\xdrawchem -Recurse | Select-Object FullName
 
-      # NSIS is pre-installed on windows-latest GitHub-hosted runners.
-      # The separate choco install step is removed — it was unreliable
-      # (community feed returns 503 intermittently).
-      # The "Build installer" step below probes common paths and only
-      # falls back to choco if the binary is genuinely missing.
+      # NSIS is typically pre-installed on windows-latest runners.
+      # If not, the "Build installer" step downloads it directly.
 
       - name: Write NSIS installer script
         shell: pwsh
@@ -302,9 +299,10 @@ jobs:
       - name: Build installer with NSIS
         shell: pwsh
         run: |
-          # Locate makensis — probe standard install paths first.
-          # windows-latest runners have NSIS pre-installed; choco is a
-          # last resort because the community feed is occasionally unavailable.
+          # Locate makensis.
+          # Priority: (1) pre-installed system paths, (2) PATH, (3) direct
+          # download of the NSIS zip from SourceForge — no Chocolatey.
+          # Chocolatey's community feed is too flaky for CI reliability.
           $candidates = @(
             "C:\Program Files (x86)\NSIS\makensis.exe",
             "C:\Program Files\NSIS\makensis.exe"
@@ -315,16 +313,24 @@ jobs:
             if ($fromPath) { $makensis = $fromPath.Source }
           }
           if (-not $makensis) {
-            Write-Host "makensis not in standard locations, trying choco..."
-            choco install nsis --no-progress -y 2>&1 | Write-Host
-            $makensis = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+            # Download the NSIS 3.10 zip directly from SourceForge.
+            # The zip contains a self-contained makensis.exe — no installer needed.
+            Write-Host "makensis not found — downloading NSIS 3.10 zip from SourceForge..."
+            $nsisZip = "$env:TEMP\nsis.zip"
+            $nsisDir = "$env:TEMP\nsis"
+            Invoke-WebRequest `
+              -Uri "https://prdownloads.sourceforge.net/nsis/nsis-3.10.zip" `
+              -OutFile $nsisZip `
+              -UseBasicParsing
+            Expand-Archive -Path $nsisZip -DestinationPath $nsisDir -Force
+            $makensis = Get-ChildItem -Path $nsisDir -Filter makensis.exe -Recurse `
+              | Select-Object -First 1 -ExpandProperty FullName
           }
           if (-not $makensis) {
             Write-Error "makensis.exe not found after all attempts — aborting"
             exit 1
           }
           Write-Host "Using makensis: $makensis"
-          # Use the call operator with an explicit string cast to handle spaces in path.
           & ([string]$makensis) installer.nsi
           Get-ChildItem *.exe | Select-Object Name, Length
 
