@@ -32,7 +32,11 @@ jobs:
 
       - name: Build Flatpak bundle
         run: |
+          # --disable-rofiles-fuse: rofiles-fuse requires dbus + machine-id
+          # which are not available in CI containers. This flag skips the
+          # read-only FUSE overlay; the build is otherwise identical.
           flatpak-builder --repo=flatpak-repo --force-clean \
+            --disable-rofiles-fuse \
             build-dir org.xdrawchem.XDrawChem.yml
 
       - name: Export bundle
