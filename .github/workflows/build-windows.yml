@@ -313,18 +313,12 @@ jobs:
             if ($fromPath) { $makensis = $fromPath.Source }
           }
           if (-not $makensis) {
-            # Download the NSIS 3.10 zip directly from SourceForge.
-            # The zip contains a self-contained makensis.exe — no installer needed.
-            Write-Host "makensis not found — downloading NSIS 3.10 zip from SourceForge..."
-            $nsisZip = "$env:TEMP\nsis.zip"
-            $nsisDir = "$env:TEMP\nsis"
-            Invoke-WebRequest `
-              -Uri "https://prdownloads.sourceforge.net/nsis/nsis-3.10.zip" `
-              -OutFile $nsisZip `
-              -UseBasicParsing
-            Expand-Archive -Path $nsisZip -DestinationPath $nsisDir -Force
-            $makensis = Get-ChildItem -Path $nsisDir -Filter makensis.exe -Recurse `
-              | Select-Object -First 1 -ExpandProperty FullName
+            # winget is pre-installed on all win25 GitHub-hosted runners and is
+            # more reliable than Chocolatey or direct SourceForge downloads.
+            Write-Host "makensis not found — installing NSIS via winget..."
+            winget install --id NSIS.NSIS --silent `
+              --accept-source-agreements --accept-package-agreements 2>&1 | Write-Host
+            $makensis = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
           }
           if (-not $makensis) {
             Write-Error "makensis.exe not found after all attempts — aborting"
