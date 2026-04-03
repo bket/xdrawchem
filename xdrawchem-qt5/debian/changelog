@@ -1,3 +1,16 @@
+xdrawchem (2:2.0~rc4-1) unstable; urgency=medium
+
+  * Replace dead woodsidelabs.com endpoints with PubChem REST (2.2, 2.3)
+  * Fix dative bond icon, arrow tool preview, arrow type selection (UAT)
+  * Add live property panel: MW and formula, hidden by default (4.5)
+  * Add Ubuntu 22.04 (Jammy) and Fedora 41 CI builds (3.1, 3.2)
+  * Add Flathub manifest org.xdrawchem.XDrawChem.yml (3.5)
+  * Add CHANGELOG.md (2.5)
+  * Fix CMake: generated/defs.h path avoids collision with executable
+  * Fix dative bond rubber-band preview during drag
+
+ -- Bryan Herger <bherger@users.sf.net>  Thu, 02 Apr 2026 00:00:00 +0000
+
 xdrawchem (2:2.0~rc3-1) unstable; urgency=medium
 
   * Name-to-structure via PubChem REST API (backlog 5.7)

@@ -1,157 +1,133 @@
 # XDrawChem — Consolidated Backlog
 *Compiled from all session history, GitHub issues, Debian tracker, and competitive analysis*
-*As of v2.0rc3 — April 2026*
+*As of v2.0rc4 — April 2026*
 
 [BryanH - I will work on some or all of these eventually, but if anything here should be a priority, copy the item and create an issue]
 
 ---
 
-## Status at v2.0rc3
+## Status at v2.0rc4
 
-**Completed in rc2→rc3 cycle:**
-- Windows CI build (MSVC + NSIS installer, produces `.exe`)
-- macOS CI build (Homebrew Qt6, produces `.dmg`)
-- All four platform builds integrated into the release workflow
-- Fixed Qt 6.4 `addAction` deprecations across `application.cpp`, `helpwindow.cpp`, `application_ring.cpp`
-- Fixed Qt 6.2 `QMessageBox` multi-string-button deprecations (items 2.1 / backlog complete)
-- Fixed `QMouseEvent::x()/y()` → `position()` deprecations in `charsel.cpp`, `render2d_text.cpp`
-- Fixed `QBitmap::operator=(QPixmap)` → `fromPixmap()` in `render2d_draw.cpp`
-- Suppressed OpenBabel `std::binary_function` deprecation warnings on GCC 13+ via `ob_compat.h`
-- AppStream `xdrawchem.metainfo.xml` confirmed installed and packaged in RPM (item 3.3 complete)
-- Name-to-structure via PubChem REST API — Tools → "Name to structure..." (item 5.7 complete)
-- InChI input confirmed working via existing SMILES dialog (item 5.8 complete)
-- Single `VERSION` file at repo root as source of truth for all platforms
-- About/Support dialogs updated with GitHub URLs; all 13 translation files updated to match
+**Completed in rc3→rc4 cycle:**
+- Replaced dead woodsidelabs.com endpoints with PubChem REST API (2.2, 2.3)
+  - "Find on PubChem…" (Ctrl+F) searches by name, CAS, or formula
+  - Molecule Information dialog (Ctrl+I) populates CAS, IUPAC name, synonyms
+- Dative bond toolbar icon now shows a distinct half-arrow XPM (2.4)
+- Dative bond rubber-band preview fixed during drag
+- Arrow tool: button-click now activates last-chosen arrow type
+- Arrow tool: `bracket_type` initialised so first use draws correct arrow
+- Live property panel (4.5): docked widget showing MW and formula, hidden by default; enable via Tools → Properties
+- CHANGELOG.md created from debian/changelog and session history (2.5)
+- Ubuntu 22.04 (Jammy) DEB added to CI matrix (3.1)
+- Fedora 41 RPM added to CI matrix (3.2)
+- Flathub manifest `org.xdrawchem.XDrawChem.yml` + CI workflow (3.5)
+- AppStream metainfo.xml: fixed name tags, added rc3/rc4 releases, screenshot URL updated
+- Lone pairs / orbitals / charges: confirmed already implemented via SYM_* symbol system (SYM_2E, SYM_PLUS, SYM_MINUS, p_orbital, etc.) — no further work needed (5.3)
 
-**Completed previously (rc1/rc2):**
-- Qt6 + CMake port (zero warnings/errors)
+**Completed previously (rc1–rc3):**
+- Qt6 + CMake port, all deprecation warnings cleared on all platforms
 - 13 test suites, 274 tests, 100% passing
-- Bugs fixed: #9 double bond geometry, #10 clean-up orientation, #13 curved arrow tips, #14 Bézier arrows, #15 SMILES `**`, #18 OpenBabel 3, #19 Georgian translation
-- Features added: IUPAC naming (PubChem REST), PubChem browser, valence checking, PDF export, Fusion/light-palette startup fix, dative bond (order 9), ACS style preset, SVG export, copy as SVG/PNG, canonical SMILES
-- CI/CD: GitHub Actions for DEB (Ubuntu 24.04), RPM (Rocky 9), Windows, macOS, Release
+- Bugs fixed: #9–#19 (geometry, arrows, SMILES, OpenBabel 3, translations)
+- Features added: IUPAC/PubChem naming, valence checking, PDF/SVG/PNG export, ACS style, dative bond, canonical SMILES, name-to-structure, InChI input
+- CI/CD: Windows (MSVC + NSIS), macOS (DMG), DEB (Ubuntu 24.04), RPM (Rocky 9), Release workflow
+- Single VERSION file at repo root; About/Support dialogs updated with GitHub links
 
 ---
 
-## SECTION 1 — Open GitHub Issues (still unresolved)
+## SECTION 1 — Open GitHub Issues
 
-These were open on the tracker at the start of the session. Check https://github.com/bryanherger/xdrawchem/issues for any new ones.
-
-| # | Title | Notes |
-|---|---|---|
-| Open | Any issues filed after rc3 ships | Monitor after release |
+Check https://github.com/bryanherger/xdrawchem/issues for any new ones.
 
 ---
 
 ## SECTION 2 — Code Quality / Technical Debt
-*Low risk, relatively small scope — good for a maintenance sprint*
 
-**2.2 Dead `CalcName()` CGI endpoint** — The old name-lookup pathway calls a dead CGI script on woodsidelabs.com. It should be removed or redirected to the new `IUPACName()` PubChem pathway. The menu item may still be wired to the old code.
-
-**2.3 Dead "Find on Internet" endpoint** — `NetDialog` code still exists but the endpoint it calls is gone. Should be replaced by the PubChem browser integration already in the codebase, or removed.
-
-**2.4 Dative bond toolbar icon** — `ring/dativetool.png` is currently a copy of `wavytool.png` used as a placeholder. A proper half-arrow icon (→ with one barb) would make the toolbar unambiguous. Can be drawn as a 22×22 SVG and converted.
-
-**2.5 CHANGELOG.md is sparse** — The file exists but only has stub entries. Should be kept updated going forward; the debian/changelog already has the right content and could be used as a source.
+**2.5 CHANGELOG.md** — Created. Keep updated going forward; debian/changelog is the source of truth.
 
 **2.6 Help window HTML docs** — The `doc/` folder contains aging HTML that references Qt3-era UI. Could be modernised in place or linked to a GitHub Wiki.
 
 ---
 
 ## SECTION 3 — Platform & Distribution
-*Enables new user populations; mostly CI/packaging work*
-
-**3.1 Ubuntu 22.04 DEB re-enablement** — The 22.04 DEB build was fixed for the Qt6.2 `addAction` argument order, so it now builds. Consider re-enabling it as an official release artifact (currently only 24.04 Noble is packaged for DEB).
-
-**3.2 Fedora 40 RPM re-enablement** — Disabled in `build-rpm.yml` during initial CI setup. Could be re-added now that the Rocky 9 build is stable.
 
 **3.4 `debian/watch` file** — The Debian tracker flags a `uscan` error. Adding a `debian/watch` file pointing to the GitHub releases API would let Debian maintainers track upstream automatically.
 
-**3.5 Flathub submission** — A `org.xdrawchem.XDrawChem.yml` Flatpak manifest would allow distribution via Flathub, reaching users on any Linux distro without distro packaging. Dependencies (Qt6, OpenBabel) are available in Flathub's SDK. Requires the AppStream metainfo file (done) first.
+**3.5 Flathub submission** — Manifest created and CI workflow added. Actual submission requires a PR to `github.com/flathub/flathub` — do this after v2.0 ships.
 
-**3.8 Repository screenshot** — No screenshot in the repo. GNOME Software, Flathub, and most software directories require at least one screenshot. A 1280×800 PNG of a typical molecule drawing session would suffice.
+**3.8 Repository screenshot** — Added (`xdrawchem_screenshot_0.png`). AppStream metainfo updated to reference it.
 
 ---
 
 ## SECTION 4 — Feature Parity: Medium Priority
-*These are present in ChemDraw, ChemDoodle, Ketcher, and MarvinSketch. Medium implementation effort.*
 
-**4.1 CIP R/S and E/Z stereochemistry labels** — Every professional tool displays R/S labels at chiral centres and E/Z at double bonds. XDrawChem draws wedge/hash bonds correctly but never annotates the structure with the descriptor. OpenBabel can calculate CIP assignments from the existing stereo data; the work is mainly overlaying the labels on the canvas and encoding them in CML/Molfile output. This is the single highest-value missing feature for pharmaceutical and organic chemistry users.
+**4.1 CIP R/S and E/Z stereochemistry labels** — Every professional tool displays R/S at chiral centres and E/Z at double bonds. XDrawChem draws wedge/hash bonds correctly but never annotates the descriptor. OpenBabel can calculate CIP assignments; the work is overlaying labels on the canvas and encoding them in CML/Molfile output. Highest-value missing feature for pharmaceutical users. **Target: v2.1**
 
-**4.2 Atom-to-atom reaction mapping** — Numbers atoms across a reaction arrow so you can track which reactant atom becomes which product atom. Required for reaction databases, retrosynthesis tools, and metabolic pathway analysis. Needs a new "map atoms" UI mode and a way to store/display the mapping numbers; RXN file format (for import/export) then follows naturally.
+**4.2 Atom-to-atom reaction mapping** — Numbers atoms across a reaction arrow. Needs new UI mode, DPoint field, and RXN format. High effort. **Target: v2.1 or later**
 
-**4.3 MDL SDF / RXN file support** — SDF (Structure-Data File) is the most widely used format for exchanging collections of structures — every compound database exports SDF. RXN is the reaction equivalent. OpenBabel handles both; it's mostly a UI matter of supporting multi-record files and displaying a structure list/browser. Moderate effort.
+**4.3 MDL SDF / RXN file support** — SDF is the most widely used structure exchange format. `chemdata_mdl.cpp` is currently stubs returning false; OB handles both formats. Needs a multi-record browser UI. **Target: v2.1**
 
-**4.4 Formal charges and isotope labels on atoms** — Click an atom to add +, −, 2+, 2−, or a radical dot, and have that encoded in the Molfile `charge` field (not just as cosmetic text). Similarly, isotope labels (¹⁴C, ²H, ³H) should be stored in the Molfile `isotope` field. Currently XDrawChem has charge symbols as insertable graphical objects but they are not chemically meaningful. Needed for NMR labelling, reaction mechanisms, and inorganic chemistry.
+**4.4 Formal charges and isotope labels on atoms** — The bond-edit dialog has +/− radio buttons but they insert cosmetic text, not chemically meaningful Molfile charge fields. `DPoint` needs a `formal_charge` member and serialization in XDC/CML/MDL formats. **Target: v2.1**
 
-**4.5 Live property calculation panel** — A `QDockWidget` that shows MW, molecular formula, exact mass, and elemental composition, updating in real-time as you draw. MarvinSketch has this as a "pinnable calculation box". OpenBabel and the existing `MolData` class provide all the calculations; it's primarily a UI docking panel. Medium effort with high usability payoff.
+**4.5 Live property panel** — Implemented (hidden by default). Update trigger coverage and docking behaviour need more testing before promoting to enabled-by-default. **Polish in v2.1**
 
-**4.6 Functional group / fragment template browser** — A categorised template palette for common protecting groups and functional group abbreviations: Boc, Fmoc, Cbz, tosyl (Ts), triflate (OTf), mesylate (OMs), TBS, TMS, Bn, PMB, etc. These are placed constantly in synthetic organic chemistry. The existing CML ring infrastructure would support this; it's mostly a library curation task plus a browseable UI. Ketcher ships 450+ such fragments.
+**4.6 Functional group / fragment template browser** — Categorised palette for Boc, Fmoc, TBS, Bn, etc. Library curation + browseable UI. **Target: v2.1 or later**
 
-**4.7 S-Groups and polymer notation** — SRU (Structural Repeating Unit) brackets with subscript `n`, used in polymer chemistry and patent applications. Also superatom abbreviations (Ph, Bn, etc.) that expand/collapse. Both Ketcher and ChemDoodle support this. Higher effort — requires a new data model concept alongside the existing bond/atom model.
+**4.7 S-Groups and polymer notation** — SRU brackets, superatom abbreviations. Requires new data model. **Target: v2.2**
 
 ---
 
 ## SECTION 5 — Feature Parity: Lower Priority
-*Nice-to-have; present in top-tier tools but not critical for general use*
 
-**5.1 Structure-from-image OCR (OSRA)** — OSRA (Optical Structure Recognition Application) converts scanned or photographed chemical structures into SMILES/SDF. Historically available as a plugin for Accelrys Draw; ChemDoodle has a paid cloud version. An OSRA integration (calling the OSRA binary or library) would be extremely useful for digitising textbook structures but is a significant integration project.
+**5.1 Structure-from-image OCR (OSRA)** — Large integration project. **Target: v2.2**
 
-**5.2 Fischer, Haworth, and Newman projection tools** — ChemDoodle 2D automatically recognises and analyses these projection types. XDrawChem has a Newman projection mode but no Fischer or Haworth support. Medium effort for drawing; automatic stereo assignment from projections would be higher effort.
+**5.2 Fischer, Haworth, and Newman projection tools** — Medium effort for drawing; auto stereo assignment is harder. **Target: v2.1 or later**
 
-**5.3 Lone pair display on atoms** — Clicking an atom to display lone pairs (horizontal or vertical electron dot pairs) is used heavily in mechanism drawing. ChemSketch added this via the atom properties dialog. The lone pair is cosmetic (does not affect valence counting) so it's a rendering addition only.
+**5.4 Electron pushing arrows (mechanism tools)** — Fishhook and two-electron arrows anchored to bonds/atoms. Existing curved arrow infrastructure is a starting point. **Target: v2.1**
 
-**5.4 Electron pushing arrows (mechanism tools)** — ChemDoodle 12.9 added automatic mechanism generation from electron-pushing arrows. At minimum, single-electron (fishhook) and two-electron pushing arrows anchored to bonds or atoms (not just free-floating curved arrows) would improve mechanism drawing. The existing curved arrow infrastructure is a starting point.
+**5.5 Superscript/subscript in text labels** — Qt `QTextDocument` rich text could handle this. **Target: v2.1**
 
-**5.5 Superscript/subscript in text labels** — ChemDoodle highlights this as a differentiator. Currently XDrawChem text labels are plain text. Allowing mixed super/subscript in labels (e.g. SO₄²⁻ rendered properly) would improve publication-quality output. Qt's `QTextDocument` rich text engine could handle this.
-
-**5.6 SMARTS input** — SMARTS format (`FindFormat("sma")`) is not compiled into the system OpenBabel package on Ubuntu/Rocky. However, OB's SMILES reader silently accepts SMARTS atoms, so reading SMARTS strings through the existing SMILES input dialog already works for most cases. True SMARTS output (for substructure query export) requires OB's SMARTS writer, which may need a custom OB build. Low value unless specifically requested.
+**5.6 SMARTS input** — OB SMILES reader accepts most SMARTS already. True SMARTS output needs OB's writer. Low priority unless requested.
 
 ---
 
-## SECTION 6 — CI/CD & Infrastructure Improvements
+## SECTION 6 — CI/CD & Infrastructure
 
-**6.1 GPG-signed packages** — Neither the RPM nor the DEB are GPG-signed. Adding a signing step using a repository key stored as a GitHub Actions secret would make the packages installable from a proper apt/dnf repository without manual trust overrides.
+**6.1 GPG-signed packages** — Neither RPM nor DEB are signed. Needed for proper apt/dnf repository hosting.
 
-**6.2 Apt/DNF repository hosting** — Rather than requiring users to manually download `.deb`/`.rpm` files, host a simple repository on GitHub Pages (`deb.xdrawchem.org`, `rpm.xdrawchem.org`) using `reprepro` (DEB) and `createrepo` (RPM). Users could then do `apt install xdrawchem` after adding the repo.
+**6.2 Apt/DNF repository hosting** — Host on GitHub Pages so users can `apt install xdrawchem`.
 
-**6.3 Release workflow robustness** — The current release workflow polls the GitHub API for artifacts with a 20-minute timeout. This is fragile if builds take longer. Switching to `workflow_run` trigger (once GitHub fixes tag support for it) or using a matrix-completion check would be more reliable.
+**6.3 Release workflow robustness** — Current poller has a 20-minute timeout. `workflow_run` trigger would be more reliable once GitHub supports tags.
 
-**6.4 Ubuntu 22.04 DEB in release** — Once re-enabled (see 3.1), the release workflow should attach the Jammy `.deb` alongside the Noble one.
+**6.4 Ubuntu 22.04 DEB in release** — Added to CI. Wire into release artifact download in release.yml once confirmed stable.
 
-**6.5 Code coverage reporting** — Add `gcov`/`lcov` to the CI run and upload a coverage report (e.g. to Codecov). Useful for identifying untested paths as test count grows.
+**6.5 Code coverage reporting** — `gcov`/`lcov` + Codecov upload.
 
-**6.6 Lintian clean** — The Debian tracker reports one lintian warning on the packaged version. Running `lintian --pedantic` on the built DEB and addressing the warning would make the package ready for Debian proper.
+**6.6 Lintian clean** — One lintian warning outstanding on the DEB.
 
 ---
 
 ## SECTION 7 — Documentation
 
-**7.1 GitHub Wiki** — Replace or supplement the aging HTML help docs with a GitHub Wiki covering: installation, first steps, file formats supported, keyboard shortcuts, and the ring library. Would dramatically reduce barrier to entry for new users.
+**7.1 GitHub Wiki** — Replace aging HTML help docs.
 
-**7.2 Screenshot in repo** — Required for Flathub and most software directories (see 3.8). Needed before any store submission.
+**7.3 PACKAGING.md** — Add Windows and macOS sections.
 
-**7.3 PACKAGING.md completeness** — The file exists and covers Linux packaging. Adding Windows and macOS sections (even as stubs with "planned") sets expectations clearly.
-
-**7.4 Keyboard shortcuts reference** — No comprehensive shortcut list exists in the docs. A one-page cheat sheet (PDF + Markdown) covering all draw modes, ring shortcuts, and menu accelerators would help power users.
+**7.4 Keyboard shortcuts reference** — One-page cheat sheet.
 
 ---
 
 ## Priority Summary for v2.1 Planning
 
-| Priority | Item | Effort | Impact |
+| Priority | Item | Effort | Notes |
 |---|---|---|---|
-| 🔴 High | 4.1 CIP R/S, E/Z labels | Medium | Major feature gap vs all competitors |
-| 🔴 High | 2.2 Remove dead CalcName CGI | Low | Dead code removal |
-| 🔴 High | 2.3 Remove/replace dead "Find on Internet" | Low | Dead code removal |
-| 🟡 Medium | 4.3 SDF / RXN file support | Medium | Opens compound database workflows |
-| 🟡 Medium | 4.4 Formal charges + isotopes on atoms | Medium | Needed for mechanisms and NMR |
-| 🟡 Medium | 4.5 Live property panel | Medium | High usability payoff |
-| 🟡 Medium | 3.5 Flathub submission | Low-Med | Reaches all Linux users |
-| 🟡 Medium | 5.3 Lone pair display | Low | Mechanism drawing quality |
-| 🟡 Medium | 2.4 Proper dative bond icon | Low | Polish |
+| 🔴 High | 4.1 CIP R/S, E/Z labels | Medium | Biggest feature gap vs competitors |
+| 🔴 High | 4.3 SDF / RXN file support | Medium | Opens compound database workflows |
+| 🟡 Medium | 4.4 Formal charges + isotopes | Medium | Molfile chemical correctness |
+| 🟡 Medium | 4.5 Property panel polish | Low | Docking + update trigger improvements |
+| 🟡 Medium | 3.5 Flathub PR submission | Low | Submit after v2.0 ships |
+| 🟡 Medium | 5.4 Electron pushing arrows | Medium | Mechanism drawing |
 | 🟢 Lower | 4.2 Reaction atom mapping | High | Important for reaction DBs |
 | 🟢 Lower | 4.6 Fragment template browser | Medium | Organic chemistry workflows |
-| 🟢 Lower | 3.1 Ubuntu 22.04 DEB re-enable | Low | Wider DEB coverage |
-| 🟢 Lower | 3.2 Fedora 40 RPM | Low | Wider RPM coverage |
 | 🟢 Lower | 6.1 GPG-signed packages | Medium | Security/trust |
-| 🟢 Lower | 5.1 OSRA image OCR | High | Very useful but large integration |
+| 🟢 Lower | 3.4 debian/watch file | Low | Debian tracker |
+| 🟢 Lower | 5.1 OSRA image OCR | High | Very useful but large |
