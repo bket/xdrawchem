@@ -20,18 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5.0.1
 
-      - name: Install flatpak-builder
+      - name: Add Flathub remote and install KDE SDK
         run: |
-          apt-get update -q
-          apt-get install -y flatpak flatpak-builder
-
-      - name: Add Flathub remote
-        run: |
+          # flatpak and flatpak-builder are pre-installed in the lint container.
+          # apt-get is not available (Alpine-based image).
           flatpak remote-add --if-not-exists \
-            flathub https://flathub.org/repo/flathub.flatpakrepo
-
-      - name: Install KDE SDK
-        run: |
+            flathub https://flathub.org/repo/flathub.flatpakrepo || true
           flatpak install -y flathub \
             org.kde.Platform//6.8 \
             org.kde.Sdk//6.8
