@@ -210,9 +210,11 @@ jobs:
           Write-Host "=== dist\xdrawchem contents ==="
           Get-ChildItem dist\xdrawchem -Recurse | Select-Object FullName
 
-      - name: Install NSIS
-        run: choco install nsis --no-progress -y
-        shell: pwsh
+      # NSIS is pre-installed on windows-latest GitHub-hosted runners.
+      # The separate choco install step is removed — it was unreliable
+      # (community feed returns 503 intermittently).
+      # The "Build installer" step below probes common paths and only
+      # falls back to choco if the binary is genuinely missing.
 
       - name: Write NSIS installer script
         shell: pwsh
@@ -300,21 +302,30 @@ jobs:
       - name: Build installer with NSIS
         shell: pwsh
         run: |
-          # Locate makensis — it may be pre-installed or installed by choco
-          $makensis = @(
+          # Locate makensis — probe standard install paths first.
+          # windows-latest runners have NSIS pre-installed; choco is a
+          # last resort because the community feed is occasionally unavailable.
+          $candidates = @(
             "C:\Program Files (x86)\NSIS\makensis.exe",
             "C:\Program Files\NSIS\makensis.exe"
-          ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+          )
+          $makensis = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
           if (-not $makensis) {
-            $makensis = (Get-Command makensis -ErrorAction SilentlyContinue)?.Source
+            $fromPath = Get-Command makensis -ErrorAction SilentlyContinue
+            if ($fromPath) { $makensis = $fromPath.Source }
           }
           if (-not $makensis) {
-            Write-Host "makensis not found, reinstalling NSIS..."
-            choco install nsis --no-progress -y --force
-            $makensis = "C:\Program Files (x86)\NSIS\makensis.exe"
+            Write-Host "makensis not in standard locations, trying choco..."
+            choco install nsis --no-progress -y 2>&1 | Write-Host
+            $makensis = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          }
+          if (-not $makensis) {
+            Write-Error "makensis.exe not found after all attempts — aborting"
+            exit 1
           }
           Write-Host "Using makensis: $makensis"
-          & $makensis installer.nsi
+          # Use the call operator with an explicit string cast to handle spaces in path.
+          & ([string]$makensis) installer.nsi
           Get-ChildItem *.exe | Select-Object Name, Length
 
       - name: Upload installer artifact
