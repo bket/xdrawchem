@@ -1,12 +1,12 @@
 # XDrawChem — Consolidated Backlog
 *Compiled from all session history, GitHub issues, Debian tracker, and competitive analysis*
-*As of v2.0rc4 — April 2026*
+*As of v2.0 — April 2026*
 
 [BryanH - I will work on some or all of these eventually, but if anything here should be a priority, copy the item and create an issue]
 
 ---
 
-## Status at v2.0rc4
+## Status at v2.0
 
 **Completed in rc3→rc4 cycle:**
 - Replaced dead woodsidelabs.com endpoints with PubChem REST API (2.2, 2.3)

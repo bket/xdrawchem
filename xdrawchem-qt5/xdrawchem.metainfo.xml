@@ -70,6 +70,20 @@
   </screenshots>
 
   <releases>
+    <release version="2.0" date="2026-04-09">
+      <description>
+        <p>XDrawChem 2.0 — first stable Qt6 release.</p>
+        <ul>
+          <li>Full Qt6 + CMake build; requires Qt 6.2 or later</li>
+          <li>OpenBabel 3 integration for 20+ chemical file formats</li>
+          <li>PubChem REST integration: Find on PubChem, IUPAC name lookup, name-to-structure</li>
+          <li>Dative (coordinate covalent) bond, ACS style preset, Bézier arrows</li>
+          <li>SVG, PDF, and high-DPI PNG export; copy as SVG/PNG to clipboard</li>
+          <li>Valence checking; canonical SMILES and InChI output</li>
+          <li>Packages: DEB (Ubuntu 22.04/24.04), RPM (Rocky 9/Fedora 41), Windows EXE, macOS DMG, Flatpak</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0rc4" date="2026-04-01">
       <description>
         <p>Fourth release candidate for XDrawChem 2.0.</p>

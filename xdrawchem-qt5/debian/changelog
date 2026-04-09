@@ -1,3 +1,13 @@
+xdrawchem (2:2.0-1) unstable; urgency=medium
+
+  * XDrawChem 2.0 stable release
+  * Flatpak CI: fix RapidJSON 1.1.0 const-member build error on GCC 14
+  * Flatpak CI: pre-install RapidJSON module; add --disable-rofiles-fuse
+  * Release workflow: fix DEB filename collision between noble and jammy
+  * Windows: replace Chocolatey/SourceForge NSIS install with winget
+
+ -- Bryan Herger <bherger@users.sf.net>  Wed, 09 Apr 2026 00:00:00 +0000
+
 xdrawchem (2:2.0~rc4-1) unstable; urgency=medium
 
   * Replace dead woodsidelabs.com endpoints with PubChem REST (2.2, 2.3)

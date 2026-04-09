@@ -5,7 +5,17 @@ Entries are derived from the Debian changelog and commit history.
 
 ---
 
-## 2.0rc4 — 2026-04 (current)
+## 2.0 — 2026-04-09
+
+### Infrastructure / CI
+- Flatpak: fix RapidJSON 1.1.0 const-member build error on GCC 14 (`-fpermissive`)
+- Flatpak: pre-install RapidJSON as a module; add `--disable-rofiles-fuse`
+- Release: fix DEB filename collision when noble and jammy extracted together
+- Windows: replace Chocolatey/SourceForge NSIS fallback with `winget install NSIS.NSIS`
+
+*(All rc4 changes below)*
+
+## 2.0rc4 — 2026-04
 
 ### Bug fixes (UAT)
 - Dative bond toolbar button now shows a distinct half-arrow icon (was blank)

@@ -85,7 +85,7 @@ modules:
         # Pin to a specific tag for reproducible Flathub builds.
         # Update this tag when submitting a new release.
         # No commit: field — flatpak-builder resolves the SHA from the tag.
-        tag: v2.0rc4
+        tag: v2.0
     post-install:
       # Install the ring library to the correct data directory
       - install -d ${FLATPAK_DEST}/share/xdrawchem
