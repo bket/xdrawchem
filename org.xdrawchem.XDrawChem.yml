@@ -48,20 +48,15 @@ modules:
   # ── OpenBabel ────────────────────────────────────────────────────────────────
   # Not in the KDE SDK; build from source using the same version as Rocky 9 EPEL.
   - name: openbabel
-    # Use simple buildsystem so we can inject a patch step between
-    # cmake configure (which downloads its own RapidJSON to _build/external/)
-    # and the ninja build. The -DRAPIDJSON_INCLUDE_DIRS flag does not prevent
-    # OB from downloading its own copy; we must patch that downloaded copy.
-    buildsystem: simple
-    build-commands:
-      # Single shell command: cmake (in-source) + ninja + install.
-      # Using separate commands caused ninja to not find build.ninja because
-      # each flatpak-builder build-command runs in a fresh sandbox context.
-      - cmake . -DCMAKE_INSTALL_PREFIX=/app -DCMAKE_BUILD_TYPE=Release
-          -DBUILD_GUI=OFF -DBUILD_TESTING=OFF -DENABLE_TESTS=OFF -DWITH_INCHI=ON
-          "-DCMAKE_CXX_FLAGS=-include ctime"
-          && ninja -j$(nproc)
-          && ninja install
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DBUILD_GUI=OFF
+      - -DBUILD_TESTING=OFF
+      - -DENABLE_TESTS=OFF
+      - -DWITH_INCHI=ON
+      - -DCMAKE_CXX_FLAGS=-include ctime
     sources:
       - type: archive
         url: https://github.com/openbabel/openbabel/archive/refs/tags/openbabel-3-1-1.tar.gz
