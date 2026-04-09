@@ -4,10 +4,12 @@
 %global xdcmajmin %(echo %{xdcver} | sed "s/[^0-9.].*$//")
 # Derive rc tag (everything after the numeric part) for Release:
 %global xdcrc    %(echo %{xdcver} | sed "s/^[0-9.]*//")
+# Final releases have empty xdcrc → Release: 1; pre-releases → Release: 0.1.rcN
+%global xdcrel   %(if [ -z "%{xdcrc}" ]; then echo "1"; else echo "0.1.%{xdcrc}"; fi)
 
 Name:           xdrawchem
 Version:        %{xdcmajmin}
-Release:        0.1.%{xdcrc}%{?dist}
+Release:        %{xdcrel}%{?dist}
 Summary:        Two-dimensional chemical structure drawing program
 License:        GPL-2.0-only
 URL:            https://github.com/bryanherger/xdrawchem
