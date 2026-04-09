@@ -48,20 +48,24 @@ modules:
   # ── OpenBabel ────────────────────────────────────────────────────────────────
   # Not in the KDE SDK; build from source using the same version as Rocky 9 EPEL.
   - name: openbabel
-    buildsystem: cmake-ninja
-    config-opts:
-      - -DCMAKE_BUILD_TYPE=Release
-      - -DBUILD_GUI=OFF
-      - -DBUILD_TESTING=OFF
-      - -DENABLE_TESTS=OFF
-      - -DWITH_INCHI=ON
-      # GCC 14 / musl libc is stricter about transitive includes.
-      # OB 3.1.1 obutil.h uses clock()/CLOCKS_PER_SEC without including
-      # <ctime>. Force-include it for all OB translation units.
-      # GCC 14 / musl: obutil.h uses clock() without <ctime>; force-include it.
-      - -DCMAKE_CXX_FLAGS=-include ctime
-      # Point OB at the pre-installed RapidJSON so it skips its internal download.
-      - -DRAPIDJSON_INCLUDE_DIRS=/app/include
+    # Use simple buildsystem so we can inject a patch step between
+    # cmake configure (which downloads its own RapidJSON to _build/external/)
+    # and the ninja build. The -DRAPIDJSON_INCLUDE_DIRS flag does not prevent
+    # OB from downloading its own copy; we must patch that downloaded copy.
+    buildsystem: simple
+    build-commands:
+      - cmake -B _build -DCMAKE_INSTALL_PREFIX=/app -DCMAKE_BUILD_TYPE=Release
+          -DBUILD_GUI=OFF -DBUILD_TESTING=OFF -DENABLE_TESTS=OFF -DWITH_INCHI=ON
+          "-DCMAKE_CXX_FLAGS=-include ctime"
+      # OB downloads its own RapidJSON to _build/external/ during cmake configure.
+      # GCC 14 rejects the copy-assign operator that assigns to a const member.
+      # Patch the downloaded file before compiling.
+      - find _build/external -name document.h
+          -exec sed -i
+          "s/GenericStringRef& operator=(const GenericStringRef& rhs) { s = rhs.s; length = rhs.length; }/GenericStringRef\& operator=(const GenericStringRef\& rhs) = delete;/"
+          {} ;
+      - ninja -C _build -j$(nproc)
+      - ninja -C _build install
     sources:
       - type: archive
         url: https://github.com/openbabel/openbabel/archive/refs/tags/openbabel-3-1-1.tar.gz
