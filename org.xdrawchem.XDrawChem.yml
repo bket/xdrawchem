@@ -54,11 +54,14 @@ modules:
     # OB from downloading its own copy; we must patch that downloaded copy.
     buildsystem: simple
     build-commands:
-      - cmake -B _build -DCMAKE_INSTALL_PREFIX=/app -DCMAKE_BUILD_TYPE=Release
+      # Single shell command: cmake (in-source) + ninja + install.
+      # Using separate commands caused ninja to not find build.ninja because
+      # each flatpak-builder build-command runs in a fresh sandbox context.
+      - cmake . -DCMAKE_INSTALL_PREFIX=/app -DCMAKE_BUILD_TYPE=Release
           -DBUILD_GUI=OFF -DBUILD_TESTING=OFF -DENABLE_TESTS=OFF -DWITH_INCHI=ON
           "-DCMAKE_CXX_FLAGS=-include ctime"
-      - ninja -C _build -j$(nproc)
-      - ninja -C _build install
+          && ninja -j$(nproc)
+          && ninja install
     sources:
       - type: archive
         url: https://github.com/openbabel/openbabel/archive/refs/tags/openbabel-3-1-1.tar.gz
