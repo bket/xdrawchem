@@ -54,7 +54,9 @@ modules:
       # GCC 14 / musl libc is stricter about transitive includes.
       # OB 3.1.1 obutil.h uses clock()/CLOCKS_PER_SEC without including
       # <ctime>. Force-include it for all OB translation units.
-      - -DCMAKE_CXX_FLAGS=-include ctime
+      # GCC 14 rejects RapidJSON 1.1.0: const member assigned in copy-assign operator.
+      # -fpermissive downgrades the error to a warning so the build completes.
+      - -DCMAKE_CXX_FLAGS=-include ctime -fpermissive
       # Point OB at the pre-installed RapidJSON so it skips its internal download.
       - -DRAPIDJSON_INCLUDE_DIRS=/app/include
     sources:
