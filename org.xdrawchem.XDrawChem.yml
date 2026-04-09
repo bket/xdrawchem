@@ -78,6 +78,7 @@ modules:
   # ── XDrawChem ────────────────────────────────────────────────────────────────
   - name: xdrawchem
     buildsystem: cmake-ninja
+    builddir: true
     subdir: xdrawchem-qt5
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
