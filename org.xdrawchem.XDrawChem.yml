@@ -31,6 +31,11 @@ modules:
       - -DRAPIDJSON_BUILD_DOC=OFF
       - -DRAPIDJSON_BUILD_EXAMPLES=OFF
       - -DRAPIDJSON_BUILD_TESTS=OFF
+    build-commands:
+      # RapidJSON 1.1.0 has a copy-assignment operator that assigns to a const
+      # member (GenericStringRef::length). GCC 14 rejects this even with
+      # -fpermissive. Patch the operator to = delete before cmake installs it.
+      - sed -i 's/GenericStringRef\& operator=(const GenericStringRef\& rhs) { s = rhs.s; length = rhs.length; }/GenericStringRef\& operator=(const GenericStringRef\& rhs) = delete;/' include/rapidjson/document.h
     cleanup:
       - /lib/cmake
       - /lib/pkgconfig
@@ -38,7 +43,6 @@ modules:
     sources:
       - type: archive
         url: https://github.com/miloyip/rapidjson/archive/refs/tags/v1.1.0.tar.gz
-        # Verify: sha256sum of v1.1.0 tarball from GitHub
         sha256: bf7ced29704a1e696fbccf2a2b4ea068e7774fa37f6d7dd4039d0787f8bed98e
 
   # ── OpenBabel ────────────────────────────────────────────────────────────────
@@ -54,9 +58,8 @@ modules:
       # GCC 14 / musl libc is stricter about transitive includes.
       # OB 3.1.1 obutil.h uses clock()/CLOCKS_PER_SEC without including
       # <ctime>. Force-include it for all OB translation units.
-      # GCC 14 rejects RapidJSON 1.1.0: const member assigned in copy-assign operator.
-      # -fpermissive downgrades the error to a warning so the build completes.
-      - -DCMAKE_CXX_FLAGS=-include ctime -fpermissive
+      # GCC 14 / musl: obutil.h uses clock() without <ctime>; force-include it.
+      - -DCMAKE_CXX_FLAGS=-include ctime
       # Point OB at the pre-installed RapidJSON so it skips its internal download.
       - -DRAPIDJSON_INCLUDE_DIRS=/app/include
     sources:
