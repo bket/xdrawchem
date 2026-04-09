@@ -57,13 +57,6 @@ modules:
       - cmake -B _build -DCMAKE_INSTALL_PREFIX=/app -DCMAKE_BUILD_TYPE=Release
           -DBUILD_GUI=OFF -DBUILD_TESTING=OFF -DENABLE_TESTS=OFF -DWITH_INCHI=ON
           "-DCMAKE_CXX_FLAGS=-include ctime"
-      # OB downloads its own RapidJSON to _build/external/ during cmake configure.
-      # GCC 14 rejects the copy-assign operator that assigns to a const member.
-      # Patch the downloaded file before compiling.
-      - find _build/external -name document.h
-          -exec sed -i
-          "s/GenericStringRef& operator=(const GenericStringRef& rhs) { s = rhs.s; length = rhs.length; }/GenericStringRef\& operator=(const GenericStringRef\& rhs) = delete;/"
-          {} ;
       - ninja -C _build -j$(nproc)
       - ninja -C _build install
     sources:
