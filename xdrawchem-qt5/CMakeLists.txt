@@ -378,8 +378,14 @@ install(DIRECTORY doc/
 )
 
 # .desktop file for application menu
+# Install as both the bare name (for DEB/RPM) and the reverse-DNS name
+# (required by Flathub / Flatpak export rules).
 install(FILES xdrawchem.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+)
+install(FILES xdrawchem.desktop
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+    RENAME org.xdrawchem.XDrawChem.desktop
 )
 
 # Application icon
@@ -387,10 +393,19 @@ install(FILES ring/xdrawchem-icon.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/pixmaps
     RENAME xdrawchem.png
 )
+install(FILES ring/xdrawchem-icon.png
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps
+    RENAME org.xdrawchem.XDrawChem.png
+)
 
 # AppStream / Flathub metainfo
+# Install as both bare name and reverse-DNS name (Flathub requirement).
 install(FILES xdrawchem.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
+)
+install(FILES xdrawchem.metainfo.xml
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
+    RENAME org.xdrawchem.XDrawChem.metainfo.xml
 )
 
 # ── Tests ───────────────────────────────────────────────────────────────
