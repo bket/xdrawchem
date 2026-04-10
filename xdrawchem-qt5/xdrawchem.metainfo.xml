@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>org.xdrawchem.xdrawchem</id>
+  <id>io.github.bryanherger.xdrawchem</id>
 
   <name>XDrawChem</name>
   <summary>Two-dimensional chemical structure drawing program</summary>
@@ -33,7 +33,7 @@
     </ul>
   </description>
 
-  <launchable type="desktop-id">xdrawchem.desktop</launchable>
+  <launchable type="desktop-id">io.github.bryanherger.xdrawchem.desktop</launchable>
 
   <url type="homepage">https://github.com/bryanherger/xdrawchem</url>
   <url type="bugtracker">https://github.com/bryanherger/xdrawchem/issues</url>

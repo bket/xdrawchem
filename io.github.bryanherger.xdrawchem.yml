@@ -2,11 +2,11 @@
 # Submission target: https://github.com/flathub/flathub
 #
 # Build locally:
-#   flatpak-builder --install --force-clean build-dir org.xdrawchem.XDrawChem.yml
+#   flatpak-builder --install --force-clean build-dir io.github.bryanherger.xdrawchem.yml
 # Test:
-#   flatpak run org.xdrawchem.XDrawChem
+#   flatpak run io.github.bryanherger.xdrawchem
 
-app-id: org.xdrawchem.XDrawChem
+app-id: io.github.bryanherger.xdrawchem
 runtime: org.kde.Platform
 runtime-version: '6.8'
 sdk: org.kde.Sdk

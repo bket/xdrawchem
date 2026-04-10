@@ -385,7 +385,7 @@ install(FILES xdrawchem.desktop
 )
 install(FILES xdrawchem.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
-    RENAME org.xdrawchem.XDrawChem.desktop
+    RENAME io.github.bryanherger.xdrawchem.desktop
 )
 
 # Application icon
@@ -395,7 +395,7 @@ install(FILES ring/xdrawchem-icon.png
 )
 install(FILES ring/xdrawchem-icon.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps
-    RENAME org.xdrawchem.XDrawChem.png
+    RENAME io.github.bryanherger.xdrawchem.png
 )
 
 # AppStream / Flathub metainfo
@@ -405,7 +405,7 @@ install(FILES xdrawchem.metainfo.xml
 )
 install(FILES xdrawchem.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
-    RENAME org.xdrawchem.XDrawChem.metainfo.xml
+    RENAME io.github.bryanherger.xdrawchem.metainfo.xml
 )
 
 # ── Tests ───────────────────────────────────────────────────────────────

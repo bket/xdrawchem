@@ -20,7 +20,7 @@
 - CHANGELOG.md created from debian/changelog and session history (2.5)
 - Ubuntu 22.04 (Jammy) DEB added to CI matrix (3.1)
 - Fedora 41 RPM added to CI matrix (3.2)
-- Flathub manifest `org.xdrawchem.XDrawChem.yml` + CI workflow (3.5)
+- Flathub manifest `io.github.bryanherger.xdrawchem.yml` + CI workflow (3.5)
 - AppStream metainfo.xml: fixed name tags, added rc3/rc4 releases, screenshot URL updated
 - Lone pairs / orbitals / charges: confirmed already implemented via SYM_* symbol system (SYM_2E, SYM_PLUS, SYM_MINUS, p_orbital, etc.) — no further work needed (5.3)
 

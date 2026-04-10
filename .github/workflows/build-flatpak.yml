@@ -37,16 +37,16 @@ jobs:
           # read-only FUSE overlay; the build is otherwise identical.
           flatpak-builder --repo=flatpak-repo --force-clean \
             --disable-rofiles-fuse \
-            build-dir org.xdrawchem.XDrawChem.yml
+            build-dir io.github.bryanherger.xdrawchem.yml
 
       - name: Export bundle
         run: |
           flatpak build-bundle flatpak-repo \
-            XDrawChem.flatpak org.xdrawchem.XDrawChem
+            xdrawchem.flatpak io.github.bryanherger.xdrawchem
 
       - name: Upload Flatpak bundle
         uses: actions/upload-artifact@v7.0.0
         with:
           name: xdrawchem-flatpak
-          path: XDrawChem.flatpak
+          path: xdrawchem.flatpak
           retention-days: 30
