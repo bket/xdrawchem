@@ -70,6 +70,16 @@
   </screenshots>
 
   <releases>
+    <release version="2.0.1" date="2026-04-13">
+      <description>
+        <p>XDrawChem 2.0.1 — packaging and Flatpak maintenance release.</p>
+        <ul>
+          <li>Flatpak app-id renamed to io.github.bryanherger.xdrawchem</li>
+          <li>Flatpak: desktop and metainfo files exported with correct reverse-DNS names</li>
+          <li>Debian packaging: Standards-Version updated to 4.7.2</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0" date="2026-04-09">
       <description>
         <p>XDrawChem 2.0 — first stable Qt6 release.</p>

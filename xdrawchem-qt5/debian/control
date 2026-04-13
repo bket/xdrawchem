@@ -18,7 +18,7 @@ Build-Depends:
  desktop-file-utils,
  libxkbcommon-dev,
  libqt6svg6-dev | qt6-svg-dev,
-Standards-Version: 4.6.2
+Standards-Version: 4.7.2
 Homepage: https://github.com/bryanherger/xdrawchem
 Vcs-Git: https://github.com/bryanherger/xdrawchem.git
 Vcs-Browser: https://github.com/bryanherger/xdrawchem

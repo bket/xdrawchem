@@ -5,6 +5,15 @@ Entries are derived from the Debian changelog and commit history.
 
 ---
 
+## 2.0.1 — 2026-04-13
+
+### Packaging
+- Debian: bump Standards-Version to 4.7.2
+- Flatpak: app-id renamed to `io.github.bryanherger.xdrawchem` (Flathub requirement)
+- Flatpak: desktop and metainfo files now install with reverse-DNS filenames
+- Flatpak: OpenBabel build uses `cmake-ninja` + `builddir:true` for sandbox correctness
+- Added `index.html` for GitHub Pages redirect to repo
+
 ## 2.0 — 2026-04-09
 
 ### Infrastructure / CI
