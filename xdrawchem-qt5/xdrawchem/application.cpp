@@ -891,8 +891,20 @@ void ApplicationWindow::FromRingMenu( int x )
 
 void ApplicationWindow::updateCustomRingMenu()
 {
-    ringmenu->removeAction( customRingMenuAction );
-    customRingMenuAction = ringmenu->addMenu( BuildCustomRingMenu( ringmenu ) );
+    // Previously this tried to use an uninitialized `ringmenu` member — it was
+    // declared in application.h but never assigned, and dereferencing it
+    // crashed in QMenu::addMenu (signal 11) after saving a custom ring.
+    //
+    // The correct menu to rebuild is ringMenu (the drawRingButton dropdown)
+    // since BuildNewRingMenu embeds the User-defined submenu at the bottom.
+    // Simplest approach: rebuild the whole ringMenu and re-attach it.
+    if ( ringMenu ) {
+        ringMenu->clear();
+        ringMenu->deleteLater();
+    }
+    ringMenu = BuildNewRingMenu();
+    drawRingButton->setMenu( ringMenu );
+    connect( ringMenu, &QMenu::triggered, this, &ApplicationWindow::setRingAction );
 }
 
 void ApplicationWindow::FromRingToolbar( QString fi )

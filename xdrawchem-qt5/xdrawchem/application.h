@@ -191,7 +191,8 @@ private:
     XRuler *hruler, *vruler;
     QLabel *m_rulerUnitLabel;
     QMenu *edit, *format;
-    QMenu *ringmenu;
+    // ringmenu was a dangling uninitialized pointer, removed.
+    // Use ringMenu (capital M) for the draw-ring button dropdown.
     QToolBar *BuildBioTools();
     int fix_hydrogens;
     QPrinter *printer;
@@ -244,7 +245,7 @@ private:
     QAction *ring3Action, *ring4Action, *ring5Action, *ring6Action, *ringBenzeneAction, *ringImidazoleAction, *ringCyclopentadieneAction, *ring6BoatAction, *ring6ChairAction, *ringPyrimidineAction, *ring7Action, *ring8Action, *ringIndoleAction, *ringNaphAction, *ringPurineAction, *ringBiphenylAction, *ringAnthraAction, *ringSteroidAction;
     QAction *naAdenineAction, *naCytosineAction, *naGuanineAction, *naThymineAction, *naUracilAction;
     QAction *srAction, *sdAction, *sfAction, *sgAction;
-    QAction *customRingMenuAction;
+    // customRingMenuAction was tied to the dangling ringmenu, removed.
 
     QComboBox *colorList, *fontList, *fontSizeList, *ltList;
     QStringList ringlist, symbollist, arrowlist, curvearrowlist, bracketlist;
