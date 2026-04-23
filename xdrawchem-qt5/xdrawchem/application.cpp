@@ -706,6 +706,8 @@ ApplicationWindow::ApplicationWindow()
     m_propertyPanel->hide();  // hidden by default; enable via Tools menu
     connect( m_chemData, &ChemData::SignalMoleculeChanged,
              this,       &ApplicationWindow::updatePropertyPanel );
+    connect( m_chemData, &ChemData::SignalSelectionChanged,
+             this,       &ApplicationWindow::updatePropertyPanel );
 
     // Now that m_propertyPanel exists, find the Tools menu and insert the toggle.
     for ( QMenu *menu : menuBar()->findChildren<QMenu *>() ) {
@@ -2029,7 +2031,9 @@ void ApplicationWindow::updatePropertyPanel()
     if ( !m_propertyPanel || !m_propertyPanel->isVisible() )
         return;
 
-    Molecule *m = m_chemData->firstMolecule();
+    // Prefer the highlighted molecule so selection naturally drives the panel;
+    // falls back to the first molecule when nothing is selected.
+    Molecule *m = m_chemData->highlightedMolecule();
     if ( !m ) {
         m_propertyPanel->clear();
         return;

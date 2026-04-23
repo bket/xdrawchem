@@ -37,6 +37,10 @@ public:
     ChemData( QObject *parent = nullptr );
     void drawAll();
     Molecule *firstMolecule();
+    // Returns the first molecule that contains a highlighted (user-selected)
+    // atom or bond.  Used by the property panel to reflect selection.
+    // Falls back to firstMolecule() when nothing is selected.
+    Molecule *highlightedMolecule();
     void addMolecule( Molecule * );
     Molecule* findMolecule(DPoint* p);
     void addBond( DPoint *, DPoint *, int, int, QColor, bool hl = false );
@@ -76,6 +80,7 @@ public:
 
     // defined in chemdata_rw.cpp
     bool load( QString );
+    bool loadFile( QString );  // internal: load without emitting SignalMoleculeChanged
     bool save( QString );
     bool load_legacy( QString );
 
@@ -148,6 +153,9 @@ signals:
     // Emitted after any structural change (bond/atom/text added, deleted, edited).
     // Connect to ApplicationWindow::updatePropertyPanel() for the live panel.
     void SignalMoleculeChanged();
+    // Emitted when the selection changes (single-click on a different molecule,
+    // lasso/rect select, DeselectAll, etc.).  Does not imply the data changed.
+    void SignalSelectionChanged();
 
 private:
     // the Render2D widget this ChemData is linked to

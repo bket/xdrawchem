@@ -559,6 +559,7 @@ void ChemData::fromSMILES( QString sm )
     m1->FromSMILES( sm );
     m1->SelectAll();
     drawlist.append( m1 );
+    emit SignalMoleculeChanged();
 }
 
 void ChemData::SmartPlace( QString sf, DPoint * t1 )

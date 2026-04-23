@@ -10,6 +10,20 @@
 
 bool ChemData::load( QString fn )
 {
+    bool ok = loadFile( fn );
+    // Emit after every successful load path so the property panel and any
+    // other listeners refresh. Covers: file open, drag-drop, ring menu
+    // placement (which calls load() via SmartPlace*), and SDF import.
+    if ( ok )
+        emit SignalMoleculeChanged();
+    return ok;
+}
+
+// Internal helper: the original load() body, without the signal.
+// Split out so callers of the various load_xxx helpers also trigger the
+// SignalMoleculeChanged emission at the single load() entry point.
+bool ChemData::loadFile( QString fn )
+{
     // identify file type by first few lines
     QFile f( fn );
 

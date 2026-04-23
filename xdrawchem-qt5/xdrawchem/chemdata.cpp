@@ -53,6 +53,21 @@ Molecule *ChemData::firstMolecule()
     return 0;
 }
 
+// Returns the first molecule containing a highlighted (selected) atom.
+// Falls back to firstMolecule() if nothing is highlighted.
+Molecule *ChemData::highlightedMolecule()
+{
+    for (Drawable *tmp_draw : drawlist) {
+        if ( tmp_draw->Type() != TYPE_MOLECULE )
+            continue;
+        if ( tmp_draw->Highlighted() ) {
+            return static_cast<Molecule *>( tmp_draw );
+        }
+    }
+    return firstMolecule();
+}
+
+
 void ChemData::addMolecule( Molecule * m1 )
 {
     drawlist.append( m1 );
@@ -359,6 +374,7 @@ void ChemData::SelectAll()
     for (DPoint *tmp_pt : allpts) {
         tmp_pt->setHighlighted( true );
     }
+    emit SignalSelectionChanged();
 }
 
 void ChemData::DeselectAll()
@@ -371,6 +387,7 @@ void ChemData::DeselectAll()
     for (DPoint *tmp_pt : allpts) {
         tmp_pt->setHighlighted( false );
     }
+    emit SignalSelectionChanged();
 }
 
 void ChemData::SetColorIfHighlighted( QColor c )
@@ -458,6 +475,7 @@ void ChemData::NewSelectRect( QRect n, bool shiftdown )
     for (Drawable *tmp_draw : drawlist) {
         tmp_draw->isWithinRect( n, shiftdown );
     }
+    emit SignalSelectionChanged();
 }
 
 // Get list of unique points contained in all Molecules.
