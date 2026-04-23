@@ -6,6 +6,9 @@
 %global xdcrc    %(echo %{xdcver} | sed "s/^[0-9.]*//")
 # Final releases have empty xdcrc → Release: 1; pre-releases → Release: 0.1.rcN
 %global xdcrel   %(if [ -z "%{xdcrc}" ]; then echo "1"; else echo "0.1.%{xdcrc}"; fi)
+# Reverse-DNS app ID — matches Flatpak manifest and second install target
+# added in CMakeLists.txt for desktop/metainfo/icon (Flathub requires these).
+%global appid    io.github.bryanherger.xdrawchem
 
 Name:           xdrawchem
 Version:        %{xdcmajmin}
@@ -93,9 +96,13 @@ QT_QPA_PLATFORM=offscreen ctest --output-on-failure -j$(nproc)
 %doc README.md CHANGELOG.md HISTORY.txt INSTALL.txt
 %{_bindir}/xdrawchem
 %{_datadir}/%{name}/
+# Both bare-name (traditional) and reverse-DNS (Flathub/AppStream) copies.
 %{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/%{appid}.desktop
 %{_datadir}/pixmaps/%{name}.png
+%{_datadir}/icons/hicolor/256x256/apps/%{appid}.png
 %{_datadir}/metainfo/%{name}.metainfo.xml
+%{_datadir}/metainfo/%{appid}.metainfo.xml
 
 %changelog
 * Thu Mar 26 2026 Bryan Herger <bherger@users.sf.net> - 2.0-0.1.rc1

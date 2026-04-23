@@ -1,5 +1,8 @@
 usr/bin/xdrawchem
 usr/share/xdrawchem/
 usr/share/applications/xdrawchem.desktop
+usr/share/applications/io.github.bryanherger.xdrawchem.desktop
 usr/share/pixmaps/xdrawchem.png
+usr/share/icons/hicolor/256x256/apps/io.github.bryanherger.xdrawchem.png
 usr/share/metainfo/xdrawchem.metainfo.xml
+usr/share/metainfo/io.github.bryanherger.xdrawchem.metainfo.xml
