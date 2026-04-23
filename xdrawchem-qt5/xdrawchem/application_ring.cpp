@@ -63,7 +63,7 @@ extern Preferences preferences;
 #define AA_TRYPTOPHAN 317
 #define AA_TYROSINE 318
 #define AA_VALINE 319
-#define AA_NPH 320
+#define AA_NITROPH 320
 #define AA_STATINE 321
 #define S_RIBOSE 400
 #define S_DEOXYRIBOSE 401
@@ -135,16 +135,16 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
     aaAction->setData( AA_LYSINE );
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_met ) ), tr( "Methionine" ) );
     aaAction->setData( AA_METHIONINE );
-    aaAction = aaSub->addAction( QIcon( QPixmap( aa_nph ) ), tr( "Nitrophenylalanine" ) );
-    aaAction->setData( AA_NPH );
+    //aaAction = aaSub->addAction( QIcon( QPixmap( aa_phe ) ), tr( "PhenylAlanine" ) );
+    //aaAction->setData( AA_LYSINE );
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_phe ) ), tr( "Phenylalanine" ) );
     aaAction->setData( AA_PHENYLALANINE );
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_pro ) ), tr( "Proline" ) );
     aaAction->setData( AA_PROLINE );
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_ser ) ), tr( "Serine" ) );
     aaAction->setData( AA_SERINE );
-    aaAction = aaSub->addAction( QIcon( QPixmap( aa_statine ) ), tr( "Statine" ) );
-    aaAction->setData( AA_STATINE );
+    //aaAction = aaSub->addAction( QIcon( QPixmap( aa_statine ) ), tr( "Statine" ) );
+    //aaAction->setData( AA_STATINE );
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_thr ) ), tr( "Threonine" ) );
     aaAction->setData( AA_THREONINE );
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_trp ) ), tr( "Tryptophan" ) );
@@ -313,7 +313,7 @@ void ApplicationWindow::FromNewRingMenu( int x )
         fname = "lysine.cml";
     if ( x == AA_METHIONINE )
         fname = "methionine.cml";
-    if ( x == AA_NPH )
+    if ( x == AA_NITROPH )
         fname = "nitrophenylalanine.cml";
     if ( x == AA_PHENYLALANINE )
         fname = "phenylalanine.cml";
