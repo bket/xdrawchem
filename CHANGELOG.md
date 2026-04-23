@@ -5,7 +5,30 @@ Entries are derived from the Debian changelog and commit history.
 
 ---
 
-## 2.0.1 — 2026-04-13
+## 2.0.1 — 2026-04-23
+
+### Security / correctness
+- Fix three instances of malloc/strcpy buffer overflow + use-after-free on QByteArray
+  temporary in OpenBabel format resolution (`application_ob.cpp`, `tool_2d3d.cpp`)
+- Fix potential buffer overflow in `char type[5]` strcpy on user-defined atom labels
+  (`molecule_obmol.cpp`, `ioiface.cpp`)
+- Replace `system()` shell invocation for Ghemical/KryoMol send with
+  `QProcess::startDetached` to eliminate shell injection risk
+- Remove dead `http.cpp`/`http.h` module and dead `XDC_SERVER` / `getenv` code paths
+- Fix `-Wreorder` warning in `CMLParser` constructor
+
+### UI fixes
+- Ring menu: wire Amino Acids, Nucleic Acids, Sugars, and Useful Groups submenus
+  to `setRingAction` (they were silent since the Qt6 port)
+- Ring menu: add `setData()` to Useful Groups (FMOC, BOC, DABCYL, DABSYL, DANSYL,
+  EDANS, Biotin) so dispatch actually works
+- Property panel: refresh on ring placement, name-to-structure, selection change,
+  clipboard operations, undo, text/label edits, delete (previously only refreshed
+  for raw drawing actions)
+- Property panel: track currently-selected molecule rather than always showing
+  the first molecule
+- Amino Acids menu: remove non-natural amino acids (nitrophenylalanine, statine)
+  that can still be retrieved via PubChem lookup
 
 ### Packaging
 - Debian: bump Standards-Version to 4.7.2

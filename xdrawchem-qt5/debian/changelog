@@ -1,11 +1,22 @@
 xdrawchem (2:2.0.1-1) unstable; urgency=low
 
-  * Bump Standards-Version to 4.7.2 (no changes required)
-  * debian/watch: already present; confirms uscan tracking of GitHub releases
+  * Security: fix malloc/strcpy buffer overflow + use-after-free on
+    QByteArray temporary (three sites in application_ob.cpp, tool_2d3d.cpp)
+  * Security: replace system() with QProcess::startDetached for external
+    program launch (Ghemical/KryoMol) to avoid shell injection risk
+  * Security: fix fixed-buffer strcpy with user-supplied atom labels
+  * Remove dead http.cpp/h module and dead XDC_SERVER environment lookup
+  * Ring menu: connect Amino Acids, Nucleic Acids, Sugars, Useful Groups
+    submenus so clicks dispatch to setRingAction (silent since Qt6 port)
+  * Property panel: refresh on ring placement, name-to-structure, selection
+    changes, clipboard operations, undo, and delete
+  * Amino Acids menu: remove non-natural amino acids that caused Qt6
+    menu construction issues; users can retrieve them from PubChem instead
+  * Bump Standards-Version to 4.7.2
   * Flatpak app-id renamed to io.github.bryanherger.xdrawchem
-  * Flatpak: desktop and metainfo files now install with reverse-DNS names
+  * Flatpak: desktop and metainfo files install with reverse-DNS names
 
- -- Bryan Herger <bherger@users.sf.net>  Mon, 13 Apr 2026 00:00:00 +0000
+ -- Bryan Herger <bherger@users.sf.net>  Wed, 23 Apr 2026 00:00:00 +0000
 
 xdrawchem (2:2.0-1) unstable; urgency=medium
 

@@ -70,12 +70,15 @@
   </screenshots>
 
   <releases>
-    <release version="2.0.1" date="2026-04-13">
+    <release version="2.0.1" date="2026-04-23">
       <description>
-        <p>XDrawChem 2.0.1 — packaging and Flatpak maintenance release.</p>
+        <p>XDrawChem 2.0.1 — security, UI, and packaging maintenance release.</p>
         <ul>
-          <li>Flatpak app-id renamed to io.github.bryanherger.xdrawchem</li>
-          <li>Flatpak: desktop and metainfo files exported with correct reverse-DNS names</li>
+          <li>Security: fix buffer overflows in OpenBabel format resolution and atom-label strcpy</li>
+          <li>Security: replace system() with QProcess::startDetached for Ghemical/KryoMol launch</li>
+          <li>Ring menu: amino acids, nucleic acids, sugars, and useful groups submenus now work</li>
+          <li>Property panel refreshes on ring placement, name-to-structure, selection, undo, delete</li>
+          <li>Flatpak app-id renamed to io.github.bryanherger.xdrawchem for Flathub submission</li>
           <li>Debian packaging: Standards-Version updated to 4.7.2</li>
         </ul>
       </description>
