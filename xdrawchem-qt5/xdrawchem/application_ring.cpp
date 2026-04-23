@@ -210,17 +210,21 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
 QMenu *ApplicationWindow::BuildCustomRingMenu(QMenu *ringSub)
 {
     QMenu *userDefSub = new QMenu( tr( "User-defined" ), ringSub );
-    QDir d( preferences.getCustomRingDir(), "*.png" );
+    // TODO: fix crings_dialog to render preview
+    //QDir d( preferences.getCustomRingDir(), "*.png" );
+    QDir d( preferences.getCustomRingDir(), "*.cml" );
 
     ringlist = d.entryList();
     QAction *customAction;
     for ( int cc = 0; cc < ringlist.count(); cc++ ) {
-        QPixmap px1( QString( preferences.getCustomRingDir() + ringlist[cc] ) );
-        QBitmap mask1( px1.width(), px1.height() );
+        // TODO: fix crings_dialog to render preview
+        //QPixmap px1( QString( preferences.getCustomRingDir() + ringlist[cc] ) );
+        //QBitmap mask1( px1.width(), px1.height() );
 
-        mask1.fill( Qt::color1 );
-        px1.setMask( mask1 );
-        customAction = userDefSub->addAction( QIcon( px1 ), ringlist[cc].left( ringlist[cc].length() - 4 ) );
+        //mask1.fill( Qt::color1 );
+        //px1.setMask( mask1 );
+        //customAction = userDefSub->addAction( QIcon( px1 ), ringlist[cc].left( ringlist[cc].length() - 4 ) );
+        customAction = userDefSub->addAction( ringlist[cc].left( ringlist[cc].length() - 4 ) );
         customAction->setData( cc );
     }
     userDefSub->addAction( tr( "Add new..." ), this, SLOT( saveCustomRing() ) );
