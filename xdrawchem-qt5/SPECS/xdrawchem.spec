@@ -96,13 +96,15 @@ QT_QPA_PLATFORM=offscreen ctest --output-on-failure -j$(nproc)
 %doc README.md CHANGELOG.md HISTORY.txt INSTALL.txt
 %{_bindir}/xdrawchem
 %{_datadir}/%{name}/
-# Both bare-name (traditional) and reverse-DNS (Flathub/AppStream) copies.
+# Bare-name files (traditional system packaging convention)
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/applications/%{appid}.desktop
 %{_datadir}/pixmaps/%{name}.png
-%{_datadir}/icons/hicolor/256x256/apps/%{appid}.png
 %{_datadir}/metainfo/%{name}.metainfo.xml
-%{_datadir}/metainfo/%{appid}.metainfo.xml
+# Reverse-DNS copies (Flathub/AppStream requirement). Glob patterns tolerate
+# the build environment even if the %appid macro is not defined for some reason.
+%{_datadir}/applications/io.github.bryanherger.*.desktop
+%{_datadir}/icons/hicolor/256x256/apps/io.github.bryanherger.*.png
+%{_datadir}/metainfo/io.github.bryanherger.*.metainfo.xml
 
 %changelog
 * Thu Mar 26 2026 Bryan Herger <bherger@users.sf.net> - 2.0-0.1.rc1
