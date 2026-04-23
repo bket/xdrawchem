@@ -180,7 +180,7 @@ private slots:
 
 private:
     //QPopupMenu *BuildRingMenu();  obsolete...
-    QMenu *BuildCustomRingMenu();
+    QMenu *BuildCustomRingMenu(QMenu *);
     QMenu *BuildArrowMenu();
     QMenu *BuildCurveArrowMenu();
     QMenu *BuildBracketMenu();

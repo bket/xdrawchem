@@ -108,7 +108,7 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
 
     // make amino acid list
     QAction *aaAction;
-    QMenu *aaSub = new QMenu( tr( "Amino acids" ), this );
+    QMenu *aaSub = new QMenu( tr( "Amino acids" ), ringSub );
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_ala ) ), tr( "Alanine" ) );
     aaAction->setData( AA_ALANINE );
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_arg ) ), tr( "Arginine" ) );
@@ -152,12 +152,12 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_tyr ) ), tr( "Tyrosine" ) );
     aaAction->setData( AA_TYROSINE );
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_val ) ), tr( "Valine" ) );
-    aaAction->setData( AA_VALINE );
+    //aaAction->setData( AA_VALINE );
 
     ringSub->addMenu( aaSub );
 
     // make nucleic acid list
-    QMenu *naSub = new QMenu( tr( "Nucleic acids" ), this );
+    QMenu *naSub = new QMenu( tr( "Nucleic acids" ), ringSub );
     naAdenineAction = naSub->addAction( QIcon( QPixmap( na_adenine ) ), tr( "Adenine" ) );
     naCytosineAction = naSub->addAction( QIcon( QPixmap( na_cytosine ) ), tr( "Cytosine" ) );
     naGuanineAction = naSub->addAction( QIcon( QPixmap( na_guanine ) ), tr( "Guanine" ) );
@@ -167,7 +167,7 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
     ringSub->addMenu( naSub );
 
     // make sugar list
-    QMenu *sugarSub = new QMenu( tr( "Sugars" ), this );
+    QMenu *sugarSub = new QMenu( tr( "Sugars" ), ringSub );
     srAction = sugarSub->addAction( QIcon( QPixmap( s_ribose ) ), tr( "Ribose" ) );
     sdAction = sugarSub->addAction( QIcon( QPixmap( s_deoxyribose ) ), tr( "Deoxyribose" ) );
     sfAction = sugarSub->addAction( QIcon( QPixmap( s_d_fructose ) ), tr( "D-fructose" ) );
@@ -176,7 +176,7 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
     ringSub->addMenu( sugarSub );
 
     // make function group list
-    QMenu *fgSub = new QMenu( tr( "Useful groups" ), this );
+    QMenu *fgSub = new QMenu( tr( "Useful groups" ), ringSub );
     fgSub->addAction( tr( "[*] FMOC" ) );
     fgSub->addAction( tr( "[*] BOC" ) );
     fgSub->addAction( tr( "[*] DABCYL" ) );
@@ -188,14 +188,14 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
     ringSub->addMenu( fgSub );
 
     // make user-defined list
-    ringSub->addMenu( BuildCustomRingMenu() );
+    ringSub->addMenu( BuildCustomRingMenu( ringSub ) );
 
     return ringSub;
 }
 
-QMenu *ApplicationWindow::BuildCustomRingMenu()
+QMenu *ApplicationWindow::BuildCustomRingMenu(QMenu *ringSub)
 {
-    QMenu *userDefSub = new QMenu( tr( "User-defined" ), this );
+    QMenu *userDefSub = new QMenu( tr( "User-defined" ), ringSub );
     QDir d( preferences.getCustomRingDir(), "*.png" );
 
     ringlist = d.entryList();

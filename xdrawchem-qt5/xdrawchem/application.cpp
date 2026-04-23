@@ -892,7 +892,7 @@ void ApplicationWindow::FromRingMenu( int x )
 void ApplicationWindow::updateCustomRingMenu()
 {
     ringmenu->removeAction( customRingMenuAction );
-    customRingMenuAction = ringmenu->addMenu( BuildCustomRingMenu() );
+    customRingMenuAction = ringmenu->addMenu( BuildCustomRingMenu( ringmenu ) );
 }
 
 void ApplicationWindow::FromRingToolbar( QString fi )
