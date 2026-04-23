@@ -152,8 +152,9 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_tyr ) ), tr( "Tyrosine" ) );
     aaAction->setData( AA_TYROSINE );
     aaAction = aaSub->addAction( QIcon( QPixmap( aa_val ) ), tr( "Valine" ) );
-    //aaAction->setData( AA_VALINE );
+    aaAction->setData( AA_VALINE );
 
+    connect( aaSub, &QMenu::triggered, this, &ApplicationWindow::setRingAction );
     ringSub->addMenu( aaSub );
 
     // make nucleic acid list
@@ -164,6 +165,7 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
     naThymineAction = naSub->addAction( QIcon( QPixmap( na_thymine ) ), tr( "Thymine" ) );
     naUracilAction = naSub->addAction( QIcon( QPixmap( na_uracil ) ), tr( "Uracil" ) );
 
+    connect( naSub, &QMenu::triggered, this, &ApplicationWindow::setRingAction );
     ringSub->addMenu( naSub );
 
     // make sugar list
@@ -173,18 +175,28 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
     sfAction = sugarSub->addAction( QIcon( QPixmap( s_d_fructose ) ), tr( "D-fructose" ) );
     sgAction = sugarSub->addAction( QIcon( QPixmap( s_d_glucose ) ), tr( "D-glucose" ) );
 
+    connect( sugarSub, &QMenu::triggered, this, &ApplicationWindow::setRingAction );
     ringSub->addMenu( sugarSub );
 
     // make function group list
     QMenu *fgSub = new QMenu( tr( "Useful groups" ), ringSub );
-    fgSub->addAction( tr( "[*] FMOC" ) );
-    fgSub->addAction( tr( "[*] BOC" ) );
-    fgSub->addAction( tr( "[*] DABCYL" ) );
-    fgSub->addAction( tr( "[*] DABSYL" ) );
-    fgSub->addAction( tr( "[*] DANSYL" ) );
-    fgSub->addAction( tr( "[*] EDANS" ) );
-    fgSub->addAction( tr( "[*] Biotin" ) );
+    QAction *fgAction;
+    fgAction = fgSub->addAction( tr( "FMOC" ) );
+    fgAction->setData( FG_FMOC );
+    fgAction = fgSub->addAction( tr( "BOC" ) );
+    fgAction->setData( FG_BOC );
+    fgAction = fgSub->addAction( tr( "DABCYL" ) );
+    fgAction->setData( FG_DABCYL );
+    fgAction = fgSub->addAction( tr( "DABSYL" ) );
+    fgAction->setData( FG_DABSYL );
+    fgAction = fgSub->addAction( tr( "DANSYL" ) );
+    fgAction->setData( FG_DANSYL );
+    fgAction = fgSub->addAction( tr( "EDANS" ) );
+    fgAction->setData( FG_EDANS );
+    fgAction = fgSub->addAction( tr( "Biotin" ) );
+    fgAction->setData( FG_BIOTIN );
 
+    connect( fgSub, &QMenu::triggered, this, &ApplicationWindow::setRingAction );
     ringSub->addMenu( fgSub );
 
     // make user-defined list
@@ -214,6 +226,11 @@ QMenu *ApplicationWindow::BuildCustomRingMenu(QMenu *ringSub)
     }
     userDefSub->addAction( tr( "Add new..." ), this, SLOT( saveCustomRing() ) );
 
+    // Note: userDefSub is NOT connected here because custom ring actions use
+    // setData(cc) with a 0-based index, which doesn't map to setRingAction's
+    // ring-code dispatch (100+). Dispatch for these needs to go through
+    // FromRingMenu(int) which has been disconnected since the Qt6 port;
+    // that's a known regression tracked for a future fix.
     return userDefSub;
 }
 
