@@ -218,19 +218,20 @@ QMenu *ApplicationWindow::BuildCustomRingMenu(QMenu *ringSub)
 
         mask1.fill( Qt::color1 );
         px1.setMask( mask1 );
-        /*userDefSub->addAction( QPixmap( QString(RingDir + ringlist[cc]) ),
-           ringlist[cc],
-           this, FromRingMenu(int)), 0, cc ); */
         customAction = userDefSub->addAction( QIcon( px1 ), ringlist[cc].left( ringlist[cc].length() - 4 ) );
         customAction->setData( cc );
     }
     userDefSub->addAction( tr( "Add new..." ), this, SLOT( saveCustomRing() ) );
 
-    // Note: userDefSub is NOT connected here because custom ring actions use
-    // setData(cc) with a 0-based index, which doesn't map to setRingAction's
-    // ring-code dispatch (100+). Dispatch for these needs to go through
-    // FromRingMenu(int) which has been disconnected since the Qt6 port;
-    // that's a known regression tracked for a future fix.
+    // Custom ring actions carry a 0-based index into ringlist[] via setData(cc),
+    // which is incompatible with setRingAction's ring-code dispatch (100+).
+    // Dispatch them directly to FromRingMenu(int).  The "Add new..." entry
+    // has no data set so QVariant::isValid() returns false and we skip it
+    // (it already has its own SLOT connection above).
+    connect( userDefSub, &QMenu::triggered, this, [this]( QAction *a ) {
+        if ( a && a->data().isValid() )
+            FromRingMenu( a->data().toInt() );
+    } );
     return userDefSub;
 }
 
