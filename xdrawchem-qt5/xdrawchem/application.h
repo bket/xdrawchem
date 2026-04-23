@@ -245,7 +245,9 @@ private:
     QAction *ring3Action, *ring4Action, *ring5Action, *ring6Action, *ringBenzeneAction, *ringImidazoleAction, *ringCyclopentadieneAction, *ring6BoatAction, *ring6ChairAction, *ringPyrimidineAction, *ring7Action, *ring8Action, *ringIndoleAction, *ringNaphAction, *ringPurineAction, *ringBiphenylAction, *ringAnthraAction, *ringSteroidAction;
     QAction *naAdenineAction, *naCytosineAction, *naGuanineAction, *naThymineAction, *naUracilAction;
     QAction *srAction, *sdAction, *sfAction, *sgAction;
-    // customRingMenuAction was tied to the dangling ringmenu, removed.
+    // Tracks the User-defined submenu action inside ringMenu so
+    // updateCustomRingMenu() can swap it out in place.
+    QAction *customRingMenuAction = nullptr;
 
     QComboBox *colorList, *fontList, *fontSizeList, *ltList;
     QStringList ringlist, symbollist, arrowlist, curvearrowlist, bracketlist;

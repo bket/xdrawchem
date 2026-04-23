@@ -199,8 +199,10 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
     connect( fgSub, &QMenu::triggered, this, &ApplicationWindow::setRingAction );
     ringSub->addMenu( fgSub );
 
-    // make user-defined list
-    ringSub->addMenu( BuildCustomRingMenu( ringSub ) );
+    // make user-defined list.  Track the QAction returned by addMenu so
+    // updateCustomRingMenu() can swap it out in place when a new custom
+    // ring is saved (no full rebuild needed).
+    customRingMenuAction = ringSub->addMenu( BuildCustomRingMenu( ringSub ) );
 
     return ringSub;
 }
