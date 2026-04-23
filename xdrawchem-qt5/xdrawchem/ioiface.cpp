@@ -281,7 +281,6 @@ bool IOIface::convertToOBMol()
 
     obmol->BeginModify();
     obmol->ReserveAtoms( allpoints.count() );
-    char type[5];
     vector3 v;
     OBAtom atom;
 
@@ -291,9 +290,10 @@ bool IOIface::convertToOBMol()
         v.SetZ( tmp_atom->z );
         atom.SetVector( v );
         atom.SetAtomicNum( tmp_atom->getAtomicNumber() );
-        strcpy( type, tmp_atom->baseElement().toLatin1() );
-        atom.SetType( type );
-        //atom.SetType( tmp_atom->baseElement().toLatin1() );
+        // Keep QByteArray alive for SetType; previous char type[5] strcpy
+        // could overflow on user-defined atom labels.
+        QByteArray typeBytes = tmp_atom->baseElement().toLatin1();
+        atom.SetType( typeBytes.constData() );
 
         if ( !obmol->AddAtom( atom ) )
             return ( false );

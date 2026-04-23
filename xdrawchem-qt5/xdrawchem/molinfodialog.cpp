@@ -83,18 +83,8 @@ void MolInfoDialog::doAccept()
 
 void MolInfoDialog::doPubChem()
 {
-    QString ffurl, ffcmd;
-
-    ffurl = "https://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=" + pcc;
+    QString ffurl = "https://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=" + pcc;
     QDesktopServices::openUrl(QUrl(ffurl, QUrl::TolerantMode));
-
-    /*ffcmd = "firefox " + ffurl + " &";
-    qDebug() << ffcmd;
-    system( ffcmd.toLatin1() );
-    QClipboard *cb = QApplication::clipboard();
-
-    // Copy text into the clipboard
-    cb->setText( ffurl, QClipboard::Clipboard );*/
 }
 
 void MolInfoDialog::SendHelp()

@@ -216,7 +216,6 @@ OBMol *Molecule::convertToOBMol()
 
     obmol->BeginModify();
     obmol->ReserveAtoms( allpoints.count() );
-    char type[5];
     vector3 v;
     OBAtom atom;
 
@@ -226,8 +225,11 @@ OBMol *Molecule::convertToOBMol()
         v.SetZ( tmp_atom->z );
         atom.SetVector( v );
         atom.SetAtomicNum( tmp_atom->getAtomicNumber() );
-        strcpy( type, tmp_atom->baseElement().toLatin1() );
-        atom.SetType( type );
+        // Keep QByteArray alive for SetType; previous char type[5] strcpy
+        // could overflow on user-defined atom labels (baseElement can
+        // return arbitrary strings for atomic_number==999).
+        QByteArray typeBytes = tmp_atom->baseElement().toLatin1();
+        atom.SetType( typeBytes.constData() );
 
         if ( !obmol->AddAtom( atom ) )
             return NULL;

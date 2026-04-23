@@ -18,8 +18,11 @@ class QString;
 class CMLParser
 {
 public:
-    explicit CMLParser(Render2D *r1) : r(r1), states(0), ep1(nullptr), ep2(nullptr),
-                                       tmp_pt(nullptr), tmp_bond(nullptr) {}
+    // Init order must match member declaration order below
+    // (tmp_pt, ep1, ep2, tmp_bond, r, states) to silence -Wreorder.
+    explicit CMLParser(Render2D *r1)
+        : tmp_pt(nullptr), ep1(nullptr), ep2(nullptr),
+          tmp_bond(nullptr), r(r1), states(0) {}
 
     // Parse CML from an already-open device (e.g. QFile).
     // Returns true on success, false on XML error.

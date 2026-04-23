@@ -106,11 +106,8 @@ void Tool_2D3D::save3DFile()
 
        int cutpt = str1.indexOf(':');
        str1.truncate(cutpt);
-       const char *tmpchar = str1.toLatin1();
-       char *realchar;
-       realchar = (char*)malloc(sizeof(char)*str1.length());
-       strcpy(realchar, tmpchar);
-       inFileType = extab.FilenameToType( realchar );
+       QByteArray str1Bytes = str1.toLatin1();
+       inFileType = extab.FilenameToType( str1Bytes.constData() );
        OBMol *mol = new3dmol->convertToOBMol();
        mol->SetInputType(inFileType);
        mol->SetOutputType(inFileType);

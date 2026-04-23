@@ -133,7 +133,6 @@ set(XDC_SOURCES
     xdrawchem/graphdialog.cpp
     xdrawchem/graphwidget.cpp
     xdrawchem/helpwindow.cpp
-    xdrawchem/http.cpp
     xdrawchem/ioiface.cpp
     # main.cpp excluded from object lib — linked only into the executable
     xdrawchem/molecule_1h_nmr.cpp
@@ -216,7 +215,6 @@ set(XDC_HEADERS
     xdrawchem/graphdialog.h
     xdrawchem/graphwidget.h
     xdrawchem/helpwindow.h
-    xdrawchem/http.h
     xdrawchem/ioiface.h
     xdrawchem/justifytools.h
     xdrawchem/lines.h
@@ -281,7 +279,6 @@ target_include_directories(xdrawchem_obj PUBLIC
 target_compile_definitions(xdrawchem_obj PUBLIC
     UNIX
     RINGHOME="${RINGHOME}"
-    XDC_SERVER="https://www.woodsidelabs.com/chemistry"
 )
 target_link_libraries(xdrawchem_obj PUBLIC
     Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::PrintSupport Qt6::Xml Qt6::Svg
@@ -306,7 +303,6 @@ target_include_directories(xdrawchem PRIVATE
 target_compile_definitions(xdrawchem PRIVATE
     UNIX
     RINGHOME="${RINGHOME}"
-    XDC_SERVER="https://www.woodsidelabs.com/chemistry"
 )
 
 # ── Compiler warnings ─────────────────────────────────────────────────────────

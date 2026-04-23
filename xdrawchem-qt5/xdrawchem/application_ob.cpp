@@ -139,12 +139,12 @@ void ApplicationWindow::OBNewLoad( QString infile, QString infilter )
     int cutpt = infilter.indexOf( QString::fromLatin1( " -- " ) );
 
     infilter.truncate( cutpt );
-    const char *tmpchar = infilter.toLatin1();
-    char *realchar;
-    realchar = ( char * ) malloc( sizeof( char ) *infilter.length() );
-    strcpy( realchar, tmpchar );
+    // Keep the QByteArray alive for the duration of the FindFormat call.
+    // Previously: const char* pointed into a temporary that was destroyed
+    // before use, plus malloc(length) was one byte short of null terminator.
+    QByteArray infilterBytes = infilter.toLatin1();
     if ( inFormat == 0 )
-        inFormat = Conv.FindFormat( realchar );
+        inFormat = Conv.FindFormat( infilterBytes.constData() );
     OBMol *mol = new OBMol;
     std::ifstream inFileStream( infile.toLatin1() );
 
@@ -249,12 +249,9 @@ void ApplicationWindow::OBNewSave()
     int cutpt = str1.indexOf( " -- " );
 
     str1.truncate( cutpt );
-    const char *tmpchar = str1.toLatin1();
-    char *realchar;
-    realchar = ( char * ) malloc( sizeof( char ) * str1.length() );
-    strcpy( realchar, tmpchar );
+    QByteArray str1Bytes = str1.toLatin1();
     if ( outFormat == 0 )
-        outFormat = Conv.FindFormat( realchar );
+        outFormat = Conv.FindFormat( str1Bytes.constData() );
     OBMol *mol = new OBMol;
 
     Conv.SetInAndOutFormats( outFormat, outFormat );

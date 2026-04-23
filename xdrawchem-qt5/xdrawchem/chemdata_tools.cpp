@@ -87,7 +87,7 @@ void ChemData::Tool( DPoint *target, int mode )
     Tool_13CNMR_Dialog *tool13cnmr;
     Tool_IR_Dialog *toolir;
     Tool_2D3D tool2d3d;
-    QString tmpname, serverName;
+    QString tmpname;
     QStringList choices;
     Bond *tmp_bond;
     //int dret;
@@ -116,10 +116,9 @@ void ChemData::Tool( DPoint *target, int mode )
         tt_ea = m->CalcElementalAnalysis();
         mi->setEA( tt_ea->getText() );
 
-        serverName = getenv( "XDC_SERVER" );
-        if ( serverName.length() < 2 )
-            serverName = XDC_SERVER;
-        if ( na->getNameCAS( serverName, thisInChI ) ) {
+        // NetAccess::getNameCAS uses the PubChem REST API directly;
+        // the server argument is retained for API compatibility but ignored.
+        if ( na->getNameCAS( QString(), thisInChI ) ) {
             mi->setCAS( na->scas );
             mi->setName( na->siupacname );
             mi->setSynonyms( na->sname );

@@ -9,6 +9,7 @@
 *****************************************************************************/
 
 #include <QDateTime>
+#include <QProcess>
 #include <QGridLayout>
 #include <QApplication>
 #include <QGuiApplication>
@@ -745,7 +746,7 @@ void ApplicationWindow::externalProgram()
 #define PROGRAM_KRYOMOL 1
 #define PROGRAM_GHEMICAL 2
 
-    int sendto = 0, qbox, passfail = 0;
+    int sendto = 0, qbox;
     QString exportFileName;
 
     {
@@ -776,22 +777,26 @@ void ApplicationWindow::externalProgram()
                  );
             return;
         }
+        // Use QProcess::startDetached with a separate argument list so shell
+        // metacharacters in the filename cannot be interpreted as commands.
+        // Previously this used system() with string concatenation — a shell
+        // injection risk if exportFileName ever contained special characters.
+        QString program;
         if ( sendto == 1 ) {
             qDebug() << "Ghemical: ";
-            exportFileName.prepend( "ghemical " );
-            passfail = system( exportFileName.toLatin1() );
-            qDebug() << passfail;
+            program = QStringLiteral("ghemical");
         }
         if ( sendto == 2 ) {
             qDebug() << "KryoMol: ";
-            exportFileName.prepend( "kryomol " );
-            passfail = system( exportFileName.toLatin1() );
-            qDebug() << passfail;
+            program = QStringLiteral("kryomol");
         }
-        if ( passfail != 0 ) {
-            QMessageBox::critical( this, tr( "Send to external program failed" ), tr( "Could not execute the external program.\nPlease verify that it is installed correctly." )
-                 );
-            return;
+        if ( !program.isEmpty() ) {
+            bool ok = QProcess::startDetached( program, QStringList() << exportFileName );
+            if ( !ok ) {
+                QMessageBox::critical( this, tr( "Send to external program failed" ),
+                    tr( "Could not execute the external program.\nPlease verify that it is installed correctly." ) );
+                return;
+            }
         }
     }
 }
