@@ -152,6 +152,7 @@ bool ChemData::Paste()
             addText( t );
         }
     }
+    emit SignalMoleculeChanged();
     return true;
 }
 
@@ -181,6 +182,7 @@ bool ChemData::Undo()
     current_undo_file = last_states[last_states.count() - 1];
     last_states.removeLast();
     load_native( current_undo_file );
+    emit SignalMoleculeChanged();
     return true;
 }
 

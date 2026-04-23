@@ -120,12 +120,14 @@ void ChemData::addText( Text * t )
                 Molecule *tm = ( Molecule * ) tmp_draw; // this is cheating, I know!
 
                 tm->addText( t );
+                emit SignalMoleculeChanged();
                 return;
             }
         }
         qDebug() << "FYI, add text failed";
     }
     notSaved = true;
+    emit SignalMoleculeChanged();
 }
 
 void ChemData::addGraphicObject( GraphicObject * t )
@@ -275,6 +277,7 @@ void ChemData::Erase( Drawable * d )
     // Split Molecules as needed
     DetectSplit();
     notSaved = true;
+    emit SignalMoleculeChanged();
 }
 
 void ChemData::EraseSelected()
@@ -314,6 +317,7 @@ void ChemData::EraseSelected()
     // Split Molecules as needed
     DetectSplit();
     notSaved = true;
+    emit SignalMoleculeChanged();
 }
 
 // Split Molecule's which hold multiple structures (e.g. after delete)
