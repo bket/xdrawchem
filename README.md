@@ -5,7 +5,7 @@ two-dimensional chemical structures. It supports CML, SMILES, MDL Mol,
 CDXML, and its own XDC format, and integrates with OpenBabel for
 cheminformatics calculations (SMILES, InChI, NMR prediction, 3D).
 
-![XDrawChem application screenshot showing synthesis of aspirin](xdrawchem_screenshot_0.png)
+![XDrawChem application screenshot showing synthesis of aspirin](xdrawchem_screenshot_1.png)
 
 ## Quick start
 
