@@ -78,6 +78,15 @@ modules:
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DRINGHOME=/app/share/xdrawchem
+    # Remove the bare-name duplicates that CMake installs for DEB/RPM.
+    # Flathub's appstreamcli compose sees both the bare file and the
+    # reverse-DNS copy declaring the same <id> and errors with
+    # "duplicate-component". Only the reverse-DNS files are needed
+    # for Flatpak.
+    cleanup:
+      - /share/applications/xdrawchem.desktop
+      - /share/pixmaps/xdrawchem.png
+      - /share/metainfo/xdrawchem.metainfo.xml
     sources:
       - type: git
         url: https://github.com/bryanherger/xdrawchem.git
