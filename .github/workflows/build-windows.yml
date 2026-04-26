@@ -12,7 +12,7 @@ on:
       - 'v*'
   pull_request:
     paths:
-      - 'xdrawchem-qt5/**'
+      - 'xdrawchem/**'
       - '.github/workflows/build-windows.yml'
   workflow_dispatch:
 
@@ -152,7 +152,7 @@ jobs:
             throw "OpenBabel import lib not found in OB_ROOT (see lib listing above)"
           }
           Write-Host "Using OB lib: $OB_LIB"
-          cmake -S xdrawchem-qt5 -B build `
+          cmake -S xdrawchem -B build `
             -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_PREFIX_PATH="$QT_DIR" `
@@ -181,7 +181,7 @@ jobs:
 
           # Copy ring data
           New-Item -ItemType Directory -Force -Path dist\xdrawchem\ring | Out-Null
-          Copy-Item xdrawchem-qt5\ring\* dist\xdrawchem\ring\ -Recurse
+          Copy-Item xdrawchem\ring\* dist\xdrawchem\ring\ -Recurse
 
           # Copy Qt runtime DLLs
           & "$QT_BIN\windeployqt.exe" `

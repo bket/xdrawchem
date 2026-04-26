@@ -92,10 +92,10 @@ modules:
       - type: git
         url: https://github.com/bryanherger/xdrawchem.git
         branch: master
-        subdir: xdrawchem-qt5
+        subdir: xdrawchem
       # Uncomment for a specific tagged release:
       # - type: git
       #   url: https://github.com/bryanherger/xdrawchem.git
       #   tag: v2.0rc2
       #   commit: HEAD
-      #   subdir: xdrawchem-qt5
+      #   subdir: xdrawchem

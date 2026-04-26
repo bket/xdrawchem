@@ -18,7 +18,7 @@ License:        GPL-2.0-only
 URL:            https://github.com/bryanherger/xdrawchem
 # Tarball created from the git tag v{xdcver} by the release workflow.
 # For local builds: tar -czf ~/rpmbuild/SOURCES/xdrawchem-%{xdcver}.tar.gz \
-#   --transform='s|^xdrawchem-qt5|xdrawchem-%{xdcver}|' xdrawchem-qt5
+#   --transform='s|^xdrawchem|xdrawchem-%{xdcver}|' xdrawchem
 Source0:        https://github.com/bryanherger/%{name}/archive/refs/tags/v%{xdcver}.tar.gz#/%{name}-%{xdcver}.tar.gz
 
 # ── RHEL 8 / CentOS Stream 8 / Rocky 8 / Alma 8 ──────────────────────────────

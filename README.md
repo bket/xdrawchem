@@ -11,7 +11,7 @@ cheminformatics calculations (SMILES, InChI, NMR prediction, 3D).
 
 ```bash
 git clone https://github.com/bryanherger/xdrawchem
-cd xdrawchem/xdrawchem-qt5
+cd xdrawchem/xdrawchem      # repo root → source subdirectory (yes, both named xdrawchem)
 mkdir build && cd build
 cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release
 ninja
@@ -19,13 +19,13 @@ ninja
 ```
 
 Requires **Qt 6.4+**, **OpenBabel 3.x**, and **CMake 3.19+**.
-See [xdrawchem-qt5/README.md](xdrawchem-qt5/README.md) for full build instructions and dependencies.
+See [xdrawchem/README.md](xdrawchem/README.md) for full build instructions and dependencies.
 
 ## Repository layout
 
 | Directory | Contents |
 |---|---|
-| `xdrawchem-qt5/` | **Current source** — Qt5 (qmake) and Qt6 (CMake) |
+| `xdrawchem/` | **Current source** — Qt5 (qmake) and Qt6 (CMake) |
 
 > **Looking for the legacy Qt3 or Qt4 codebases?**
 > They were removed from `master` after v2.0.1 to simplify the repository.

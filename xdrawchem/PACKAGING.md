@@ -50,7 +50,7 @@ dnf install rpm-build rpmdevtools cmake ninja-build gcc-c++ \
 ```bash
 rpmdev-setuptree
 # Create source tarball from git:
-git archive --prefix=xdrawchem-2.0rc1/ HEAD:xdrawchem-qt5 | \
+git archive --prefix=xdrawchem-2.0rc1/ HEAD:xdrawchem | \
     gzip > ~/rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz
 cp SPECS/xdrawchem.spec ~/rpmbuild/SPECS/
 rpmbuild -ba ~/rpmbuild/SPECS/xdrawchem.spec
@@ -86,7 +86,7 @@ sudo apt install debhelper cmake ninja-build pkg-config \
 
 ### Build
 ```bash
-cd xdrawchem-qt5
+cd xdrawchem
 dpkg-buildpackage -us -uc -b      # binary-only, no signing
 # or for a source+binary build:
 dpkg-buildpackage -us -uc

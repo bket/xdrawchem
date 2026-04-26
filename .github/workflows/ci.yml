@@ -37,10 +37,10 @@ jobs:
 
       - name: Configure
         run: |
-          cmake -S xdrawchem-qt5 -B build \
+          cmake -S xdrawchem -B build \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DRINGHOME=${{ github.workspace }}/xdrawchem-qt5/ring
+            -DRINGHOME=${{ github.workspace }}/xdrawchem/ring
 
       - name: Build
         run: cmake --build build -j$(nproc)

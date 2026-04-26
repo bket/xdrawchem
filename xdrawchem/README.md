@@ -49,7 +49,7 @@ brew install qt@6 open-babel cmake ninja
 ### Qt6 — CMake (recommended)
 
 ```bash
-cd xdrawchem-qt5
+cd xdrawchem
 mkdir build && cd build
 cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release
 ninja
@@ -71,7 +71,7 @@ sudo ninja install
 ### Qt5 — qmake (legacy)
 
 ```bash
-cd xdrawchem-qt5
+cd xdrawchem
 qmake xdrawchem.pro   # or qmake-qt5 on some distributions
 make -j$(nproc)
 sudo make install
@@ -95,7 +95,7 @@ If running from the build directory without installing, set the environment
 variable to point at the source tree:
 
 ```bash
-RINGHOME=/path/to/xdrawchem-qt5/ring ./xdrawchem
+RINGHOME=/path/to/xdrawchem/ring ./xdrawchem
 ```
 
 ---
@@ -103,7 +103,7 @@ RINGHOME=/path/to/xdrawchem-qt5/ring ./xdrawchem
 ## Project structure
 
 ```
-xdrawchem-qt5/
+xdrawchem/
 ├── CMakeLists.txt          # Qt6 CMake build (primary)
 ├── xdrawchem.pro           # Qt5 qmake build (legacy)
 ├── xdrawchem/              # All C++ source and headers

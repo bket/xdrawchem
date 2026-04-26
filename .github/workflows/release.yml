@@ -120,9 +120,9 @@ jobs:
       - name: Extract changelog section
         id: changelog
         run: |
-          if [ -f xdrawchem-qt5/CHANGELOG.md ]; then
+          if [ -f xdrawchem/CHANGELOG.md ]; then
             awk '/^## /{if(found)exit; found=1; next} found{print}' \
-              xdrawchem-qt5/CHANGELOG.md > /tmp/release-notes.md
+              xdrawchem/CHANGELOG.md > /tmp/release-notes.md
           else
             echo "See commit history for changes in this release." \
               > /tmp/release-notes.md

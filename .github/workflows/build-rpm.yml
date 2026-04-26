@@ -56,13 +56,13 @@ jobs:
 
           mkdir -p rpmbuild/SOURCES rpmbuild/SPECS rpmbuild/RPMS rpmbuild/SRPMS
           mkdir -p /tmp/xdrawchem-${XDCVER}
-          cp -r xdrawchem-qt5/. /tmp/xdrawchem-${XDCVER}/
+          cp -r xdrawchem/. /tmp/xdrawchem-${XDCVER}/
           # Also include VERSION at the tarball root so CMakeLists.txt
           # can find it (looks for ./VERSION as fallback to ../VERSION)
           cp VERSION /tmp/xdrawchem-${XDCVER}/VERSION
           tar -czf rpmbuild/SOURCES/xdrawchem-${XDCVER}.tar.gz \
             -C /tmp xdrawchem-${XDCVER}/
-          cp xdrawchem-qt5/SPECS/xdrawchem.spec rpmbuild/SPECS/
+          cp xdrawchem/SPECS/xdrawchem.spec rpmbuild/SPECS/
           # Stash the version for subsequent steps
           echo "XDCVER=${XDCVER}" >> $GITHUB_ENV
 

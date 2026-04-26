@@ -12,7 +12,7 @@ on:
       - 'v*'
   pull_request:
     paths:
-      - 'xdrawchem-qt5/**'
+      - 'xdrawchem/**'
       - '.github/workflows/build-mac.yml'
   workflow_dispatch:
 
@@ -44,7 +44,7 @@ jobs:
           echo "OB prefix: $OB_PREFIX"
           echo "OB include: $OB_INCLUDE"
           ls "$OB_INCLUDE" 2>/dev/null | head -5 || echo "OB include not found at expected path"
-          cmake -S xdrawchem-qt5 -B build \
+          cmake -S xdrawchem -B build \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_PREFIX_PATH="$(brew --prefix qt@6);$OB_PREFIX" \
@@ -67,7 +67,7 @@ jobs:
           cp build/xdrawchem staging/XDrawChem.app/Contents/MacOS/xdrawchem
 
           # Ring data + translations
-          cp -r xdrawchem-qt5/ring   staging/XDrawChem.app/Contents/Resources/
+          cp -r xdrawchem/ring   staging/XDrawChem.app/Contents/Resources/
           cp    build/*.qm           staging/XDrawChem.app/Contents/Resources/ 2>/dev/null || true
 
           # Info.plist
@@ -101,10 +101,10 @@ jobs:
           PLIST
 
           # Icon (convert PNG to icns if iconutil available)
-          if command -v iconutil &>/dev/null && [ -f xdrawchem-qt5/ring/xdrawchem-icon.png ]; then
+          if command -v iconutil &>/dev/null && [ -f xdrawchem/ring/xdrawchem-icon.png ]; then
             mkdir -p /tmp/xdc.iconset
             for sz in 16 32 64 128 256 512; do
-              sips -z $sz $sz xdrawchem-qt5/ring/xdrawchem-icon.png \
+              sips -z $sz $sz xdrawchem/ring/xdrawchem-icon.png \
                 --out /tmp/xdc.iconset/icon_${sz}x${sz}.png 2>/dev/null || true
             done
             iconutil -c icns /tmp/xdc.iconset -o staging/XDrawChem.app/Contents/Resources/xdrawchem.icns 2>/dev/null || true
@@ -127,7 +127,7 @@ jobs:
 
           create-dmg \
             --volname "XDrawChem $VERSION" \
-            --volicon "xdrawchem-qt5/ring/xdrawchem-icon.png" \
+            --volicon "xdrawchem/ring/xdrawchem-icon.png" \
             --window-pos 200 120 \
             --window-size 600 400 \
             --icon-size 100 \

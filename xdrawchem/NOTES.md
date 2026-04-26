@@ -3,7 +3,7 @@
 ## Build instructions
 
 ```bash
-cd xdrawchem-qt5
+cd xdrawchem
 mkdir build && cd build
 qmake ../xdrawchem.pro
 make -j$(nproc)

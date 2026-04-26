@@ -37,7 +37,7 @@ jobs:
           DEB_VER=$(echo "$XDCVER" | sed 's/\([0-9.]*\)\(.*\)/2:\1~\2-1/')
           echo "DEB_VER=${DEB_VER}" >> $GITHUB_ENV
           # Prepend a new changelog entry so dpkg-buildpackage picks up the right version
-          cd xdrawchem-qt5
+          cd xdrawchem
           DEBEMAIL="bherger@users.sf.net"
           DEBFULLNAME="Bryan Herger"
           DATE=$(date -R)
@@ -65,7 +65,7 @@ jobs:
       # debhelper-compat 13 is handled by debian/compat; 
       # install the actual debhelper package
       - name: Build DEB packages
-        working-directory: xdrawchem-qt5
+        working-directory: xdrawchem
         env:
           DEB_BUILD_OPTIONS: parallel=${{ runner.cpu_count || 2 }}
           QT_QPA_PLATFORM: offscreen
