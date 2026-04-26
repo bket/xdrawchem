@@ -26,8 +26,12 @@ See [xdrawchem-qt5/README.md](xdrawchem-qt5/README.md) for full build instructio
 | Directory | Contents |
 |---|---|
 | `xdrawchem-qt5/` | **Current source** — Qt5 (qmake) and Qt6 (CMake) |
-| `legacy-xdrawchem-qt4/` | Historical Qt4 port (not maintained) |
-| `legacy-xdrawchem-qt3/` | Original Qt3 codebase (not maintained) |
+
+> **Looking for the legacy Qt3 or Qt4 codebases?**
+> They were removed from `master` after v2.0.1 to simplify the repository.
+> Check out [`v2.0`](https://github.com/bryanherger/xdrawchem/tree/v2.0)
+> if you need them — `legacy-xdrawchem-qt3/` and `legacy-xdrawchem-qt4/`
+> are preserved there and at every earlier tag.
 
 ## Links
 
