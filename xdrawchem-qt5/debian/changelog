@@ -1,3 +1,12 @@
+xdrawchem (2:2.0.2-1) UNRELEASED; urgency=low
+
+  * Flatpak: cleanup bare-name desktop/metainfo/icon copies in the
+    Flatpak sandbox so appstreamcli compose does not error with
+    duplicate-component on the byte-identical reverse-DNS copies.
+  * README: updated screenshot.
+
+ -- Bryan Herger <bherger@users.sf.net>  Sun, 26 Apr 2026 00:00:00 +0000
+
 xdrawchem (2:2.0.1-1) unstable; urgency=low
 
   * Security: fix malloc/strcpy buffer overflow + use-after-free on
@@ -8,6 +17,9 @@ xdrawchem (2:2.0.1-1) unstable; urgency=low
   * Remove dead http.cpp/h module and dead XDC_SERVER environment lookup
   * Ring menu: connect Amino Acids, Nucleic Acids, Sugars, Useful Groups
     submenus so clicks dispatch to setRingAction (silent since Qt6 port)
+  * Custom ring submenu: restore dispatch via per-action lambda; fix
+    signal-11 crash on save (uninitialised ringmenu pointer); rebuild
+    only the User-defined submenu in place to avoid paint warnings.
   * Property panel: refresh on ring placement, name-to-structure, selection
     changes, clipboard operations, undo, and delete
   * Amino Acids menu: remove non-natural amino acids that caused Qt6
@@ -15,6 +27,9 @@ xdrawchem (2:2.0.1-1) unstable; urgency=low
   * Bump Standards-Version to 4.7.2
   * Flatpak app-id renamed to io.github.bryanherger.xdrawchem
   * Flatpak: desktop and metainfo files install with reverse-DNS names
+  * DEB and RPM: include the reverse-DNS file copies in the install
+    manifest and %files section (CMake installs both bare and
+    reverse-DNS names for system packaging compatibility)
 
  -- Bryan Herger <bherger@users.sf.net>  Wed, 23 Apr 2026 00:00:00 +0000
 

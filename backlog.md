@@ -8,6 +8,15 @@
 
 ## Status at v2.0.1
 
+**Completed in v2.0.1 cycle (post-v2.0):**
+- Security: buffer-overflow UB in OpenBabel format resolution + atom-label strcpy fixed
+- Security: shell injection risk in Ghemical/KryoMol launch eliminated (QProcess::startDetached)
+- Ring menu: AA / NA / Sugars / Useful Groups / Custom rings dispatch restored
+- Property panel updates on every data-mutation path (draw, ring, NTS, paste, undo, delete, selection)
+- Flatpak: full Flathub-ready manifest with reverse-DNS app-id
+- DEB / RPM: reverse-DNS file copies included alongside bare names
+- Debian Standards-Version bumped to 4.7.2
+
 **Completed in rc3→rc4 cycle:**
 - Replaced dead woodsidelabs.com endpoints with PubChem REST API (2.2, 2.3)
   - "Find on PubChem…" (Ctrl+F) searches by name, CAS, or formula

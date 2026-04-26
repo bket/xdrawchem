@@ -1,5 +1,24 @@
 # XDrawChem Packaging Guide
 
+## File layout: bare names vs reverse-DNS
+
+Starting in 2.0.1, CMake installs each user-facing data file twice — once
+under its traditional bare name, and once under the reverse-DNS form that
+Flathub and AppStream require:
+
+| Bare name (DEB/RPM convention) | Reverse-DNS (Flathub/AppStream) |
+|---|---|
+| `xdrawchem.desktop` | `io.github.bryanherger.xdrawchem.desktop` |
+| `xdrawchem.png` | `io.github.bryanherger.xdrawchem.png` |
+| `xdrawchem.metainfo.xml` | `io.github.bryanherger.xdrawchem.metainfo.xml` |
+
+Both are byte-identical copies. Both `debian/xdrawchem.install` and the
+RPM `%files` section list both names, so `dpkg-buildpackage` and
+`rpmbuild` accept the install tree without "unpackaged file" errors.
+Flatpak's manifest cleans up the bare-name copies inside the sandbox
+before `appstreamcli compose` runs, since both files declare the same
+`<id>` and would otherwise trigger a `duplicate-component` rejection.
+
 ## RPM (RHEL 8/9, Fedora, Rocky, AlmaLinux)
 
 ### Prerequisites

@@ -5,6 +5,18 @@ Entries are derived from the Debian changelog and commit history.
 
 ---
 
+## Unreleased
+
+### Packaging
+- Flatpak: cleanup bare-name desktop/metainfo/icon copies inside the Flatpak
+  sandbox so `appstreamcli compose` does not see two components with the
+  same `<id>` and reject the build with `duplicate-component`
+
+### Documentation
+- README: updated screenshot to reflect current UI
+
+---
+
 ## 2.0.1 — 2026-04-23
 
 ### Security / correctness
@@ -22,6 +34,13 @@ Entries are derived from the Debian changelog and commit history.
   to `setRingAction` (they were silent since the Qt6 port)
 - Ring menu: add `setData()` to Useful Groups (FMOC, BOC, DABCYL, DABSYL, DANSYL,
   EDANS, Biotin) so dispatch actually works
+- Custom ring submenu: restore dispatch via per-action lambda forwarding to
+  `FromRingMenu` (silent since the Qt6 port; user-saved rings can be placed again)
+- Custom ring save: fix signal-11 crash on save caused by uninitialised
+  `ringmenu` member pointer in `application.h`
+- Custom ring menu refresh: swap only the User-defined submenu in place rather
+  than rebuilding the whole ring menu (avoids a paint-device warning and stale
+  defaultAction pointers in `drawRingButton`)
 - Property panel: refresh on ring placement, name-to-structure, selection change,
   clipboard operations, undo, text/label edits, delete (previously only refreshed
   for raw drawing actions)
@@ -35,6 +54,11 @@ Entries are derived from the Debian changelog and commit history.
 - Flatpak: app-id renamed to `io.github.bryanherger.xdrawchem` (Flathub requirement)
 - Flatpak: desktop and metainfo files now install with reverse-DNS filenames
 - Flatpak: OpenBabel build uses `cmake-ninja` + `builddir:true` for sandbox correctness
+- DEB and RPM: include the reverse-DNS desktop / metainfo / icon copies in
+  `debian/xdrawchem.install` and `%files` (CMake installs both bare and
+  reverse-DNS names; both packaging systems are strict about unpackaged files)
+- RPM `%files`: use literal `io.github.bryanherger.*` glob patterns so future
+  reverse-DNS additions (e.g. MIME icons) don't need spec changes
 - Added `index.html` for GitHub Pages redirect to repo
 
 ## 2.0 — 2026-04-09

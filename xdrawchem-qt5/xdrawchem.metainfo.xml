@@ -77,8 +77,10 @@
           <li>Security: fix buffer overflows in OpenBabel format resolution and atom-label strcpy</li>
           <li>Security: replace system() with QProcess::startDetached for Ghemical/KryoMol launch</li>
           <li>Ring menu: amino acids, nucleic acids, sugars, and useful groups submenus now work</li>
+          <li>Custom ring menu: dispatch restored, save crash fixed, refresh swaps in place</li>
           <li>Property panel refreshes on ring placement, name-to-structure, selection, undo, delete</li>
           <li>Flatpak app-id renamed to io.github.bryanherger.xdrawchem for Flathub submission</li>
+          <li>DEB/RPM: include reverse-DNS desktop/metainfo/icon files in package manifests</li>
           <li>Debian packaging: Standards-Version updated to 4.7.2</li>
         </ul>
       </description>
