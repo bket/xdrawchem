@@ -1,8 +1,12 @@
-xdrawchem (2:2.0.2-1) UNRELEASED; urgency=low
+xdrawchem (2:2.1~rc0-1) UNRELEASED; urgency=low
 
   * Flatpak: cleanup bare-name desktop/metainfo/icon copies in the
     Flatpak sandbox so appstreamcli compose does not error with
     duplicate-component on the byte-identical reverse-DNS copies.
+  * Repository: removed legacy Qt3 and Qt4 source trees from master
+    (preserved at the v2.0 tag and earlier).
+  * Repository: renamed xdrawchem-qt5/ to xdrawchem/ now that it is
+    the only source tree.
   * README: updated screenshot.
 
  -- Bryan Herger <bherger@users.sf.net>  Sun, 26 Apr 2026 00:00:00 +0000

@@ -70,6 +70,15 @@
   </screenshots>
 
   <releases>
+    <release version="2.1rc0" type="development">
+      <description>
+        <p>XDrawChem 2.1rc0 — first release candidate of the 2.1 series.</p>
+        <ul>
+          <li>Flatpak: appstreamcli compose accepts the build (bare-name copies cleaned up in sandbox)</li>
+          <li>Repository cleanup: legacy Qt3/Qt4 trees removed; source dir renamed xdrawchem-qt5 → xdrawchem</li>
+        </ul>
+      </description>
+    </release>
     <release version="2.0.1" date="2026-04-23">
       <description>
         <p>XDrawChem 2.0.1 — security, UI, and packaging maintenance release.</p>

@@ -93,4 +93,4 @@ modules:
         # Pin to a specific tag for reproducible Flathub builds.
         # Update this tag when submitting a new release.
         # No commit: field — flatpak-builder resolves the SHA from the tag.
-        tag: v2.0.1
+        tag: v2.1rc0

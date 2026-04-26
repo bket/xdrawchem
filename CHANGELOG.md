@@ -5,12 +5,18 @@ Entries are derived from the Debian changelog and commit history.
 
 ---
 
-## Unreleased
+## 2.1rc0 — UNRELEASED
 
 ### Packaging
 - Flatpak: cleanup bare-name desktop/metainfo/icon copies inside the Flatpak
   sandbox so `appstreamcli compose` does not see two components with the
   same `<id>` and reject the build with `duplicate-component`
+
+### Repository
+- Removed legacy Qt3 and Qt4 source trees from `master` (they remain
+  available at the `v2.0` tag and earlier)
+- Renamed `xdrawchem-qt5/` to `xdrawchem/` now that it is the only
+  source tree
 
 ### Documentation
 - README: updated screenshot to reflect current UI

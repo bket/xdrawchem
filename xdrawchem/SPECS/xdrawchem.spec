@@ -1,5 +1,5 @@
 # ── Version: set by rpmbuild --define "xdcver X.Yrcz" or edit here ──────────
-%{!?xdcver: %global xdcver 2.0.1}
+%{!?xdcver: %global xdcver 2.1rc0}
 # Derive major.minor (numeric only) for the RPM Version: field
 %global xdcmajmin %(echo %{xdcver} | sed "s/[^0-9.].*$//")
 # Derive rc tag (everything after the numeric part) for Release:
