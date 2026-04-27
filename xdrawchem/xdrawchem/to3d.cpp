@@ -1,10 +1,40 @@
-// to3d.cpp - Molecule's implementation of (more) functions
-// this code derives from BUILD3D supplied by Thomas Shattuck
+// to3d.cpp — Generate a 3D model of the current 2D structure.
+//
+// History
+// =======
+// The original implementation (Thomas Shattuck's BUILD3D, called via a
+// SourceForge CGI endpoint) is preserved in git history.  That service
+// went away when xdrawchem.sourceforge.net was decommissioned, leaving
+// a stub that only popped up "feature unavailable".
+//
+// Restored in 2.1 using a local OpenBabel-based generator:
+//   1.  Convert the 2D Molecule to an OBMol.
+//   2.  Add explicit hydrogens.
+//   3.  OBBuilder::Build() generates initial 3D coordinates from the
+//       2D connectivity (using the built-in fragment library).
+//   4.  Set up an MMFF94 force field (falls back to UFF for elements
+//       MMFF94 cannot parameterise, e.g. some transition metals).
+//   5.  Conjugate-gradients minimization for ~250 steps to relieve
+//       any strain left after the initial build.
+//   6.  Write the resulting OBMol to an MDL .mol file (3D atom block).
+//
+// All of this happens in-process — no network call, no temp Fortran
+// program, no CGI.
+
+#include "ob_compat.h"
+OB_COMPAT_BEGIN
+#include <openbabel/mol.h>
+#include <openbabel/builder.h>
+#include <openbabel/forcefield.h>
+#include <openbabel/obconversion.h>
+OB_COMPAT_END
+
+#include <sstream>
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QString>
 
-#include "graphdialog.h"
 #include "molinfodialog.h"
 #include "moldata.h"
 #include "render2d.h"
@@ -13,315 +43,133 @@
 #include "dpoint.h"
 #include "defs.h"
 
-// Preferences
 extern Preferences preferences;
 
-/*
- * The following code was obtained from:
- * http://astronomy.swin.edu.au/~pbourke/geometry/rotate/source.c
- * Code attributed to Ron Goldman
- * Web page describing this solution:
- * http://astronomy.swin.edu.au/~pbourke/geometry/rotate/
- * Web page written by Paul Bourke, December 1992, updated August 2002
- */
-
-/*
-   Rotate a point p by angle theta around an arbitrary axis r
-   Return the rotated point.
-   Positive angles are anticlockwise looking down the axis
-   towards the origin.
-   Assume right hand coordinate system.
-*/
-void Normalise( DPoint * n1 )
-{
-    double dst = sqrt( ( n1->x3 * n1->x3 ) + ( n1->y3 * n1->y3 ) + ( n1->z3 * n1->z3 ) );
-
-    n1->x3 /= dst;
-    n1->y3 /= dst;
-    n1->z3 /= dst;
-}
-
-void Translate( DPoint * n1, double dx, double dy, double dz )
-{
-    n1->x3 += dx;
-    n1->y3 += dy;
-    n1->z3 += dz;
-}
-
-DPoint ArbitraryRotate( DPoint p, double theta, DPoint r )
-{
-    DPoint q;
-    double costheta, sintheta;
-
-    Normalise( &r );
-    costheta = cos( theta );
-    sintheta = sin( theta );
-
-    q.x3 += ( costheta + ( 1 - costheta ) * r.x3 * r.x3 ) * p.x3;
-    q.x3 += ( ( 1 - costheta ) * r.x3 * r.y3 - r.z3 * sintheta ) * p.y3;
-    q.x3 += ( ( 1 - costheta ) * r.x3 * r.z3 + r.y3 * sintheta ) * p.z3;
-
-    q.y3 += ( ( 1 - costheta ) * r.x3 * r.y3 + r.z3 * sintheta ) * p.x3;
-    q.y3 += ( costheta + ( 1 - costheta ) * r.y3 * r.y3 ) * p.y3;
-    q.y3 += ( ( 1 - costheta ) * r.y3 * r.z3 - r.x3 * sintheta ) * p.z3;
-
-    q.z3 += ( ( 1 - costheta ) * r.x3 * r.z3 - r.y3 * sintheta ) * p.x3;
-    q.z3 += ( ( 1 - costheta ) * r.y3 * r.z3 + r.x3 * sintheta ) * p.y3;
-    q.z3 += ( costheta + ( 1 - costheta ) * r.z3 * r.z3 ) * p.z3;
-
-    return ( q );
-}
-
-/*
-   Rotate a point p by angle theta around an arbitrary line segment p1-p2
-   Return the rotated point.
-   Positive angles are anticlockwise looking down the axis
-   towards the origin.
-   Assume right hand coordinate system.
-*/
-DPoint ArbitraryRotate2( DPoint p, double theta, DPoint p1, DPoint p2 )
-{
-    DPoint q;
-    double costheta, sintheta;
-    DPoint r;
-
-    r.x3 = p2.x3 - p1.x3;
-    r.y3 = p2.y3 - p1.y3;
-    r.z3 = p2.z3 - p1.z3;
-    p.x3 -= p1.x3;
-    p.y3 -= p1.y3;
-    p.z3 -= p1.z3;
-    Normalise( &r );
-
-    costheta = cos( theta );
-    sintheta = sin( theta );
-
-    q.x3 += ( costheta + ( 1 - costheta ) * r.x3 * r.x3 ) * p.x3;
-    q.x3 += ( ( 1 - costheta ) * r.x3 * r.y3 - r.z3 * sintheta ) * p.y3;
-    q.x3 += ( ( 1 - costheta ) * r.x3 * r.z3 + r.y3 * sintheta ) * p.z3;
-
-    q.y3 += ( ( 1 - costheta ) * r.x3 * r.y3 + r.z3 * sintheta ) * p.x3;
-    q.y3 += ( costheta + ( 1 - costheta ) * r.y3 * r.y3 ) * p.y3;
-    q.y3 += ( ( 1 - costheta ) * r.y3 * r.z3 - r.x3 * sintheta ) * p.z3;
-
-    q.z3 += ( ( 1 - costheta ) * r.x3 * r.z3 - r.y3 * sintheta ) * p.x3;
-    q.z3 += ( ( 1 - costheta ) * r.y3 * r.z3 + r.x3 * sintheta ) * p.y3;
-    q.z3 += ( costheta + ( 1 - costheta ) * r.z3 * r.z3 ) * p.z3;
-
-    q.x3 += p1.x3;
-    q.y3 += p1.y3;
-    q.z3 += p1.z3;
-    return ( q );
-}
-
-/*
- * end arbitrary rotation code
- */
-
-// invoked from tool_2d3d.cpp...
-// Create Undo() point before executing  :)
-// actually, we're exporting this to BUILD3D...
+// invoked from tool_2d3d.cpp via Tool_2D3D::process(), and from
+// chemdata_tools.cpp / application.cpp for headless export.
+//
+// fn3d: target filename.  Empty/length<=1 triggers a save dialog.
 void Molecule::Make3DVersion( QString fn3d )
 {
-    // add NMR protons
-    up = AllPoints();
-    AddNMRprotons();
+    using namespace OpenBabel;
 
-    // find rings (esp. find aromaticity) - do after CopyTextToDPoint()
-    MakeSSSR();
-
-    // get list of unique points
-    up = AllPoints();
-    AllNeighbors();
-
-    // create input data
-    //t natoms = up.count();
-    QStringList atomEntries;
-    QString atomEntry, s1;
-    //DPoint *tmp_pt_1, *tmp_pt_2;
-    //int lc = 0;
-
-    // let's not abandon the idea of doing it ourselves...
-    this_sssr.PrintSSSR();
-    //DPoint *first_pt, *curr_pt;
-
-    QList < DPoint * >placelist;
-    //double RMS = 999.0, RMSok;
-    int i = 0;//, j = 0, chg = 0, iter = 0;
-    //int nplaced, ncount;
-    //bool inring = false, finished = true;
-    //double vecx, vecy, vecz, dst, dstmin, dstmax;
-
-    // serialize, and set initial positions
-    srand( ( int ) time( 0 ) );
-
-    i = 1;                      // BUILD3D expects the first atom to be 1
-    for (DPoint *tmp_pt : up) {
-        tmp_pt->serial = i;
-        i++;                    // serialize
-        tmp_pt->new_order = 0;  // we'll use this as a status flag
-        tmp_pt->hit = false;
-    }
-
-    QString n1, buildpath, buildfile, xyzfile;
-    QTextStream tout( &buildfile, QIODevice::WriteOnly );
-
-    int an, nc = 0, nh = 0, nn = 0, no = 0, np = 0, ns = 0, atypes = 0;
-
-    for (DPoint *tmp_pt : up) {
-        an = tmp_pt->getAtomicNumber();
-        if ( an == 1 ) {
-            if ( nh == 0 )
-                atypes++;
-            nh++;
-        }
-        if ( an == 6 ) {
-            if ( nc == 0 )
-                atypes++;
-            nc++;
-        }
-        if ( an == 7 ) {
-            if ( nn == 0 )
-                atypes++;
-            nn++;
-        }
-        if ( an == 8 ) {
-            if ( no == 0 )
-                atypes++;
-            no++;
-        }
-        if ( an == 14 ) {
-            if ( np == 0 )
-                atypes++;
-            np++;
-        }
-        if ( an == 15 ) {
-            if ( ns == 0 )
-                atypes++;
-            ns++;
-        }
-    }
-
-    tout << atypes << "Z";
-    if ( nh > 0 )
-        tout << "H 1 ";
-    if ( nc > 0 )
-        tout << "C 4 ";
-    if ( nn > 0 )
-        tout << "N 3 ";
-    if ( no > 0 )
-        tout << "O 2 ";
-    if ( np > 0 )
-        tout << "P 5 ";
-    if ( ns > 0 )
-        tout << "S 2 ";
-    tout << "Z";
-    tout << rand() << "Z";
-    tout << up.count() << "Z";
-
-    // connection table
-    DPoint *n_pt;
-
-    for (DPoint *tmp_pt : up) {
-        if ( tmp_pt->getAtomicNumber() == 6 ) {
-            if ( tmp_pt->neighbors.count() == 4 ) {
-                // NO chirality.
-                tout << tmp_pt->baseElement() << " -1 1 ";
-            } else {
-                // Consider chirality.
-                tout << tmp_pt->baseElement() << " 0 1 ";
-            }
-        } else {
-            tout << tmp_pt->baseElement() << " -1 1 ";
-        }
-        for (DPoint *n_pt : tmp_pt->neighbors) {
-            tout << n_pt->serial << " ";
-        }
-        tout << "Z";
-    }
-
-    // comment -- free advertising  :)
-    tout << "generated by " << QString( XDC_VERSION ).toLower() << "Z";
-
-    // renumbering list
-    for ( nh = 0; nh < up.count(); nh++ ) {
-        tout << nh + 1 << " " << nh + 1 << "Z";
-    }
-    // distance constraints
-    tout << "0" << "Z";
-
-    // run BUILD3D and verify 00XYZ.MOL was created
-    buildfile.replace( " ", "X" );
-    qDebug();
-    qDebug() << buildfile;
-    qDebug();
-
-    // Build3D used to call the defunct SourceForge CGI endpoint
-    // (https://xdrawchem.sourceforge.net/cgi-bin/runbuild).  That server
-    // is gone; the feature is disabled until a local OpenBabel-based
-    // 3D coordinate generator is implemented (see backlog item).
-    QMessageBox::information(
-        getRender2D(),
-        tr( "3D model not available" ),
-        tr( "The 3D coordinate generation service is currently unavailable.\n"
-            "This feature will be restored in a future release using\n"
-            "a local OpenBabel-based generator." ) );
-    return;
-#if 0   // dead code — kept for reference until local 3D generator is implemented
-    NetAccess na;
-    int ge1;
-
-    if ( na.runBuild3D( buildfile ) ) {
-        xyzfile = na.s3dmol;
-        ge1 = xyzfile.indexOf( "generated" );
-        qDebug() << "gen: " << ge1;
-        if ( ge1 > 0 ) {
-            xyzfile.remove( 0, ge1 );
-        }
-    } else {
-        qDebug() << "Build3D failed!";
+    // 1. Convert to OBMol.  convertToOBMol() copies atoms/bonds/charges
+    //    but leaves z=0 for every atom (since we are 2D internally).
+    OBMol *obmol = convertToOBMol();
+    if ( obmol == nullptr || obmol->NumAtoms() == 0 ) {
+        QMessageBox::warning( getRender2D(),
+                              tr( "3D model" ),
+                              tr( "Nothing to convert: the molecule is empty." ) );
+        delete obmol;
         return;
     }
-#endif
 
-    // if a filename was passed in, copy to that
+    // 2. Add hydrogens explicitly.  OBBuilder::Build needs them for
+    //    correct geometry, and the user expects the saved 3D file to
+    //    contain Hs anyway.
+    obmol->AddHydrogens();
+
+    // 3. Build initial 3D coordinates from connectivity.
+    OBBuilder builder;
+    if ( !builder.Build( *obmol ) ) {
+        QMessageBox::warning( getRender2D(),
+                              tr( "3D model" ),
+                              tr( "OpenBabel could not generate initial 3D "
+                                  "coordinates for this structure.\n"
+                                  "(Check for valence errors or unusual "
+                                  "fragments.)" ) );
+        delete obmol;
+        return;
+    }
+    obmol->SetDimension( 3 );
+
+    // 4. Set up a force field for cleanup.  Try MMFF94 first; if it
+    //    cannot parameterise the molecule (rare elements, exotic
+    //    valence states), fall back to UFF which covers the periodic
+    //    table almost entirely.
+    OBForceField *ff = OBForceField::FindForceField( "MMFF94" );
+    if ( ff == nullptr || !ff->Setup( *obmol ) ) {
+        ff = OBForceField::FindForceField( "UFF" );
+        if ( ff == nullptr || !ff->Setup( *obmol ) ) {
+            // No force field available — keep builder coords as-is.
+            // Better than nothing; user gets a workable 3D model even
+            // if it is slightly strained.
+            qDebug() << "Make3DVersion: no force field available, "
+                        "skipping minimization";
+            ff = nullptr;
+        }
+    }
+
+    // 5. Energy minimization.  250 conjugate-gradients steps is the
+    //    OpenBabel obabel(1) default for `--gen3d` and gives a good
+    //    balance between quality and runtime (sub-second for typical
+    //    drug-sized molecules).
+    if ( ff != nullptr ) {
+        ff->ConjugateGradients( 250 );
+        ff->GetCoordinates( *obmol );
+    }
+
+    // 6. Resolve target filename — caller may have passed one in
+    //    (headless export from chemdata_tools), otherwise prompt.
     if ( fn3d.length() > 1 ) {
         if ( fn3d.right( 4 ).toLower() != ".mol" )
             fn3d.append( ".mol" );
     } else {
-        // success -- now ask where to move output
-        QFileDialog fd( getRender2D() );      ///TODO
-        QStringList str1;
-
+        QFileDialog fd( getRender2D() );
         fd.setWindowTitle( tr( "Save 3D file as..." ) );
         fd.setFileMode( QFileDialog::AnyFile );
+        fd.setAcceptMode( QFileDialog::AcceptSave );
         fd.setNameFilters( QStringList( tr( "MDL molfile (*.mol)" ) ) );
-        if ( fd.exec() == QDialog::Accepted ) {
-            str1 = fd.selectedFiles();
-            if ( str1[0].right( 4 ).toLower() != ".mol" )
-                str1[0].append( ".mol" );
-            fn3d = str1[0];
-        } else {
+        if ( fd.exec() != QDialog::Accepted ) {
             qDebug() << "To3D cancelled by user";
-            RemoveNMRprotons();
+            delete obmol;
             return;
         }
+        QStringList sel = fd.selectedFiles();
+        if ( sel.isEmpty() ) {
+            delete obmol;
+            return;
+        }
+        fn3d = sel[0];
+        if ( fn3d.right( 4 ).toLower() != ".mol" )
+            fn3d.append( ".mol" );
     }
 
-    qDebug() << "3D file: " << fn3d;
+    // 7. Write OBMol to MDL .mol format (3D atom block preserved).
+    OBConversion conv;
+    if ( !conv.SetOutFormat( "mol" ) ) {
+        QMessageBox::warning( getRender2D(),
+                              tr( "3D model" ),
+                              tr( "OpenBabel does not have an MDL "
+                                  "molfile writer registered." ) );
+        delete obmol;
+        return;
+    }
+
+    std::ostringstream oss;
+    if ( !conv.Write( obmol, &oss ) ) {
+        QMessageBox::warning( getRender2D(),
+                              tr( "3D model" ),
+                              tr( "OpenBabel failed to serialise the "
+                                  "3D model." ) );
+        delete obmol;
+        return;
+    }
+
     QFile fout( fn3d );
-
-    if ( !fout.open( QIODevice::WriteOnly ) ) {
-        qDebug() << "File save failed!";
-    } else {
-        QTextStream tout( &fout );
-
-        tout << xyzfile;
-        fout.close();
+    if ( !fout.open( QIODevice::WriteOnly | QIODevice::Text ) ) {
+        QMessageBox::warning( getRender2D(),
+                              tr( "3D model" ),
+                              tr( "Could not open '%1' for writing." )
+                                  .arg( fn3d ) );
+        delete obmol;
+        return;
     }
+    fout.write( oss.str().c_str(), static_cast<qint64>( oss.str().size() ) );
+    fout.close();
 
-    // Remove NMR protons
-    RemoveNMRprotons();
+    qDebug() << "3D file written:" << fn3d;
+    delete obmol;
 }
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

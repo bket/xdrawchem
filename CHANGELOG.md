@@ -7,6 +7,14 @@ Entries are derived from the Debian changelog and commit history.
 
 ## 2.1rc0 — UNRELEASED
 
+### Features
+- 3D structure generation restored: Tools → "Build 3D model of molecule" now
+  produces a 3D MDL molfile locally using OpenBabel's `OBBuilder` for initial
+  coordinate generation followed by 250 steps of MMFF94 (or UFF fallback)
+  conjugate-gradients minimization. The original BUILD3D code called a
+  Fortran-based CGI service on SourceForge that no longer exists; the feature
+  had been disabled with a placeholder dialog. No network call required now.
+
 ### Packaging
 - Flatpak: cleanup bare-name desktop/metainfo/icon copies inside the Flatpak
   sandbox so `appstreamcli compose` does not see two components with the

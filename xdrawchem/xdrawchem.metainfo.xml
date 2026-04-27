@@ -74,6 +74,7 @@
       <description>
         <p>XDrawChem 2.1rc0 — first release candidate of the 2.1 series.</p>
         <ul>
+          <li>3D structure generation restored using OpenBabel (no network call required)</li>
           <li>Flatpak: appstreamcli compose accepts the build (bare-name copies cleaned up in sandbox)</li>
           <li>Repository cleanup: legacy Qt3/Qt4 trees removed; source dir renamed xdrawchem-qt5 → xdrawchem</li>
         </ul>

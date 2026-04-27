@@ -1,5 +1,9 @@
 xdrawchem (2:2.1~rc0-1) UNRELEASED; urgency=low
 
+  * Restore 3D structure generation feature using OpenBabel for local
+    coordinate generation (OBBuilder + MMFF94/UFF conjugate-gradients
+    minimization). Replaces the defunct BUILD3D SourceForge CGI
+    service that was disabled in 2.0.
   * Flatpak: cleanup bare-name desktop/metainfo/icon copies in the
     Flatpak sandbox so appstreamcli compose does not error with
     duplicate-component on the byte-identical reverse-DNS copies.
