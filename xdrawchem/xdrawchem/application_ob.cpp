@@ -150,12 +150,14 @@ void ApplicationWindow::OBNewLoad( QString infile, QString infilter )
 
     if ( !inFileStream ) {
         QMessageBox::warning( 0, tr( "Problem while opening the file" ), tr( "Cannot open the specified file." ) );
+        delete mol;
         return;
     }
 
     qInfo() << "OB loading " << inFormat;
     Conv.SetInAndOutFormats( inFormat, inFormat );
     Conv.Read( mol, &inFileStream );
+    inFileStream.close();
     SelectAll();
     Clear();
     IOIface converter( m_chemData, mol );
@@ -169,7 +171,8 @@ void ApplicationWindow::OBNewLoad( QString infile, QString infilter )
     updatePropertyPanel();
     setWindowTitle( QString( XDC_VERSION ) + QString( " - " ) + filename );
     statusBar()->showMessage( tr( "Loaded document " ) + filename );
-}
+    delete mol;
+
 
 void ApplicationWindow::OBExport()
 {
@@ -280,6 +283,7 @@ void ApplicationWindow::OBNewSave()
 
     statusBar()->showMessage( tr( "Saved file " ) + filename );
     //m_chemData->Undo();
+    delete mol;
 }
 
 QString ApplicationWindow::OBGuessFileType( QString guessname )
