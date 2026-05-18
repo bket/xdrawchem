@@ -172,7 +172,7 @@ void ApplicationWindow::OBNewLoad( QString infile, QString infilter )
     setWindowTitle( QString( XDC_VERSION ) + QString( " - " ) + filename );
     statusBar()->showMessage( tr( "Loaded document " ) + filename );
     delete mol;
-
+}
 
 void ApplicationWindow::OBExport()
 {
