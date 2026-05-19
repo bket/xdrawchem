@@ -26,6 +26,7 @@ OB_COMPAT_END
 #include "bond.h"
 #include "dpoint.h"
 #include "xdc_logging.h"
+#include <QLoggingCategory>
 
 // Static caches so labels persist across render passes without recomputation.
 // Cleared whenever the molecule structure changes (see Molecule::Changed()).
@@ -58,20 +59,27 @@ void Molecule::CalcCIPLabels()
         return;
     }
 
+    qCDebug(lcMolecule) << "CIP: OBMol has" << obmol->NumAtoms() << "atoms,"
+                      << obmol->NumBonds() << "bonds";
+
     // Build a map from OB atom index (1-based) → DPoint* so we can route
     // results back to our internal data structures.
     QList<DPoint*> allPoints = AllPoints();
-    QMap<unsigned long, DPoint*> obAtomToPoint;
+    QMap<int, DPoint*> obAtomIndexToPoint;
 
     // convertToOBMol() adds atoms in the same order as AllPoints().
+    // OpenBabel stereo configs typically use atom indices (1-based), not
+    // arbitrary GetId() values, so we key by GetIdx() here.
     for ( int i = 0; i < allPoints.count() && i < (int)obmol->NumAtoms(); ++i ) {
         OpenBabel::OBAtom *obAtom = obmol->GetAtom( i + 1 ); // OB is 1-based
         if ( obAtom )
-            obAtomToPoint.insert( obAtom->GetId(), allPoints[i] );
+            obAtomIndexToPoint.insert( obAtom->GetIdx(), allPoints[i] );
     }
 
     // Run stereo perception
     OpenBabel::OBStereoFacade facade( obmol, true ); // true = call PerceiveStereo
+    qCDebug(lcMolecule) << "CIP: tetrahedral count =" << facade.GetAllTetrahedralStereo().size()
+                      << "cistrans count =" << facade.GetAllCisTransStereo().size();
 
     // --- Tetrahedral (R/S) ---
     std::vector<OpenBabel::OBTetrahedralStereo*> tetraList = facade.GetAllTetrahedralStereo();
@@ -83,7 +91,7 @@ void Molecule::CalcCIPLabels()
         if ( !cfg.specified )
             continue;
 
-        DPoint *centerPt = obAtomToPoint.value( cfg.center, nullptr );
+        DPoint *centerPt = obAtomIndexToPoint.value( cfg.center, nullptr );
         if ( !centerPt )
             continue;
 
@@ -103,9 +111,11 @@ void Molecule::CalcCIPLabels()
         if ( !label.isEmpty() )
             s_cipPointLabels.insert( centerPt, label );
     }
+    qCDebug(lcMolecule) << "CIP: R/S labels found:" << s_cipPointLabels.size();
 
     // --- Cis/Trans (E/Z) ---
     std::vector<OpenBabel::OBCisTransStereo*> ctList = facade.GetAllCisTransStereo();
+    qCDebug(lcMolecule) << "CIP: processing" << ctList.size() << "cis/trans entries";
     for ( OpenBabel::OBCisTransStereo *ct : ctList ) {
         if ( !ct )
             continue;
@@ -114,9 +124,9 @@ void Molecule::CalcCIPLabels()
         if ( !cfg.specified )
             continue;
 
-        // cfg.begin / cfg.end are the atom IDs of the double-bond atoms.
-        DPoint *beginPt = obAtomToPoint.value( cfg.begin, nullptr );
-        DPoint *endPt   = obAtomToPoint.value( cfg.end,   nullptr );
+        // cfg.begin / cfg.end are the atom indices of the double-bond atoms.
+        DPoint *beginPt = obAtomIndexToPoint.value( (int)cfg.begin, nullptr );
+        DPoint *endPt   = obAtomIndexToPoint.value( (int)cfg.end,   nullptr );
         if ( !beginPt || !endPt )
             continue;
 
@@ -131,6 +141,8 @@ void Molecule::CalcCIPLabels()
                     label = QStringLiteral( "Z" );
                 else
                     label = QStringLiteral( "E" );
+
+                qCDebug(lcMolecule) << "CIP: found" << label << "bond" << beginPt->x << beginPt->y << "to" << endPt->x << endPt->y;
 
                 s_cipBondLabels.insert( tmp_bond, label );
                 break;

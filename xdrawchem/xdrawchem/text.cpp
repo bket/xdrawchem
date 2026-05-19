@@ -30,6 +30,7 @@ Text::Text( Render2D * r1, QObject * parent )
     ufont = font;
     ufont.setUnderline( true );
     molecule = 0;
+    justify = JUSTIFY_TOPLEFT;
     tjustify = TEXT_AUTO;
     whichside = 1;
     DataType = TEXT_DATA_NORMAL;

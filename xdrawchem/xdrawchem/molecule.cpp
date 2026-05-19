@@ -1265,6 +1265,7 @@ void Molecule::Changed()
     // add hydrogens and correct labels
     //qDebug() << "changed" ;
     AddHydrogens();
+    ClearCIPCache();
     return;
 }
 
