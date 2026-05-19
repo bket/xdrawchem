@@ -227,7 +227,7 @@ QMenu *ApplicationWindow::BuildCustomRingMenu(QMenu *ringSub)
         customAction = userDefSub->addAction( ringlist[cc].left( ringlist[cc].length() - 4 ) );
         customAction->setData( cc );
     }
-    userDefSub->addAction( tr( "Add new..." ), this, SLOT( saveCustomRing() ) );
+    userDefSub->addAction( tr( "Add new..." ), this, &ApplicationWindow::saveCustomRing );
 
     // Custom ring actions carry a 0-based index into ringlist[] via setData(cc),
     // which is incompatible with setRingAction's ring-code dispatch (100+).

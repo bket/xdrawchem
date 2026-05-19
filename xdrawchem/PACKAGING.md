@@ -50,13 +50,13 @@ dnf install rpm-build rpmdevtools cmake ninja-build gcc-c++ \
 ```bash
 rpmdev-setuptree
 # Create source tarball from git:
-git archive --prefix=xdrawchem-2.0rc1/ HEAD:xdrawchem | \
-    gzip > ~/rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz
+git archive --prefix=xdrawchem-2.1/ HEAD:xdrawchem | \
+    gzip > ~/rpmbuild/SOURCES/xdrawchem-2.1.tar.gz
 cp SPECS/xdrawchem.spec ~/rpmbuild/SPECS/
 rpmbuild -ba ~/rpmbuild/SPECS/xdrawchem.spec
 ```
 
-The `%check` section runs all 261 unit tests automatically during the build.
+The `%check` section runs all unit tests automatically during the build.
 
 ### Runtime dependencies installed by the RPM
 - `qt6-qtbase` (provides Qt6 Core, GUI, Widgets, Network, PrintSupport)
@@ -93,10 +93,10 @@ dpkg-buildpackage -us -uc
 ```
 
 Produces:
-- `xdrawchem_2.0~rc1-1_amd64.deb`       — main application
-- `xdrawchem-doc_2.0~rc1-1_all.deb`     — HTML documentation
+- `xdrawchem_2.1-1_amd64.deb`       — main application
+- `xdrawchem-doc_2.1-1_all.deb`     — HTML documentation
 
-The `override_dh_auto_test` step runs all 261 unit tests automatically.
+The `override_dh_auto_test` step runs all unit tests automatically.
 
 ### Install
 ```bash

@@ -360,19 +360,19 @@ ApplicationWindow::ApplicationWindow()
     drawChainAction->setWhatsThis( chainToolText );
 
     QAction *drawUpLineAction = drawTools->addAction( QIcon( RingDir + "uptool.png" ), tr( "Draw stereo-up line" ),
-                                                      m_renderer, SLOT( setMode_DrawUpLine() ) );
+                                                      m_renderer, &Render2D::setMode_DrawUpLine );
 
     drawUpLineAction->setWhatsThis( upLineToolText );
 
     QAction *drawDownLineAction = drawTools->addAction( QIcon( RingDir + "downtool.png" ), tr( "Draw stereo-down line" ),
-                                                        m_renderer, SLOT( setMode_DrawDownLine() ) );
+                                                        m_renderer, &Render2D::setMode_DrawDownLine );
 
     drawDownLineAction->setWhatsThis( downLineToolText );
 
     QAction *drawWavyLineAction = drawTools->addAction( QIcon( RingDir + "wavytool.png" ), tr( "Draw wavy bond" ),
-                                                        m_renderer, SLOT( setMode_DrawWavyLine() ) );
+                                                        m_renderer, &Render2D::setMode_DrawWavyLine );
     QAction *drawDativeLineAction = drawTools->addAction( QIcon( QPixmap( dativetool_xpm ) ), tr( "Draw dative (coordinate) bond" ),
-                                                          m_renderer, SLOT( setMode_DrawDativeLine() ) );
+                                                          m_renderer, &Render2D::setMode_DrawDativeLine );
     drawDativeLineAction->setWhatsThis( tr( "Dative bond: a coordinate covalent bond shown as an arrow from donor to acceptor" ) );
 
     drawWavyLineAction->setWhatsThis( wavyLineToolText );
@@ -530,18 +530,18 @@ ApplicationWindow::ApplicationWindow()
     { auto *_a = new QAction( QIcon( RingDir + "fileopen.png" ), tr( "&Open" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_O ); connect( _a, &QAction::triggered, this, [this](){ load(); } ); file->addAction( _a ); }
     { auto *_a = new QAction( tr( "&Find on PubChem..." ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_F ); connect( _a, &QAction::triggered, this, &ApplicationWindow::MakeNetDialog ); file->addAction( _a ); }
     { auto *_a = new QAction( QIcon(saveIcon), tr( "&Save" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_S ); connect( _a, &QAction::triggered, this, [this](){ save(); } ); file->addAction( _a ); }
-    file->addAction( tr( "Save &as..." ), this, SLOT( saveAs() ) );
-    file->addAction( tr( "Save picture..." ), this, SLOT( savePicture() ) );
-    file->addAction( tr( "Export PDF..." ), this, SLOT( ExportPDF() ) );
-    file->addAction( tr( "Export SVG..." ), this, SLOT( ExportSVG() ) );
+    file->addAction( tr( "Save &as..." ), this, &ApplicationWindow::saveAs );
+    file->addAction( tr( "Save picture..." ), this, &ApplicationWindow::savePicture );
+    file->addAction( tr( "Export PDF..." ), this, &ApplicationWindow::ExportPDF );
+    file->addAction( tr( "Export SVG..." ), this, &ApplicationWindow::ExportSVG );
 
     file->addSeparator();
 
-    file->addAction( tr( "Send to &external program..." ), this, SLOT( externalProgram() ) );
+    file->addAction( tr( "Send to &external program..." ), this, &ApplicationWindow::externalProgram );
 
     file->addSeparator();
 
-    file->addAction( tr( "Pa&ge setup" ), this, SLOT( pageSetup() ) );
+    file->addAction( tr( "Pa&ge setup" ), this, &ApplicationWindow::pageSetup );
     { auto *_a = new QAction( QIcon(printIcon), tr( "&Print" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_P ); connect( _a, &QAction::triggered, this, [this](){ print(); } ); file->addAction( _a ); }
 
     file->addSeparator();
@@ -555,15 +555,15 @@ ApplicationWindow::ApplicationWindow()
     edit = menuBar()->addMenu( tr( "&Edit" ) );
 
     { auto *_a = new QAction( tr( "&Undo" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_Z ); connect( _a, &QAction::triggered, m_renderer, &Render2D::Undo ); edit->addAction( _a ); }
-    insertSymbolAction = edit->addAction( tr( "Insert s&ymbol" ), this, SLOT( InsertSymbol() ) );
+    insertSymbolAction = edit->addAction( tr( "Insert s&ymbol" ), this, &ApplicationWindow::InsertSymbol );
     insertSymbolAction->setVisible( false );
 
     edit->addSeparator();
 
     { auto *_a = new QAction( tr( "Cu&t" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_X ); connect( _a, &QAction::triggered, this, &ApplicationWindow::Cut ); edit->addAction( _a ); }
     { auto *_a = new QAction( tr( "&Copy" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_C ); connect( _a, &QAction::triggered, this, &ApplicationWindow::Copy ); edit->addAction( _a ); }
-    edit->addAction( tr( "Copy as &SVG" ), this, SLOT( CopyAsSVG() ) );
-    edit->addAction( tr( "Copy as &PNG (300 dpi)" ), this, SLOT( CopyAsPNG() ) );
+    edit->addAction( tr( "Copy as &SVG" ), this, &ApplicationWindow::CopyAsSVG );
+    edit->addAction( tr( "Copy as &PNG (300 dpi)" ), this, &ApplicationWindow::CopyAsPNG );
     { auto *_a = new QAction( tr( "&Paste" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_V ); connect( _a, &QAction::triggered, this, &ApplicationWindow::Paste ); edit->addAction( _a ); }
     { auto *_a = new QAction( tr( "Clear" ), this ); _a->setShortcut( Qt::Key_Delete ); connect( _a, &QAction::triggered, this, &ApplicationWindow::Clear ); edit->addAction( _a ); }
 
@@ -580,8 +580,8 @@ ApplicationWindow::ApplicationWindow()
 
     QMenu *flipSub = new QMenu( tr( "&Flip" ), this );
 
-    flipSub->addAction( tr( "Flip &horizontal" ), this, SLOT( FlipH() ) );
-    flipSub->addAction( tr( "Flip &vertical" ), this, SLOT( FlipV() ) );
+    flipSub->addAction( tr( "Flip &horizontal" ), this, &ApplicationWindow::FlipH );
+    flipSub->addAction( tr( "Flip &vertical" ), this, &ApplicationWindow::FlipV );
 
     QMenu *zoomSub = new QMenu( tr( "&Zoom" ), this );
 
@@ -601,84 +601,84 @@ ApplicationWindow::ApplicationWindow()
      */
     QMenu *groupmenu = menuBar()->addMenu( tr( "&Group" ) );
 
-    groupmenu->addAction( tr( "Select &Reactant" ), this, SLOT( setGroup_Reactant() ) );
-    groupmenu->addAction( tr( "Select &Product" ), this, SLOT( setGroup_Product() ) );
-    groupmenu->addAction( tr( "Clear &group" ), this, SLOT( clearGroup() ) );
-    groupmenu->addAction( tr( "Clear all &groups" ), this, SLOT( clearAllGroups() ) );
+    groupmenu->addAction( tr( "Select &Reactant" ), this, &ApplicationWindow::setGroup_Reactant );
+    groupmenu->addAction( tr( "Select &Product" ), this, &ApplicationWindow::setGroup_Product );
+    groupmenu->addAction( tr( "Clear &group" ), this, &ApplicationWindow::clearGroup );
+    groupmenu->addAction( tr( "Clear all &groups" ), this, &ApplicationWindow::clearAllGroups );
 
     /**
      * format menu
      */
     format = menuBar()->addMenu( tr( "Forma&t" ) );
 
-    fixedBondAction = format->addAction( tr( "&Bond - Fixed length and angle" ), this, SLOT( setFixed_bond() ) );
+    fixedBondAction = format->addAction( tr( "&Bond - Fixed length and angle" ), this, &ApplicationWindow::setFixed_bond );
     fixedBondAction->setCheckable( true );
     fixedBondAction->setChecked( preferences.getBond_fixed() );
 
-    fixedArrowAction = format->addAction( tr( "&Arrow - Fixed length and angle" ), this, SLOT( setFixed_arrow() ) );
+    fixedArrowAction = format->addAction( tr( "&Arrow - Fixed length and angle" ), this, &ApplicationWindow::setFixed_arrow );
     fixedArrowAction->setCheckable( true );
     fixedArrowAction->setChecked( preferences.getArrow_fixed() );
 
     format->addSeparator();
 
-    format->addAction( tr( "Set background &color" ), this, SLOT( BackgroundColor() ) );
+    format->addAction( tr( "Set background &color" ), this, &ApplicationWindow::BackgroundColor );
     { auto *_a = new QAction( tr( "Toggle &grid" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_G ); connect( _a, &QAction::triggered, this, &ApplicationWindow::toggleGrid ); format->addAction( _a ); }
 
     format->addSeparator();
 
-    format->addAction( tr( "&Drawing settings..." ), this, SLOT( ShowFixedDialog() ) );
-    format->addAction( tr( "Apply &ACS Style" ), this, SLOT( ApplyACSStyle() ) );
-    format->addAction( tr( "&XDC settings..." ), this, SLOT( XDCSettings() ) );
+    format->addAction( tr( "&Drawing settings..." ), this, &ApplicationWindow::ShowFixedDialog );
+    format->addAction( tr( "Apply &ACS Style" ), this, &ApplicationWindow::ApplyACSStyle );
+    format->addAction( tr( "&XDC settings..." ), this, &ApplicationWindow::XDCSettings );
 
     /**
      * tools menu
      */
     QMenu *tools = menuBar()->addMenu( tr( "T&ools" ) );
 
-    tools->addAction( tr( "Clean up molecule" ), this, SLOT( CleanUpMolecule() ) );
+    tools->addAction( tr( "Clean up molecule" ), this, &ApplicationWindow::CleanUpMolecule );
     { auto *_a = new QAction( tr( "Auto &layout" ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_L ); connect( _a, &QAction::triggered, m_renderer, &Render2D::AutoLayout ); tools->addAction( _a ); }
-    tools->addAction( tr( "Create custom ring" ), this, SLOT( saveCustomRing() ) );
+    tools->addAction( tr( "Create custom ring" ), this, &ApplicationWindow::saveCustomRing );
 
     tools->addSeparator();
 
     { auto *_a = new QAction( tr( "Molecule information..." ), this ); _a->setShortcut( Qt::CTRL | Qt::Key_I ); connect( _a, &QAction::triggered, this, &ApplicationWindow::MoleculeInfo ); tools->addAction( _a ); }
-    tools->addAction( tr( "Predict 1H NMR" ), this, SLOT( Calc1HNMR() ) );
-    tools->addAction( tr( "Predict 13C NMR" ), this, SLOT( Calc13CNMR() ) );
-    tools->addAction( tr( "Predict IR" ), this, SLOT( CalcIR() ) );
-    tools->addAction( tr( "Predict pKa" ), this, SLOT( CalcpKa() ) );
-    tools->addAction( tr( "Predict octanol-water partition (Kow)" ), this, SLOT( CalcKOW() ) );
+    tools->addAction( tr( "Predict 1H NMR" ), this, &ApplicationWindow::Calc1HNMR );
+    tools->addAction( tr( "Predict 13C NMR" ), this, &ApplicationWindow::Calc13CNMR );
+    tools->addAction( tr( "Predict IR" ), this, &ApplicationWindow::CalcIR );
+    tools->addAction( tr( "Predict pKa" ), this, &ApplicationWindow::CalcpKa );
+    tools->addAction( tr( "Predict octanol-water partition (Kow)" ), this, &ApplicationWindow::CalcKOW );
 
     QMenu *reactionSub = new QMenu( tr( "Reaction" ), this );
 
-    reactionSub->addAction( tr( "Estimate gas-phase enthalphy change" ), this, SLOT( reactionAnalysisEnthalpy() ) );
-    reactionSub->addAction( tr( "Compare 1H NMR" ), this, SLOT( reactionAnalysis1HNMR() ) );
-    reactionSub->addAction( tr( "Compare 13C NMR" ), this, SLOT( reactionAnalysis13CNMR() ) );
+    reactionSub->addAction( tr( "Estimate gas-phase enthalphy change" ), this, &ApplicationWindow::reactionAnalysisEnthalpy );
+    reactionSub->addAction( tr( "Compare 1H NMR" ), this, &ApplicationWindow::reactionAnalysis1HNMR );
+    reactionSub->addAction( tr( "Compare 13C NMR" ), this, &ApplicationWindow::reactionAnalysis13CNMR );
 
     reactionSub->addSeparator();
 
-    reactionSub->addAction( tr( "Reverse reactions" ), this, SLOT( reactivityRetro() ) );
-    reactionSub->addAction( tr( "Get bond identifier" ), this, SLOT( RetroBondName() ) );
+    reactionSub->addAction( tr( "Reverse reactions" ), this, &ApplicationWindow::reactivityRetro );
+    reactionSub->addAction( tr( "Get bond identifier" ), this, &ApplicationWindow::RetroBondName );
 
     tools->addMenu( reactionSub );
 
     tools->addSeparator();
 
-    tools->addAction( tr( "Input InChI or SMILES" ), this, SLOT( FromSMILES() ) );
-    tools->addAction( tr( "Output SMILES" ), this, SLOT( ToSMILES() ) );
-    tools->addAction( tr( "Output InChI" ), this, SLOT( ToInChI() ) );
-    tools->addAction( tr( "Input SMARTS / SMILES" ), this, SLOT( FromSMARTS() ) );
-    tools->addAction( tr( "Output canonical SMILES" ), this, SLOT( ToCanonicalSMILES() ) );
-    tools->addAction( tr( "Get IUPAC name" ), this, SLOT( GetIUPACName() ) );
-    tools->addAction( tr( "Name to structure..." ), this, SLOT( FromIUPACName() ) );
-    tools->addAction( tr( "Look up on PubChem..." ), this, SLOT( LookupPubChem() ) );
-    tools->addAction( tr( "Check valence" ), this, SLOT( CheckValence() ) );
+    tools->addAction( tr( "Input InChI or SMILES" ), this, &ApplicationWindow::FromSMILES );
+    tools->addAction( tr( "Output SMILES" ), this, &ApplicationWindow::ToSMILES );
+    tools->addAction( tr( "Output InChI" ), this, &ApplicationWindow::ToInChI );
+    tools->addAction( tr( "Input SMARTS / SMILES" ), this, &ApplicationWindow::FromSMARTS );
+    tools->addAction( tr( "Output canonical SMILES" ), this, &ApplicationWindow::ToCanonicalSMILES );
+    tools->addAction( tr( "Get IUPAC name" ), this, &ApplicationWindow::GetIUPACName );
+    tools->addAction( tr( "Name to structure..." ), this, &ApplicationWindow::FromIUPACName );
+    tools->addAction( tr( "Look up on PubChem..." ), this, &ApplicationWindow::LookupPubChem );
+    tools->addAction( tr( "Check valence" ), this, &ApplicationWindow::CheckValence );
 
     tools->addSeparator();
 
     // Property panel toggle is added after m_propertyPanel is constructed (see below).
     // Placeholder stored in m_propertyPanelAction and inserted into the menu there.
 
-    tools->addAction( tr( "Build 3D model of molecule" ), this, SLOT( To3D() ) );
+    tools->addAction( tr( "Build 3D model of molecule" ), this, &ApplicationWindow::To3D );
 
     /**
      * help menu
@@ -686,10 +686,10 @@ ApplicationWindow::ApplicationWindow()
     QMenu *help = menuBar()->addMenu( tr( "&Help" ) );
 
     { auto *_a = new QAction( tr( "&Manual" ), this ); _a->setShortcut( Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &ApplicationWindow::NewManual ); help->addAction( _a ); }
-    help->addAction( tr( "&Did You Know?" ), this, SLOT( showDYK() ) );
-    help->addAction( tr( "&About" ), this, SLOT( about() ) );
-    help->addAction( tr( "&Support" ), this, SLOT( support() ) );
-    help->addAction( tr( "&References" ), this, SLOT( Refs() ) );
+    help->addAction( tr( "&Did You Know?" ), this, &ApplicationWindow::showDYK );
+    help->addAction( tr( "&About" ), this, &ApplicationWindow::about );
+    help->addAction( tr( "&Support" ), this, &ApplicationWindow::support );
+    help->addAction( tr( "&References" ), this, &ApplicationWindow::Refs );
 
     help->addSeparator();
 

@@ -1,6 +1,7 @@
 #include <QDateTime>
 #include <QFile>
 
+#include "xdc_logging.h"
 #include "defs.h"
 #include "chemdata.h"
 #include "dpoint.h"
@@ -16,18 +17,18 @@ bool ChemData::NewLoadCMLFile( QString fn )
     if ( !xmlFile.open( QIODevice::ReadOnly ) )
         return false;
     if ( !handler.parse( &xmlFile ) ) {
-        qWarning() << "CML parse error in" << fn;
+        qCWarning(lcCML) << "CML parse error in" << fn;
         return false;
     }
 
-    qDebug() << "done parsing";
+    qCDebug(lcCML) << "done parsing";
 
     // add bonds and labels to main drawing
     double totlen = 0.0, dx = 99999.0, dy = 99999.0;
     int n = 0;
     int th1;
 
-    qDebug() << "thick_kludge: " << thick_kludge;
+    qCDebug(lcCML) << "thick_kludge: " << thick_kludge;
     if ( thick_kludge > 0 ) {
         th1 = thick_kludge;
     } else {
@@ -85,7 +86,7 @@ bool ChemData::NewLoadCMLFile( QString fn )
     double avglen = totlen / ( double ) n;
     double sf = curfixed / avglen;
 
-    qDebug() << sf;
+    qCDebug(lcCML) << sf;
     for (DPoint *tmp_pt : parsedPoints) {
         tmp_pt->x *= sf;
         tmp_pt->y *= sf;
@@ -113,7 +114,7 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
 
     do {
         thistag = ReadTag( wholefile, ptr );
-        qDebug() << thistag.toLatin1();
+        qCDebug(lcCML) << thistag.toLatin1();
         // ReadTag returns a null at EOF (ideally).
         if ( thistag.isNull() )
             break;
@@ -129,7 +130,7 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             for ( int c1 = 0; c1 < tokens.count(); c1 += 2 ) {
                 a1 = tokens.at( c1 );
                 v1 = tokens.at( c1 + 1 );
-                qDebug() << "-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
+                qCDebug(lcCML) << "-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
                 // compare attribute a1 with list of relevant attr's
                 if ( a1.toUpper() == QString( "ID" ) )
                     MoleculeId = v1;
@@ -148,7 +149,7 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             for ( int c1 = 0; c1 < tokens.count(); c1 += 2 ) {
                 a1 = tokens.at( c1 );
                 v1 = tokens.at( c1 + 1 );
-                qDebug() << "-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
+                qCDebug(lcCML) << "-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
                 // compare attribute a1 with list of relevant attr's
                 if ( a1.toUpper() == QString( "ID" ) )
                     tmp_atom->id = v1;
@@ -160,7 +161,7 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             if ( *st1 == CML_ATOM ) {
                 TagStack.removeLast();
             } else {
-                qDebug() << "Imbalanced <atom> tags!";
+                qCWarning(lcCML) << "Imbalanced <atom> tags!";
             }
             CML_Atoms.append( tmp_atom );
         }
@@ -176,7 +177,7 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             for ( int c1 = 0; c1 < tokens.count(); c1 += 2 ) {
                 a1 = tokens.at( c1 );
                 v1 = tokens.at( c1 + 1 );
-                qDebug() << "-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
+                qCDebug(lcCML) << "-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
                 // compare attribute a1 with list of relevant attr's
                 if ( a1.toUpper() == QString( "ID" ) )
                     tmp_bond->id = v1;
@@ -184,8 +185,8 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
                     d5 = v1.indexOf( QString( " " ) );
                     tmp_bond->a1 = v1.left( d5 );
                     tmp_bond->a2 = v1.mid( d5 + 1 );
-                    qDebug() << "bond[" << tmp_bond->a1.toLatin1() << "|";
-                    qDebug() << tmp_bond->a2.toLatin1() << "]";
+                    qCDebug(lcCML) << "bond[" << tmp_bond->a1.toLatin1() << "|";
+                    qCDebug(lcCML) << tmp_bond->a2.toLatin1() << "]";
                 }
             }
         }
@@ -195,7 +196,7 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             if ( *st1 == CML_BOND ) {
                 TagStack.removeLast();
             } else {
-                qDebug() << "Imbalanced <bond> tags!";
+                qCWarning(lcCML) << "Imbalanced <bond> tags!";
             }
             CML_Bonds.append( tmp_bond );
         }
@@ -214,7 +215,7 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             if ( *st1 == CML_ATOMARRAY ) {
                 TagStack.removeLast();
             } else {
-                qDebug() << "Imbalanced <atomArray> tags!";
+                qCWarning(lcCML) << "Imbalanced <atomArray> tags!";
             }
             // create lists of tokens in arr_x2, arr_y2, str_id, str_element, arr_fc
             idlist = Tokenize( str_id );
@@ -244,14 +245,14 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
         }
         // handle </bondArray>
         if ( thistag == QString( "</bondArray>" ) ) {
-            qDebug() << atomrefs1;
-            qDebug() << atomrefs2;
-            qDebug() << str_order;
+            qCDebug(lcCML) << atomrefs1;
+            qCDebug(lcCML) << atomrefs2;
+            qCDebug(lcCML) << str_order;
             st1 = TagStack.last();
             if ( *st1 == CML_BONDARRAY ) {
                 TagStack.removeLast();
             } else {
-                qDebug() << "Imbalanced <bondArray> tags!";
+                qCWarning(lcCML) << "Imbalanced <bondArray> tags!";
             }
             // tokenize data
             a1list = Tokenize( atomrefs1 );
@@ -269,12 +270,12 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
         if ( thistag.indexOf( QString( "<coordinate2 " ) ) >= 0 ) {
             st1 = TagStack.last();
             if ( *st1 != CML_ATOM )
-                qDebug() << "Improperly placed <coordinate2> tag!";
+                qCWarning(lcCML) << "Improperly placed <coordinate2> tag!";
             tokens = ReadAttr( thistag );
             for ( int c1 = 0; c1 < tokens.count(); c1 += 2 ) {
                 a1 = tokens.at( c1 );
                 v1 = tokens.at( c1 + 1 );
-                qDebug() << "COORD2-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
+                qCDebug(lcCML) << "COORD2-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
                 // compare attribute a1 with list of relevant attr's
                 if ( a1.toUpper() == QString( "TITLE" ) )
                     str_title = v1;
@@ -284,9 +285,9 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             tdata = ReadData( wholefile, ptr );
             nexttag = ReadTag( wholefile, ptr );
             if ( nexttag != QString( "</coordinate2>" ) )
-                qDebug() << "Imbalanced <coordinate2> tags!";
+                qCWarning(lcCML) << "Imbalanced <coordinate2> tags!";
             if ( str_builtin != QString( "xy2" ) )
-                qDebug() << "Unrecognized builtin type in <coordinate2>!";
+                qCWarning(lcCML) << "Unrecognized builtin type in <coordinate2>!";
             d5 = tdata.indexOf( QString( " " ) );
             tmp_atom->x = tdata.left( d5 ).toDouble();
             tmp_atom->y = tdata.mid( d5 ).toDouble();
@@ -295,12 +296,12 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
         if ( thistag.indexOf( QString( "<coordinate3 " ) ) >= 0 ) {
             st1 = TagStack.last();
             if ( *st1 != CML_ATOM )
-                qDebug() << "Improperly placed <coordinate3> tag!";
+                qCWarning(lcCML) << "Improperly placed <coordinate3> tag!";
             tokens = ReadAttr( thistag );
             for ( int c1 = 0; c1 < tokens.count(); c1 += 2 ) {
                 a1 = tokens.at( c1 );
                 v1 = tokens.at( c1 + 1 );
-                qDebug() << "COORD3-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
+                qCDebug(lcCML) << "COORD3-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
                 // compare attribute a1 with list of relevant attr's
                 if ( a1.toUpper() == QString( "TITLE" ) )
                     str_title = v1;
@@ -310,9 +311,9 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             tdata = ReadData( wholefile, ptr );
             nexttag = ReadTag( wholefile, ptr );
             if ( nexttag != QString( "</coordinate3>" ) )
-                qDebug() << "Imbalanced <coordinate3> tags!";
+                qCWarning(lcCML) << "Imbalanced <coordinate3> tags!";
             if ( ( str_builtin != QString( "xyz3" ) ) && ( str_builtin != QString( "xyzFract" ) ) )
-                qDebug() << "Unrecognized builtin type in <coordinate3>!";
+                qCWarning(lcCML) << "Unrecognized builtin type in <coordinate3>!";
             tokens = Tokenize( tdata );
             tmp_atom->x = tokens[0].toDouble();
             tmp_atom->y = tokens[1].toDouble();
@@ -324,7 +325,7 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             for ( int c1 = 0; c1 < tokens.count(); c1 += 2 ) {
                 a1 = tokens.at( c1 );
                 v1 = tokens.at( c1 + 1 );
-                qDebug() << "STRING-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
+                qCDebug(lcCML) << "STRING-" << a1.toLatin1() << "|" << v1.toLatin1() << "-";
                 // compare attribute a1 with list of relevant attr's
                 if ( a1.toUpper() == QString( "TITLE" ) )
                     str_title = v1;
@@ -333,9 +334,9 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             }
             tdata = ReadData( wholefile, ptr );
             nexttag = ReadTag( wholefile, ptr );
-            qDebug() << "DATA<string>[" << tdata << "]";
+            qCDebug(lcCML) << "DATA<string>[" << tdata << "]";
             if ( nexttag.left( 8 ) != QString( "</string" ) )
-                qDebug() << "Imbalanced <string> tags!";
+                qCWarning(lcCML) << "Imbalanced <string> tags!";
             // known cases of <string>
             st1 = TagStack.last();
             if ( ( *st1 == CML_BOND ) && ( str_builtin == QString( "atomRef" ) ) ) {
@@ -376,9 +377,9 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
             }
             tdata = ReadData( wholefile, ptr );
             nexttag = ReadTag( wholefile, ptr );
-            qDebug() << "DATA<numArray>[" << tdata << "]";
+            qCDebug(lcCML) << "DATA<numArray>[" << tdata << "]";
             if ( ( nexttag != QString( "</integerArray>" ) ) && ( nexttag != QString( "</floatArray>" ) ) )
-                qDebug() << "Imbalanced <integerArray> or <floatArray> tags!";
+                qCWarning(lcCML) << "Imbalanced <integerArray> or <floatArray> tags!";
             // known cases of <integerArray> and <floatArray>
             st1 = TagStack.last();
             if ( ( *st1 == CML_ATOMARRAY ) && ( str_builtin == QString( "formalCharge" ) ) )
@@ -401,7 +402,7 @@ bool ChemData::LoadCMLFile( QString wholefile, QString doctype )
                 TagStack.removeLast();
                 // should be last tag...
                 if ( !TagStack.isEmpty() )
-                    qDebug() << "Imbalanced tags!";
+                    qCWarning(lcCML) << "Imbalanced tags!";
                 continue;
             }
         }
@@ -420,7 +421,7 @@ void ChemData::Convert_CML_Lists_To_Native()
     QString makesub, ms2;
     int th1;
 
-    qDebug() << "thick_kludge: " << thick_kludge;
+    qCDebug(lcCML) << "thick_kludge: " << thick_kludge;
     if ( thick_kludge > 0 ) {
         th1 = thick_kludge;
     } else {
@@ -457,7 +458,7 @@ void ChemData::Convert_CML_Lists_To_Native()
     // add Text labels
     for (DPoint *tmp_pt : points) {
         if ( tmp_pt->element != QString( "C" ) ) {
-            qDebug() << tmp_pt->element;
+            qCDebug(lcCML) << tmp_pt->element;
             Text *nt = new Text( r );
 
             nt->setPoint( tmp_pt );
@@ -486,7 +487,7 @@ void ChemData::Convert_CML_Lists_To_Native()
     double avglen = totlen / ( double ) n;
     double sf = curfixed / avglen;
 
-    qDebug() << sf;
+    qCDebug(lcCML) << sf;
     for (Drawable *tmp_draw : CDXML_Objects) {
         points.append( tmp_draw->Start() );
         points.append( tmp_draw->End() );
@@ -501,10 +502,10 @@ void ChemData::Convert_CML_Lists_To_Native()
 
     QRect sb = selectionBox();
 
-    qDebug() << sb.left();
-    qDebug() << sb.right();
-    qDebug() << sb.top();
-    qDebug() << sb.bottom();
+    qCDebug(lcCML) << sb.left();
+    qCDebug(lcCML) << sb.right();
+    qCDebug(lcCML) << sb.top();
+    qCDebug(lcCML) << sb.bottom();
     double tx = RenderTopLeft.x() + 50 - sb.left();
     double ty = RenderTopLeft.y() + 50 - sb.top();
 

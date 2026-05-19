@@ -22,6 +22,8 @@
 #include <QRegularExpression>
 #include <QDebug>
 
+#include "xdc_logging.h"
+
 #include "netaccess.h"
 
 static const QString PUBCHEM = QStringLiteral("https://pubchem.ncbi.nlm.nih.gov/rest/pug");
@@ -56,7 +58,7 @@ QString NetAccess::httpGet(const QString &url)
     if (reply->error() == QNetworkReply::NoError)
         result = QString::fromUtf8(reply->readAll());
     else
-        qWarning() << "NetAccess GET error:" << reply->errorString() << url;
+        qCWarning(lcNetwork) << "NetAccess GET error:" << reply->errorString() << url;
 
     reply->deleteLater();
     return result;
@@ -82,7 +84,7 @@ QString NetAccess::httpPost(const QString &url, const QString &body)
     if (reply->error() == QNetworkReply::NoError)
         result = QString::fromUtf8(reply->readAll());
     else
-        qWarning() << "NetAccess POST error:" << reply->errorString() << url;
+        qCWarning(lcNetwork) << "NetAccess POST error:" << reply->errorString() << url;
 
     reply->deleteLater();
     return result;
@@ -130,7 +132,7 @@ QStringList NetAccess::getChoices(QString /*server*/, QString key,
                   + QStringLiteral("/property/IsomericSMILES,IUPACName,MolecularFormula/JSON");
     }
 
-    qInfo() << "NetAccess::getChoices GET" << propUrl;
+    qCDebug(lcNetwork) << "NetAccess::getChoices GET" << propUrl;
     QString json = httpGet(propUrl);
     if (json.isEmpty())
         return results;
@@ -201,7 +203,7 @@ bool NetAccess::getNameCAS(QString /*server*/, QString sinchi)
     if (sinchi.length() < 2)
         return false;
 
-    qInfo() << "NetAccess::getNameCAS InChI:" << sinchi.left(40) << "...";
+    qCDebug(lcNetwork) << "NetAccess::getNameCAS InChI:" << sinchi.left(40) << "...";
 
     // POST the InChI string to PubChem.
     QString propUrl = PUBCHEM
@@ -250,7 +252,7 @@ bool NetAccess::getNameCAS(QString /*server*/, QString sinchi)
     scas  = extractCAS(synList);
     sname = synList.mid(0, 8).join(QStringLiteral("; "));
 
-    qInfo() << "getNameCAS result: CID" << spccompound
+    qCDebug(lcNetwork) << "getNameCAS result: CID" << spccompound
             << "CAS" << scas << "Name" << siupacname;
     return true;
 }

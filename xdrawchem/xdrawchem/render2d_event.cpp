@@ -298,14 +298,14 @@ void Render2D::mousePressEvent( QMouseEvent * e1 )
 //            rtclickpopup->setFont( QFont("Helvetica", 12, QFont::Bold) );
             rtclickpopup->addAction( title );
             rtclickpopup->addSeparator();
-            rtclickpopup->addAction( tr( "Edit" ), this, SLOT( bondEdit() ) );
+            rtclickpopup->addAction( tr( "Edit" ), this, &Render2D::bondEdit );
             if ( highlightobject->Type() == TYPE_BOND ) {
-                rtclickpopup->addAction( tr( "Info" ), this, SLOT( bondInfo() ) );
+                rtclickpopup->addAction( tr( "Info" ), this, &Render2D::bondInfo );
             } else if ( highlightobject->Type() == TYPE_BRACKET ) {
-                rtclickpopup->addAction( tr( "Fill color..." ), this, SLOT( bracketFill() ) );
-                rtclickpopup->addAction( tr( "No fill" ), this, SLOT( bracketFillOff() ) );
+                rtclickpopup->addAction( tr( "Fill color..." ), this, &Render2D::bracketFill );
+                rtclickpopup->addAction( tr( "No fill" ), this, &Render2D::bracketFillOff );
             } else if ( highlightobject->Type() == TYPE_TEXT ) {
-                rtclickpopup->addAction( tr( "Shape..." ), this, SLOT( textShape() ) );
+                rtclickpopup->addAction( tr( "Shape..." ), this, &Render2D::textShape );
             }
             menu_ok = true;
         }
@@ -313,10 +313,10 @@ void Render2D::mousePressEvent( QMouseEvent * e1 )
         targetmol = c->insideMolecule( tmp_pt2 );
         if ( targetmol != 0 ) {
             rtclickpopup->setTitle( tr( "Molecule" ) );
-            rtclickpopup->addAction( tr( "Info" ), this, SLOT( molInfo() ) );
-            rtclickpopup->addAction( tr( "Select" ), this, SLOT( molSelect() ) );
-            rtclickpopup->addAction( tr( "Cut" ), this, SLOT( molCut() ) );
-            rtclickpopup->addAction( tr( "Copy" ), this, SLOT( molCopy() ) );
+            rtclickpopup->addAction( tr( "Info" ), this, &Render2D::molInfo );
+            rtclickpopup->addAction( tr( "Select" ), this, &Render2D::molSelect );
+            rtclickpopup->addAction( tr( "Cut" ), this, &Render2D::molCut );
+            rtclickpopup->addAction( tr( "Copy" ), this, &Render2D::molCopy );
             menu_ok = true;
         }
         mouse3down = false;
@@ -336,9 +336,9 @@ void Render2D::mousePressEvent( QMouseEvent * e1 )
             if ( highlightobject->Type() == TYPE_TEXT )
                 rtmt = tr( "Text" );
             rtclickpopup->addAction( rtmt );
-            rtclickpopup->addAction( tr( "Edit" ), this, SLOT( bondEdit() ) );
+            rtclickpopup->addAction( tr( "Edit" ), this, &Render2D::bondEdit );
             if ( highlightobject->Type() == TYPE_TEXT )
-                rtclickpopup->addAction( tr( "Shape..." ), this, SLOT( textShape() ) );
+                rtclickpopup->addAction( tr( "Shape..." ), this, &Render2D::textShape );
             menu_ok = true;
         }
         mouse3down = false;

@@ -1,6 +1,84 @@
 # Changelog
 
-## [Unreleased] — Qt5 Modernisation
+## [2.1.0] — 2026-05-18
+
+### Summary
+XDrawChem 2.1 is the first stable release of the Qt6-based series, building on
+the 2.0 groundwork with restored 3D generation, MDL Molfile support, and
+significant codebase modernization.
+
+---
+
+### New Features
+
+- **3D structure generation restored** (`to3d.cpp`) using local OpenBabel
+  (`OBBuilder` + MMFF94/UFF force field minimization). No network call required.
+- **MDL Mol/SDF I/O implemented** via OpenBabel. `chemdata_mdl.cpp` now reads
+  and writes standard MDL MOL and SDF files, replacing the previous no-op stubs.
+
+### Bug Fixes
+
+- **Memory leaks in `application_ob.cpp`** — `OBNewLoad()` and `OBNewSave()`
+  now properly delete temporary `OBMol` objects.
+- **Memory leak in `molecule_obmol.cpp`** — `convertToOBMol()` no longer leaks
+  the returned `OBMol*` on error paths.
+
+### Qt / C++ Modernisation
+
+- **Remaining `SIGNAL()`/`SLOT()` string macros** converted to
+  pointer-to-member syntax across `application.cpp`, `render2d_event.cpp`,
+  and `main.cpp`. Zero string-based `connect()` calls remain in project code.
+- **`qDebug()` runtime noise gated behind `QLoggingCategory`** — all
+  `qDebug()` / `qInfo()` / `qWarning()` calls in the chemistry and I/O layers
+  now use `lcXDC()` so they can be silenced with `QT_LOGGING_RULES=xdc=false`.
+
+### Code Cleanup
+
+- **`netaccess.cpp`** — removed large commented-out `QHttp`-based dead code
+  and unreachable `slotFinished` / `slotData` / `rf` slots.
+- **Repository cleanup** — legacy Qt3/Qt4 source trees removed from `master`;
+  source directory renamed from `xdrawchem-qt5/` to `xdrawchem/`.
+
+---
+
+## [2.0.1] — 2026-04-23
+
+### Summary
+Security, UI, and packaging maintenance release.
+
+### Security
+- Fix buffer overflows in OpenBabel format resolution and atom-label `strcpy`
+- Replace `system()` with `QProcess::startDetached` for external program launch
+
+### UI / Bug Fixes
+- Ring menu: amino acids, nucleic acids, sugars, and useful groups submenus
+- Custom ring menu: dispatch restored, save crash fixed
+- Property panel refreshes on ring placement, name-to-structure, selection changes
+
+### Packaging
+- Flatpak app-id renamed to `io.github.bryanherger.xdrawchem`
+- DEB/RPM: include reverse-DNS desktop/metainfo/icon files
+- Debian Standards-Version updated to 4.7.2
+
+---
+
+## [2.0.0] — 2026-04-09
+
+### Summary
+First stable Qt6 release.
+
+### Highlights
+- Full Qt6 + CMake build; requires Qt 6.2 or later
+- OpenBabel 3 integration for 20+ chemical file formats
+- PubChem REST integration: Find on PubChem, IUPAC name lookup, name-to-structure
+- Dative (coordinate covalent) bond, ACS style preset, Bézier arrows
+- SVG, PDF, and high-DPI PNG export; copy as SVG/PNG to clipboard
+- Valence checking; canonical SMILES and InChI output
+- Packages: DEB, RPM, Windows EXE, macOS DMG, Flatpak
+
+---
+
+## [Unreleased] — Qt5 Modernisation (Historical)
 
 ### Summary
 Full modernisation pass on the `xdrawchem-qt5` codebase targeting Qt 5.15

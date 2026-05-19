@@ -102,6 +102,7 @@ set(XDC_SOURCES
     xdrawchem/application.cpp
     xdrawchem/application_ob.cpp
     xdrawchem/application_ring.cpp
+    xdrawchem/xdc_logging.cpp
     xdrawchem/arrow.cpp
     xdrawchem/biotools.cpp
     xdrawchem/bond.cpp

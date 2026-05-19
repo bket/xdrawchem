@@ -218,12 +218,12 @@ int main( int argc, char **argv )
     if ( pngflag ) {
         mw->ni_savefile = outfile;
         mw->ni_tflag = tflag;
-        QTimer::singleShot( 0, mw, SLOT( savePNG() ) );
+        QTimer::singleShot( 0, mw, &ApplicationWindow::savePNG );
     }
     if ( to3dflag ) {
         mw->ni_savefile = outfile;
         mw->ni_tflag = tflag;
-        QTimer::singleShot( 0, mw, SLOT( save3D() ) );
+        QTimer::singleShot( 0, mw, &ApplicationWindow::save3D );
     }
 
     if ( quitflag )

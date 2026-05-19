@@ -10,6 +10,8 @@
 #include "chemdata.h"
 #include "defs.h"
 
+#include "xdc_logging.h"
+
 ChemData::ChemData( QObject *parent )
     : QObject( parent )
 {
@@ -126,7 +128,7 @@ void ChemData::addBracket( DPoint * s, DPoint * e, QColor c, int type, bool hl )
 
 void ChemData::addText( Text * t )
 {
-    qDebug() << "addText";
+    qCDebug(lcChemData) << "addText";
     if ( t->Justify() == JUSTIFY_TOPLEFT ) {  // add to drawing
         drawlist.append( t );
     } else {                    // add label to specific Molecule
@@ -139,7 +141,7 @@ void ChemData::addText( Text * t )
                 return;
             }
         }
-        qDebug() << "FYI, add text failed";
+        qCWarning(lcChemData) << "FYI, add text failed";
     }
     notSaved = true;
     emit SignalMoleculeChanged();
@@ -277,7 +279,7 @@ void ChemData::Erase( Drawable * d )
             // collect empty Molecules for removal
             if ( tmp_draw->Members() == 0 )
                 removelist.append( tmp_draw );
-            qDebug() << "erased:" << erased;
+            qCDebug(lcChemData) << "erased:" << erased;
             if ( erased == true )
                 break;          //should only be one instance of d to remove!
         }
@@ -348,7 +350,7 @@ void ChemData::DetectSplit()
             tmp_mol = ( Molecule * ) tmp_draw;
             split_list = tmp_mol->MakeSplit();
             if ( split_list.count() > 1 ) {
-                qDebug() << "Split needed";
+                qCDebug(lcChemData) << "Split needed";
                 removelist.append( tmp_draw );
                 for (Drawable *td2 : split_list) {
                     drawlist.append( td2 );
@@ -432,7 +434,7 @@ QRect ChemData::selectionBox()
 
     for (Drawable *tmp_draw : drawlist) {
         tmprect = tmp_draw->BoundingBox();
-        qDebug() << tmprect.width() << "X" << tmprect.height();
+        qCDebug(lcChemData) << tmprect.width() << "X" << tmprect.height();
         if ( tmprect.isValid() ) {
             if ( tmprect.left() < left )
                 left = tmprect.left();
@@ -489,7 +491,7 @@ QList < DPoint * >ChemData::UniquePoints()
             up.append( tmp_pt );
     }
 
-    qDebug() << up.count();
+    qCDebug(lcChemData) << up.count();
     return up;
 }
 
@@ -504,7 +506,7 @@ QList < Drawable * >ChemData::UniqueObjects()
             uo.append( td2 );
     }
 
-    qDebug() << uo.count();
+    qCDebug(lcChemData) << uo.count();
     return uo;
 }
 
