@@ -138,6 +138,7 @@ set(XDC_SOURCES
     # main.cpp excluded from object lib — linked only into the executable
     xdrawchem/molecule_1h_nmr.cpp
     xdrawchem/molecule.cpp
+    xdrawchem/molecule_cip.cpp
     xdrawchem/molecule_obmol.cpp
     xdrawchem/molecule_smiles.cpp
     xdrawchem/molecule_iupac.cpp

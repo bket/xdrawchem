@@ -98,6 +98,10 @@ void Molecule::Render()
     CalcOffsets();
     for (Symbol *tmp_sym : symbols)
         tmp_sym->Render();
+
+    // Draw CIP R/S and E/Z labels if enabled globally.
+    if ( preferences.showCIPLabels )
+        DrawCIPLabels();
 }
 
 // Calculate offsets, i.e., where to put a Symbol.

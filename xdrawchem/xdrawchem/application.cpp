@@ -675,32 +675,12 @@ ApplicationWindow::ApplicationWindow()
 
     tools->addSeparator();
 
-    // Property panel toggle is added after m_propertyPanel is constructed (see below).
-    // Placeholder stored in m_propertyPanelAction and inserted into the menu there.
+    // Property panel toggle + CIP labels toggle
+    // (inserted dynamically after m_propertyPanel is created below)
 
     tools->addAction( tr( "Build 3D model of molecule" ), this, &ApplicationWindow::To3D );
 
-    /**
-     * help menu
-     */
-    QMenu *help = menuBar()->addMenu( tr( "&Help" ) );
-
-    { auto *_a = new QAction( tr( "&Manual" ), this ); _a->setShortcut( Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &ApplicationWindow::NewManual ); help->addAction( _a ); }
-    help->addAction( tr( "&Did You Know?" ), this, &ApplicationWindow::showDYK );
-    help->addAction( tr( "&About" ), this, &ApplicationWindow::about );
-    help->addAction( tr( "&Support" ), this, &ApplicationWindow::support );
-    help->addAction( tr( "&References" ), this, &ApplicationWindow::Refs );
-
-    help->addSeparator();
-
-    { auto *_a = new QAction( tr( "What's &This" ), this ); _a->setShortcut( Qt::SHIFT | Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &QWidget::whatsThis ); help->addAction( _a ); }
-
-    /**
-     * create data system
-     */
-    m_chemData = new ChemData;
-
-    // ── Live property panel ───────────────────────────────────────────────
+    // ── Property panel ────────────────────────────────────────────────────
     m_propertyPanel = new PropertyPanel( this );
     addDockWidget( Qt::RightDockWidgetArea, m_propertyPanel );
     m_propertyPanel->hide();  // hidden by default; enable via Tools menu
@@ -709,13 +689,21 @@ ApplicationWindow::ApplicationWindow()
     connect( m_chemData, &ChemData::SignalSelectionChanged,
              this,       &ApplicationWindow::updatePropertyPanel );
 
-    // Now that m_propertyPanel exists, find the Tools menu and insert the toggle.
+    // Now insert the property panel toggle and CIP labels toggle into Tools menu.
     for ( QMenu *menu : menuBar()->findChildren<QMenu *>() ) {
         if ( menu->title() == tr( "T&ools" ) ) {
-            // Insert before "Build 3D model" — find that action
             for ( QAction *a : menu->actions() ) {
                 if ( a->text() == tr( "Build 3D model of molecule" ) ) {
                     menu->insertAction( a, m_propertyPanel->toggleViewAction() );
+                    // CIP labels toggle
+                    QAction *cipToggle = new QAction( tr( "Show CIP labels" ), this );
+                    cipToggle->setCheckable( true );
+                    cipToggle->setChecked( preferences.showCIPLabels );
+                    connect( cipToggle, &QAction::toggled, this, [this]( bool checked ) {
+                        preferences.showCIPLabels = checked;
+                        m_renderer->update();
+                    } );
+                    menu->insertAction( a, cipToggle );
                     break;
                 }
             }

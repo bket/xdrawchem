@@ -170,6 +170,13 @@ public:
         return ang3;
     }
 
+    // defined in molecule_cip.cpp
+    void CalcCIPLabels();           // compute R/S and E/Z descriptors
+    void DrawCIPLabels();             // render labels on canvas
+    QString GetCIPLabelForPoint(DPoint *dp);   // "R", "S", or "" for a chiral center
+    QString GetCIPLabelForBond(Bond *b);       // "E", "Z", or "" for a double bond
+    void ClearCIPCache();             // invalidate CIP cache on structure change
+
     OpenBabel::OBMol * convertToOBMol();
     bool convertFromOBMol(OpenBabel::OBMol *);
     static const char symbol[110][4];

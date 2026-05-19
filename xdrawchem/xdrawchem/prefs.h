@@ -43,6 +43,7 @@ public:
         mainFont = QFont( "Helvetica", 10 );
         rulerFont = QFont( "Courier", 8 );
         bondcenter = false;
+        show_cip_labels = false;
     }
 
     void setFile( QString fn, bool fb )
@@ -143,6 +144,12 @@ public:
             if (line.toUpper().contains("RULERFONT") > 0) {
                 rulerFont.fromString( line.mid(10) );
             }
+            if (line.toUpper().contains("SHOW_CIP_LABELS") > 0) {
+                if (line.toUpper().contains("TRUE"))
+                    show_cip_labels = true;
+                else
+                    show_cip_labels = false;
+            }
         } while (!tin.atEnd());
 
         fin.close();
@@ -195,6 +202,10 @@ public:
         tout << "GRIDSPACE " << gridspace << Qt::endl;
         tout << "MAINFONT " << mainFont.toString() << Qt::endl;
         tout << "RULERFONT " << rulerFont.toString() << Qt::endl;
+        if (show_cip_labels)
+            tout << "SHOW_CIP_LABELS true" << Qt::endl;
+        else
+            tout << "SHOW_CIP_LABELS false" << Qt::endl;
 
         fout.close();
 
@@ -247,6 +258,7 @@ public:
     void setMainFont( QFont ff1 ) { mainFont = ff1; }
     QFont getRulerFont() { return rulerFont; }
     void setRulerFont( QFont ff1 ) { rulerFont = ff1; }
+    bool showCIPLabels = false;
 
     void setCustomRingDir(QString d1)
     {
@@ -265,6 +277,8 @@ public:
     bool getBondCenter() { return bondcenter; }
     void setDpi(int d1) { paper_dpi = d1; }
     int getDpi() { return paper_dpi; }
+    bool getShowCIPLabels() { return show_cip_labels; }
+    void setShowCIPLabels( bool b ) { show_cip_labels = b; }
 
 private:
     bool fixed_arrow, fixed_bond, fix_hydrogens;
@@ -285,6 +299,7 @@ private:
     int units;  // PIXELS, ENGLISH, METRIC - see defs.h
     int gridmode, gridspace, drawgrid, snapgrid;
     int zoom;  // not saved.
+    bool show_cip_labels;  // show CIP R/S, E/Z labels
     QFont mainFont, rulerFont;  // added at user request
     bool bondcenter;
 };
