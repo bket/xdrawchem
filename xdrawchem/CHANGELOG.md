@@ -18,6 +18,10 @@ significant codebase modernization.
 - **SDF multi-record browser** (`sdfbrowser.cpp`) — When opening an `.sdf` file,
   a dialog lists all records with molecule names and lets the user import
   individual records or all at once.
+- **CIP stereochemistry labels** (`molecule_cip.cpp`) — Toggle via
+  Tools → "Show CIP labels".  Computes R/S (tetrahedral) and E/Z (cis/trans)
+  descriptors using OpenBabel's `OBStereoFacade`.  R/S labels appear next to
+  chiral centers; E/Z labels appear at double-bond midpoints.
 
 ### Bug Fixes
 

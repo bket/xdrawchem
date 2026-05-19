@@ -19,6 +19,12 @@ Entries are derived from the Debian changelog and commit history.
 - **SDF multi-record browser** — When opening an `.sdf` file via File → Open,
   a browser dialog lists all records with molecule names and lets the user
   navigate with Previous/Next, import individual records, or import all at once.
+- **CIP R/S and E/Z stereochemistry labels** — Tools → "Show CIP labels" toggles
+  display of Cahn-Ingold-Prelog descriptors computed by OpenBabel.
+  - **R/S** (tetrahedral): shown in bold blue text next to chiral centers
+    (e.g. asymmetric carbon atoms with wedge/hash bonds).
+  - **E/Z** (cis/trans): shown at the midpoint of stereogenic double bonds.
+  - Labels are cached and only recomputed when the molecule structure changes.
 
 ### Bug Fixes
 - **Memory leaks in `application_ob.cpp`** — `OBNewLoad()` and `OBNewSave()`

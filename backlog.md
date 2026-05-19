@@ -8,6 +8,23 @@
 
 ## Status at v2.0.1
 
+**Completed in v2.1 cycle:**
+- 3D structure generation restored using local OpenBabel (OBBuilder + MMFF94/UFF minimization)
+- MDL Mol/SDF I/O fully implemented via OpenBabel (was previously stubbed out)
+- SDF multi-record browser UI for browsing and importing individual records
+- CIP R/S and E/Z stereochemistry labels computed via OpenBabel stereo API
+  - Tetrahedral R/S labels shown next to chiral centers
+  - Cis/trans E/Z labels shown at double-bond midpoints
+  - Toggle via Tools → Show CIP labels
+- Memory leaks in `OBNewLoad`, `OBNewSave`, `convertToOBMol()` fixed
+- All `SIGNAL()`/`SLOT()` macros converted to pointer-to-member syntax
+- `qDebug()` calls gated behind `QLoggingCategory` (`xdc_logging.h/cpp`)
+- Legacy Qt3/Qt4 source trees removed from `master`
+- Source directory renamed from `xdrawchem-qt5/` to `xdrawchem/`
+- Flatpak appstream duplicate-component issue fixed
+- `debian/watch` file added for Debian tracker compatibility
+- Release build: zero compiler warnings
+
 **Completed in v2.0.1 cycle (post-v2.0):**
 - Security: buffer-overflow UB in OpenBabel format resolution + atom-label strcpy fixed
 - Security: shell injection risk in Ghemical/KryoMol launch eliminated (QProcess::startDetached)
@@ -69,7 +86,7 @@ Check https://github.com/bryanherger/xdrawchem/issues for any new ones.
 
 ## SECTION 4 — Feature Parity: Medium Priority
 
-**4.1 CIP R/S and E/Z stereochemistry labels** — Every professional tool displays R/S at chiral centres and E/Z at double bonds. XDrawChem draws wedge/hash bonds correctly but never annotates the descriptor. OpenBabel can calculate CIP assignments; the work is overlaying labels on the canvas and encoding them in CML/Molfile output. Highest-value missing feature for pharmaceutical users. **Target: v2.1**
+**4.1 CIP R/S and E/Z stereochemistry labels** — ✅ Implemented. OpenBabel's `OBStereoFacade` perceives tetrahedral (R/S) and cis/trans (E/Z) configurations. Labels are rendered in bold blue text next to chiral centers and at double-bond midpoints. Toggle via Tools → Show CIP labels. Encoding in CML/Molfile output remains for future work. **Target: v2.1**
 
 **4.2 Atom-to-atom reaction mapping** — Numbers atoms across a reaction arrow. Needs new UI mode, DPoint field, and RXN format. High effort. **Target: v2.1 or later**
 
@@ -129,7 +146,7 @@ Check https://github.com/bryanherger/xdrawchem/issues for any new ones.
 
 | Priority | Item | Effort | Notes |
 |---|---|---|---|
-| 🔴 High | 4.1 CIP R/S, E/Z labels | Medium | Biggest feature gap vs competitors |
+| 🔴 High | 4.1 CIP R/S, E/Z labels | Medium | ✅ Labels rendered; CML/Molfile encoding remains |
 | 🔴 High | 4.3 SDF / RXN file support | Medium | ✅ Core I/O + browser UI done. RXN remains |
 | 🟡 Medium | 4.4 Formal charges + isotopes | Medium | Molfile chemical correctness |
 | 🟡 Medium | 4.5 Property panel polish | Low | Could be enabled-by-default |
