@@ -219,7 +219,8 @@ OBMol *Molecule::convertToOBMol()
     vector3 v;
     OBAtom atom;
 
-    for (DPoint *tmp_atom : allpoints) {
+    for ( int i = 0; i < allpoints.count(); ++i ) {
+        DPoint *tmp_atom = allpoints[i];
         v.SetX( tmp_atom->x );
         v.SetY( tmp_atom->y );
         v.SetZ( tmp_atom->z );
@@ -230,6 +231,8 @@ OBMol *Molecule::convertToOBMol()
         // return arbitrary strings for atomic_number==999).
         QByteArray typeBytes = tmp_atom->baseElement().toLatin1();
         atom.SetType( typeBytes.constData() );
+        // Set explicit atom ID so stereo configs can reference this atom.
+        atom.SetId( static_cast<unsigned long>( i ) );
 
         if ( !obmol->AddAtom( atom ) )
             return NULL;

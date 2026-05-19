@@ -62,18 +62,17 @@ void Molecule::CalcCIPLabels()
     qCDebug(lcMolecule) << "CIP: OBMol has" << obmol->NumAtoms() << "atoms,"
                       << obmol->NumBonds() << "bonds";
 
-    // Build a map from OB atom index (1-based) → DPoint* so we can route
-    // results back to our internal data structures.
+    // Build a map from OB atom ID → DPoint* so we can route results back to
+    // our internal data structures.
     QList<DPoint*> allPoints = AllPoints();
-    QMap<int, DPoint*> obAtomIndexToPoint;
+    QMap<unsigned long, DPoint*> obAtomIdToPoint;
 
-    // convertToOBMol() adds atoms in the same order as AllPoints().
-    // OpenBabel stereo configs typically use atom indices (1-based), not
-    // arbitrary GetId() values, so we key by GetIdx() here.
+    // convertToOBMol() sets atom IDs to the 0-based index in AllPoints().
+    // OpenBabel stereo configs use GetId() values (OBStereo::Ref), not GetIdx().
     for ( int i = 0; i < allPoints.count() && i < (int)obmol->NumAtoms(); ++i ) {
         OpenBabel::OBAtom *obAtom = obmol->GetAtom( i + 1 ); // OB is 1-based
         if ( obAtom )
-            obAtomIndexToPoint.insert( obAtom->GetIdx(), allPoints[i] );
+            obAtomIdToPoint.insert( obAtom->GetId(), allPoints[i] );
     }
 
     // Run stereo perception
@@ -91,7 +90,7 @@ void Molecule::CalcCIPLabels()
         if ( !cfg.specified )
             continue;
 
-        DPoint *centerPt = obAtomIndexToPoint.value( cfg.center, nullptr );
+        DPoint *centerPt = obAtomIdToPoint.value( cfg.center, nullptr );
         if ( !centerPt )
             continue;
 
@@ -121,17 +120,25 @@ void Molecule::CalcCIPLabels()
             continue;
 
         OpenBabel::OBCisTransStereo::Config cfg = ct->GetConfig();
+        qCDebug(lcMolecule) << "CIP: cfg.begin=" << (int)cfg.begin << "cfg.end=" << (int)cfg.end
+                              << "specified=" << cfg.specified << "shape=" << (int)cfg.shape;
         if ( !cfg.specified )
             continue;
 
-        // cfg.begin / cfg.end are the atom indices of the double-bond atoms.
-        DPoint *beginPt = obAtomIndexToPoint.value( (int)cfg.begin, nullptr );
-        DPoint *endPt   = obAtomIndexToPoint.value( (int)cfg.end,   nullptr );
-        if ( !beginPt || !endPt )
+        // cfg.begin / cfg.end are the atom IDs (OBStereo::Ref) of the double-bond atoms.
+        DPoint *beginPt = obAtomIdToPoint.value( cfg.begin, nullptr );
+        DPoint *endPt   = obAtomIdToPoint.value( cfg.end,   nullptr );
+        qCDebug(lcMolecule) << "CIP: beginPt=" << beginPt << "endPt=" << endPt;
+        if ( !beginPt || !endPt ) {
+            qCDebug(lcMolecule) << "CIP: DPoint lookup FAILED for begin/end";
             continue;
+        }
 
         // Find the bond connecting these two points.
+        bool foundBond = false;
         for ( Bond *tmp_bond : bonds ) {
+            qCDebug(lcMolecule) << "CIP: checking bond" << tmp_bond->Start() << tmp_bond->End()
+                                  << "vs beginPt=" << beginPt << "endPt=" << endPt;
             if ( ( tmp_bond->Start() == beginPt && tmp_bond->End() == endPt ) ||
                  ( tmp_bond->Start() == endPt   && tmp_bond->End() == beginPt ) ) {
                 // E = trans, Z = cis
@@ -145,8 +152,13 @@ void Molecule::CalcCIPLabels()
                 qCDebug(lcMolecule) << "CIP: found" << label << "bond" << beginPt->x << beginPt->y << "to" << endPt->x << endPt->y;
 
                 s_cipBondLabels.insert( tmp_bond, label );
+                foundBond = true;
                 break;
             }
+        }
+        if ( !foundBond ) {
+            qCDebug(lcMolecule) << "CIP: NO matching bond found for" << beginPt << endPt
+                                  << "bonds count=" << bonds.count();
         }
     }
 

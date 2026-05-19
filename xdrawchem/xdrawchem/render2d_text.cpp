@@ -70,10 +70,10 @@ void Render2D::DrawText_FinishText()
 
     localtexteditor->setReadOnly( true );
 
+    // lt1 = plain text (stored as element / elementmask)
+    // lt2 = rich HTML (stored as displayText for rendering)
+    QString lt1 = localtexteditor->toPlainText();
     QString lt2 = localtexteditor->toHtml();
-
-//    localtexteditor->setTextFormat( Qt::PlainText );
-    QString lt1 = localtexteditor->toHtml();
     QPixmap ltpix = localtexteditor->grab();
 
     qInfo() << "toHtml():" << localtexteditor->toHtml();
