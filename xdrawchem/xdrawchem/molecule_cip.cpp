@@ -75,10 +75,99 @@ void Molecule::CalcCIPLabels()
             obAtomIdToPoint.insert( obAtom->GetId(), allPoints[i] );
     }
 
-    // Run stereo perception
+    // Debug: dump OBMol structure
+    for ( unsigned int i = 1; i <= obmol->NumAtoms(); ++i ) {
+        OpenBabel::OBAtom *a = obmol->GetAtom(i);
+        if ( a ) {
+            qCDebug(lcMolecule) << "CIP: atom" << i << "id=" << a->GetId()
+                                << "elem=" << a->GetAtomicNum()
+                                << "coords=" << a->GetX() << a->GetY();
+        }
+    }
+    for ( unsigned int i = 0; i < obmol->NumBonds(); ++i ) {
+        OpenBabel::OBBond *b = obmol->GetBond(i);
+        if ( b ) {
+            qCDebug(lcMolecule) << "CIP: bond" << i
+                                << "begin=" << b->GetBeginAtomIdx() << "end=" << b->GetEndAtomIdx()
+                                << "order=" << b->GetBondOrder()
+                                << "flags=" << b->GetFlags();
+        }
+    }
+
+    // --- Compute E/Z from 2D coordinates directly ---
+    // For each double bond, find the two highest-priority substituents on each end
+    // and determine if they're on the same side (Z/cis) or opposite sides (E/trans).
+    for ( Bond *tmp_bond : bonds ) {
+        if ( tmp_bond->Order() != 2 )
+            continue;  // skip non-double bonds
+
+        DPoint *c1 = tmp_bond->Start();
+        DPoint *c2 = tmp_bond->End();
+
+        // Find substituents on each carbon
+        QList<DPoint*> subs1;  // substituents on c1 (excluding c2)
+        QList<DPoint*> subs2;  // substituents on c2 (excluding c1)
+        for ( Bond *b : bonds ) {
+            if ( b == tmp_bond )
+                continue;
+            if ( b->Start() == c1 || b->End() == c1 ) {
+                DPoint *other = (b->Start() == c1) ? b->End() : b->Start();
+                if ( other != c2 )
+                    subs1.append( other );
+            }
+            if ( b->Start() == c2 || b->End() == c2 ) {
+                DPoint *other = (b->Start() == c2) ? b->End() : b->Start();
+                if ( other != c1 )
+                    subs2.append( other );
+            }
+        }
+
+        if ( subs1.isEmpty() || subs2.isEmpty() )
+            continue;
+
+        // Pick highest CIP priority substituent on each carbon.
+        // For simplicity, use atomic number as priority (higher = more priority).
+        // A full CIP ranking would need recursive comparison.
+        auto cipPriority = []( DPoint *p ) -> int {
+            return p->getAtomicNumber();
+        };
+
+        DPoint *sub1 = *std::max_element( subs1.begin(), subs1.end(),
+            [&]( DPoint *a, DPoint *b ) { return cipPriority( a ) < cipPriority( b ); } );
+        DPoint *sub2 = *std::max_element( subs2.begin(), subs2.end(),
+            [&]( DPoint *a, DPoint *b ) { return cipPriority( a ) < cipPriority( b ); } );
+
+        // Determine if sub1 and sub2 are on the same side of the double bond.
+        // Vector from c1 to c2:
+        double dx = c2->x - c1->x;
+        double dy = c2->y - c1->y;
+
+        // Line equation: ax + by + c = 0 for bond line
+        double a = dy;
+        double b = -dx;
+        double c = -(a * c1->x + b * c1->y);
+        double dist1 = a * sub1->x + b * sub1->y + c;
+        double dist2 = a * sub2->x + b * sub2->y + c;
+
+        qCDebug(lcMolecule) << "CIP: double bond" << c1->x << c1->y << "to" << c2->x << c2->y
+                              << "sub1=" << sub1->x << sub1->y << "sub2=" << sub2->x << sub2->y
+                              << "dist1=" << dist1 << "dist2=" << dist2;
+
+        // If both distances have the same sign, they're on the same side -> Z (cis)
+        // If opposite signs, they're on opposite sides -> E (trans)
+        QString label;
+        if ( ( dist1 > 0 ) == ( dist2 > 0 ) )
+            label = QStringLiteral( "Z" );
+        else
+            label = QStringLiteral( "E" );
+
+        qCDebug(lcMolecule) << "CIP: computed" << label << "for double bond";
+        s_cipBondLabels.insert( tmp_bond, label );
+    }
+
+    // Run stereo perception for R/S tetrahedral centers
     OpenBabel::OBStereoFacade facade( obmol, true ); // true = call PerceiveStereo
-    qCDebug(lcMolecule) << "CIP: tetrahedral count =" << facade.GetAllTetrahedralStereo().size()
-                      << "cistrans count =" << facade.GetAllCisTransStereo().size();
+    qCDebug(lcMolecule) << "CIP: tetrahedral count =" << facade.GetAllTetrahedralStereo().size();
 
     // --- Tetrahedral (R/S) ---
     std::vector<OpenBabel::OBTetrahedralStereo*> tetraList = facade.GetAllTetrahedralStereo();
@@ -111,56 +200,6 @@ void Molecule::CalcCIPLabels()
             s_cipPointLabels.insert( centerPt, label );
     }
     qCDebug(lcMolecule) << "CIP: R/S labels found:" << s_cipPointLabels.size();
-
-    // --- Cis/Trans (E/Z) ---
-    std::vector<OpenBabel::OBCisTransStereo*> ctList = facade.GetAllCisTransStereo();
-    qCDebug(lcMolecule) << "CIP: processing" << ctList.size() << "cis/trans entries";
-    for ( OpenBabel::OBCisTransStereo *ct : ctList ) {
-        if ( !ct )
-            continue;
-
-        OpenBabel::OBCisTransStereo::Config cfg = ct->GetConfig();
-        qCDebug(lcMolecule) << "CIP: cfg.begin=" << (int)cfg.begin << "cfg.end=" << (int)cfg.end
-                              << "specified=" << cfg.specified << "shape=" << (int)cfg.shape;
-        if ( !cfg.specified )
-            continue;
-
-        // cfg.begin / cfg.end are the atom IDs (OBStereo::Ref) of the double-bond atoms.
-        DPoint *beginPt = obAtomIdToPoint.value( cfg.begin, nullptr );
-        DPoint *endPt   = obAtomIdToPoint.value( cfg.end,   nullptr );
-        qCDebug(lcMolecule) << "CIP: beginPt=" << beginPt << "endPt=" << endPt;
-        if ( !beginPt || !endPt ) {
-            qCDebug(lcMolecule) << "CIP: DPoint lookup FAILED for begin/end";
-            continue;
-        }
-
-        // Find the bond connecting these two points.
-        bool foundBond = false;
-        for ( Bond *tmp_bond : bonds ) {
-            qCDebug(lcMolecule) << "CIP: checking bond" << tmp_bond->Start() << tmp_bond->End()
-                                  << "vs beginPt=" << beginPt << "endPt=" << endPt;
-            if ( ( tmp_bond->Start() == beginPt && tmp_bond->End() == endPt ) ||
-                 ( tmp_bond->Start() == endPt   && tmp_bond->End() == beginPt ) ) {
-                // E = trans, Z = cis
-                // OpenBabel uses ShapeU/ShapeZ to encode this.
-                QString label;
-                if ( cfg.shape == OpenBabel::OBStereo::ShapeZ )
-                    label = QStringLiteral( "Z" );
-                else
-                    label = QStringLiteral( "E" );
-
-                qCDebug(lcMolecule) << "CIP: found" << label << "bond" << beginPt->x << beginPt->y << "to" << endPt->x << endPt->y;
-
-                s_cipBondLabels.insert( tmp_bond, label );
-                foundBond = true;
-                break;
-            }
-        }
-        if ( !foundBond ) {
-            qCDebug(lcMolecule) << "CIP: NO matching bond found for" << beginPt << endPt
-                                  << "bonds count=" << bonds.count();
-        }
-    }
 
     delete obmol;
     s_cipLabelsValid = true;

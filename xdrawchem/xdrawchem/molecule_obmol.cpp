@@ -256,6 +256,9 @@ OBMol *Molecule::convertToOBMol()
     }
 
     obmol->EndModify();
+    // Coordinates are 2D (x,y with z=0), tell OpenBabel so it uses
+    // StereoFrom2D() for stereochemistry perception.
+    obmol->SetDimension(2);
 
     return obmol;
 }
