@@ -20,6 +20,8 @@
 
 #include "application.h"
 #include "clipboard.h"
+#include "xdc_logging.h"
+
 #include "defs.h"
 #include "prefs.h"
 #include "dyk.h"
@@ -206,7 +208,9 @@ int main( int argc, char **argv )
     // translation file for application strings
     QTranslator translator;
 
-    translator.load( QString::fromLatin1( "xdrawchem_" ) + QLocale::system().name(), RingDir );
+    if ( !translator.load( QString::fromLatin1( "xdrawchem_" ) + QLocale::system().name(), RingDir ) ) {
+        qCDebug(lcRender) << "Translator load failed for" << QLocale::system().name();
+    }
     a.installTranslator( &translator );
 
     ApplicationWindow *mw = new ApplicationWindow;

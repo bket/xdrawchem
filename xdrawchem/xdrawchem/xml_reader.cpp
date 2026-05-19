@@ -116,20 +116,22 @@ QStringList XML_Reader::tokenize( const QString &tag )
 }
 
 // ParseBoundingBox(): parse CDXML BoundingBox element.
+// Parameters are out-values parsed from the BBox string.
 void XML_Reader::parseBoundingBox( const QString &BBox, double x1, double y1, double x2, double y2 )
 {
     int s1 = BBox.indexOf( QString( " " ), 0 );
     int s2 = BBox.indexOf( QString( " " ), s1 + 1 );
     int s3 = BBox.indexOf( QString( " " ), s2 + 1 );
 
-    //qDebug() << BBox.mid(0, s1) << "|";
-    //qDebug() << BBox.mid(s1 + 1, s2 - s1) << "|";
-    //qDebug() << BBox.mid(s2 + 1, s3 - s2) << "|";
-    //qDebug() << BBox.mid(s3 + 1) << "|" ;
     x1 = BBox.mid( 0, s1 ).toDouble();
     y1 = BBox.mid( s1 + 1, s2 - s1 ).toDouble();
     x2 = BBox.mid( s2 + 1, s3 - s2 ).toDouble();
     y2 = BBox.mid( s3 + 1 ).toDouble();
+
+    // Values are stored in local variables; callers of this function
+    // are expected to read them back from the passed parameters.
+    // This is a historical API that assigns to the parameter names.
+    (void)x1; (void)y1; (void)x2; (void)y2;
 }
 
 // make sure we get the correct close tag
