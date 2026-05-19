@@ -167,6 +167,7 @@ set(XDC_SOURCES
     xdrawchem/renderarea.cpp
     xdrawchem/retro.cpp
     xdrawchem/ringdialog.cpp
+    xdrawchem/sdfbrowser.cpp
     xdrawchem/smilesdialog.cpp
     xdrawchem/symbol.cpp
     xdrawchem/text.cpp
@@ -242,6 +243,7 @@ set(XDC_HEADERS
     xdrawchem/ringdialog.h
     xdrawchem/rings.h
     xdrawchem/ring_xpm.h
+    xdrawchem/sdfbrowser.h
     xdrawchem/sdg.h
     xdrawchem/setofrings.h
     xdrawchem/smilesdialog.h

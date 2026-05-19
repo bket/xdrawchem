@@ -100,7 +100,7 @@ The `override_dh_auto_test` step runs all unit tests automatically.
 
 ### Install
 ```bash
-sudo dpkg -i xdrawchem_2.0~rc1-1_amd64.deb
+sudo dpkg -i xdrawchem_2.1-1_amd64.deb
 sudo apt-get install -f    # resolve any missing runtime deps
 ```
 
@@ -110,9 +110,123 @@ sudo apt-get install -f    # resolve any missing runtime deps
 
 ---
 
+## Windows (MSVC + NSIS)
+
+### Prerequisites
+
+- **Visual Studio 2022** (Community edition is free) with "Desktop development
+  with C++" workload
+- **CMake >= 3.19** (bundled with VS or from <https://cmake.org/>)
+- **NSIS** (Nullsoft Scriptable Install System) — install via winget:
+  ```powershell
+  winget install NSIS.NSIS
+  ```
+- **vcpkg** for dependency management:
+  ```powershell
+  git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+  C:\vcpkg\bootstrap-vcpkg.bat
+  ```
+- **Qt6** installed via the online installer or vcpkg
+- **OpenBabel 3.x** built or installed
+
+### Build
+
+The CI workflow (`.github/workflows/build-windows.yml`) handles the full build.
+For a local build:
+
+```powershell
+cd xdrawchem
+mkdir build && cd build
+
+# Adjust paths to your Qt6 and OpenBabel installations:
+cmake -G "Visual Studio 17 2022" -A x64 `
+    -DCMAKE_PREFIX_PATH="C:\Qt\6.8.0\msvc2022_64" `
+    -DOpenBabel_INCLUDE_DIR="C:\openbabel\include" `
+    -DOpenBabel_LIBRARY="C:\openbabel\lib\openbabel.lib" `
+    ..
+
+cmake --build . --config Release
+```
+
+### Packaging
+
+The `build-windows.yml` workflow produces:
+- `xdrawchem-2.1-win64.exe` — NSIS installer
+- `xdrawchem-2.1-win64.zip` — Portable zip (no installer)
+
+Both include the Qt6 runtime DLLs, OpenBabel DLLs, and translation files.
+
+### Runtime dependencies
+- Qt6 Core, GUI, Widgets, Network, PrintSupport, Svg
+- OpenBabel 3.x (`openbabel-3.dll`)
+- MSVC Runtime (redistributable included in installer)
+
+---
+
+## macOS (DMG)
+
+### Prerequisites
+
+- **macOS 12+** (Monterey or later)
+- **Xcode 14+** with command-line tools:
+  ```bash
+  xcode-select --install
+  ```
+- **Homebrew** (<https://brew.sh/>)
+- **CMake >= 3.19**
+- **Qt6** (via Homebrew or online installer):
+  ```bash
+  brew install qt@6
+  ```
+- **OpenBabel 3.x**:
+  ```bash
+  brew install open-babel
+  ```
+
+### Build
+
+```bash
+cd xdrawchem
+mkdir build && cd build
+
+cmake -G Ninja \
+    -DCMAKE_PREFIX_PATH="$(brew --prefix qt@6)" \
+    -DOpenBabel_INCLUDE_DIR="$(brew --prefix open-babel)/include/openbabel3" \
+    -DOpenBabel_LIBRARY="$(brew --prefix open-babel)/lib/libopenbabel.dylib" \
+    ..
+
+ninja
+```
+
+### Packaging
+
+The CI workflow (`.github/workflows/build-mac.yml`) produces a `.dmg`:
+
+```bash
+# Create app bundle and DMG (requires create-dmg from Homebrew)
+brew install create-dmg
+
+# The build-mac.yml workflow handles signing, notarization, and DMG creation.
+# For local use, the raw app bundle is at:
+ls build/xdrawchem.app
+```
+
+### Runtime dependencies
+- Qt6 frameworks (embedded in `.app` by `macdeployqt`)
+- OpenBabel (`libopenbabel.7.dylib`, relinked by CI)
+- macOS 12+ (Intel or Apple Silicon, universal binary built by CI)
+
+### Notes
+- Apple Silicon (M1/M2/M3) and Intel binaries are built separately and
+  lipo'd into a universal binary by the CI workflow.
+- Code signing and notarization require an Apple Developer account.
+  Unsigned builds work locally with Gatekeeper disabled (`xattr -cr`).
+
+---
+
 ## Distribution compatibility matrix
 
-| Distro                | Qt6 source   | OpenBabel source | Notes                          |
+| Distro / Platform     | Qt6 source   | OpenBabel source | Notes                          |
 |-----------------------|-------------|-----------------|--------------------------------|
 | RHEL 8 / Rocky 8      | EPEL 8      | EPEL 8          | Enable EPEL before building    |
 | RHEL 9 / Rocky 9      | AppStream   | EPEL 9          | Enable EPEL for openbabel      |
@@ -120,3 +234,5 @@ sudo apt-get install -f    # resolve any missing runtime deps
 | Debian 12 (Bookworm)  | Default     | Default         | No extra repos needed          |
 | Ubuntu 22.04 LTS      | Default     | Default         | No extra repos needed          |
 | Ubuntu 24.04 LTS      | Default     | Default         | No extra repos needed          |
+| Windows 10/11 (MSVC)    | Online installer | vcpkg or self-build | VS 2022 required          |
+| macOS 12+ (Intel/Apple) | Homebrew    | Homebrew        | Xcode 14+ required             |

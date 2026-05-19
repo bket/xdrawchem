@@ -5,29 +5,46 @@ Entries are derived from the Debian changelog and commit history.
 
 ---
 
-## 2.1rc0 — UNRELEASED
+## 2.1rc0 — UNRELEASED (target: 2026-05-25)
 
-### Features
-- 3D structure generation restored: Tools → "Build 3D model of molecule" now
+### New Features
+- **3D structure generation restored** — Tools → "Build 3D model of molecule" now
   produces a 3D MDL molfile locally using OpenBabel's `OBBuilder` for initial
   coordinate generation followed by 250 steps of MMFF94 (or UFF fallback)
   conjugate-gradients minimization. The original BUILD3D code called a
   Fortran-based CGI service on SourceForge that no longer exists; the feature
   had been disabled with a placeholder dialog. No network call required now.
+- **MDL MOL/SDF file I/O** — `chemdata_mdl.cpp` now reads and writes standard MDL
+  MOL and SDF files via OpenBabel, replacing the previous no-op stubs.
+- **SDF multi-record browser** — When opening an `.sdf` file via File → Open,
+  a browser dialog lists all records with molecule names and lets the user
+  navigate with Previous/Next, import individual records, or import all at once.
 
-### Packaging
-- Flatpak: cleanup bare-name desktop/metainfo/icon copies inside the Flatpak
-  sandbox so `appstreamcli compose` does not see two components with the
-  same `<id>` and reject the build with `duplicate-component`
+### Bug Fixes
+- **Memory leaks in `application_ob.cpp`** — `OBNewLoad()` and `OBNewSave()`
+  now properly delete temporary `OBMol` objects.
+- **Memory leak in `molecule_obmol.cpp`** — `convertToOBMol()` no longer leaks
+  the returned `OBMol*` on error paths.
 
-### Repository
-- Removed legacy Qt3 and Qt4 source trees from `master` (they remain
-  available at the `v2.0` tag and earlier)
-- Renamed `xdrawchem-qt5/` to `xdrawchem/` now that it is the only
-  source tree
+### Qt / C++ Modernisation
+- **Remaining `SIGNAL()`/`SLOT()` string macros** converted to
+  pointer-to-member syntax across `application.cpp`, `render2d_event.cpp`,
+  and `main.cpp`. Zero string-based `connect()` calls remain in active code.
+- **`qDebug()` runtime noise gated behind `QLoggingCategory`** — all
+  `qDebug()` / `qInfo()` / `qWarning()` calls in the chemistry and I/O layers
+  now use category macros so they can be silenced with `QT_LOGGING_RULES=xdc=false`.
+
+### Code Cleanup
+- **`netaccess.cpp`** — removed large commented-out `QHttp`-based dead code
+  and unreachable `slotFinished` / `slotData` / `rf` slots.
+- **Repository cleanup** — legacy Qt3/Qt4 source trees removed from `master`;
+  source directory renamed from `xdrawchem-qt5/` to `xdrawchem/`.
+- **Flatpak** — cleaned up bare-name desktop/metainfo/icon copies inside the sandbox
+  so `appstreamcli compose` does not see duplicate `<id>` entries and reject the build.
 
 ### Documentation
-- README: updated screenshot to reflect current UI
+- README: updated screenshot to reflect current UI.
+- `backlog.md`: refreshed to reflect completed v2.1 items.
 
 ---
 

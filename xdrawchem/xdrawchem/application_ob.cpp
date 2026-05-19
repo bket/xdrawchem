@@ -17,6 +17,7 @@ using namespace OpenBabel;
 #include <QStatusBar>
 
 #include "application.h"
+#include "sdfbrowser.h"
 #include "chemdata.h"
 #include "molecule.h"
 #include "dpoint.h"
@@ -81,7 +82,27 @@ void ApplicationWindow::OBImport()
     fd.setFileMode( QFileDialog::ExistingFile );
     fd.setNameFilters( readFilters );
     if ( fd.exec() == QDialog::Accepted ) {
-        OBNewLoad( fd.selectedFiles()[0], fd.selectedNameFilter() );
+        QString selectedFile = fd.selectedFiles()[0];
+        QString selectedFilter = fd.selectedNameFilter();
+
+        // For SDF files, show the multi-record browser instead of
+        // loading only the first molecule through OpenBabel.
+        if ( selectedFile.endsWith(".sdf", Qt::CaseInsensitive) ||
+             selectedFile.endsWith(".sd", Qt::CaseInsensitive) ) {
+            SDFBrowser browser( this, selectedFile, m_chemData, m_renderer );
+            if ( browser.exec() == QDialog::Accepted ) {
+                if ( browser.imported() ) {
+                    setWindowTitle( QString( XDC_VERSION ) + QString( " - " ) + selectedFile );
+                    statusBar()->showMessage( tr( "Loaded SDF: " ) + selectedFile );
+                    filename = selectedFile;
+                    m_chemData->saved();
+                    updatePropertyPanel();
+                }
+            }
+            return;
+        }
+
+        OBNewLoad( selectedFile, selectedFilter );
     }
 }
 

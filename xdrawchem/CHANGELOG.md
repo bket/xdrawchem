@@ -15,6 +15,9 @@ significant codebase modernization.
   (`OBBuilder` + MMFF94/UFF force field minimization). No network call required.
 - **MDL Mol/SDF I/O implemented** via OpenBabel. `chemdata_mdl.cpp` now reads
   and writes standard MDL MOL and SDF files, replacing the previous no-op stubs.
+- **SDF multi-record browser** (`sdfbrowser.cpp`) — When opening an `.sdf` file,
+  a dialog lists all records with molecule names and lets the user import
+  individual records or all at once.
 
 ### Bug Fixes
 

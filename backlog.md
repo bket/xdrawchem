@@ -59,9 +59,9 @@ Check https://github.com/bryanherger/xdrawchem/issues for any new ones.
 
 ## SECTION 3 — Platform & Distribution
 
-**3.4 `debian/watch` file** — The Debian tracker flags a `uscan` error. Adding a `debian/watch` file pointing to the GitHub releases API would let Debian maintainers track upstream automatically.
+**3.4 `debian/watch` file** — ✅ Added. The Debian tracker can now track upstream releases automatically.
 
-**3.5 Flathub submission** — Manifest created and CI workflow added. Actual submission requires a PR to `github.com/flathub/flathub` — do this after v2.0 ships.
+**3.5 Flathub submission** — Manifest created and CI workflow added. Actual submission requires a PR to `github.com/flathub/flathub` — do this after v2.1 ships.
 
 **3.8 Repository screenshot** — Added (`xdrawchem_screenshot_0.png`). AppStream metainfo updated to reference it.
 
@@ -73,11 +73,11 @@ Check https://github.com/bryanherger/xdrawchem/issues for any new ones.
 
 **4.2 Atom-to-atom reaction mapping** — Numbers atoms across a reaction arrow. Needs new UI mode, DPoint field, and RXN format. High effort. **Target: v2.1 or later**
 
-**4.3 MDL SDF / RXN file support** — SDF is the most widely used structure exchange format. `chemdata_mdl.cpp` is currently stubs returning false; OB handles both formats. Needs a multi-record browser UI. **Target: v2.1**
+**4.3 MDL SDF / RXN file support** — ✅ Core I/O implemented in `chemdata_mdl.cpp` via OpenBabel. SDF browser UI added for multi-record navigation. RXN format support remains for future release. **Target: v2.1**
 
 **4.4 Formal charges and isotope labels on atoms** — The bond-edit dialog has +/− radio buttons but they insert cosmetic text, not chemically meaningful Molfile charge fields. `DPoint` needs a `formal_charge` member and serialization in XDC/CML/MDL formats. **Target: v2.1**
 
-**4.5 Live property panel** — Implemented (hidden by default). Update trigger coverage and docking behaviour need more testing before promoting to enabled-by-default. **Polish in v2.1**
+**4.5 Live property panel** — Implemented (hidden by default). Update trigger coverage confirmed on all major paths. Could be promoted to enabled-by-default after wider testing. **Polish in v2.1**
 
 **4.6 Functional group / fragment template browser** — Categorised palette for Boc, Fmoc, TBS, Bn, etc. Library curation + browseable UI. **Target: v2.1 or later**
 
@@ -130,13 +130,13 @@ Check https://github.com/bryanherger/xdrawchem/issues for any new ones.
 | Priority | Item | Effort | Notes |
 |---|---|---|---|
 | 🔴 High | 4.1 CIP R/S, E/Z labels | Medium | Biggest feature gap vs competitors |
-| 🔴 High | 4.3 SDF / RXN file support | Medium | Opens compound database workflows |
+| 🔴 High | 4.3 SDF / RXN file support | Medium | ✅ Core I/O + browser UI done. RXN remains |
 | 🟡 Medium | 4.4 Formal charges + isotopes | Medium | Molfile chemical correctness |
-| 🟡 Medium | 4.5 Property panel polish | Low | Docking + update trigger improvements |
-| 🟡 Medium | 3.5 Flathub PR submission | Low | Submit after v2.0 ships |
+| 🟡 Medium | 4.5 Property panel polish | Low | Could be enabled-by-default |
+| 🟡 Medium | 3.5 Flathub PR submission | Low | Submit after v2.1 ships |
 | 🟡 Medium | 5.4 Electron pushing arrows | Medium | Mechanism drawing |
 | 🟢 Lower | 4.2 Reaction atom mapping | High | Important for reaction DBs |
 | 🟢 Lower | 4.6 Fragment template browser | Medium | Organic chemistry workflows |
 | 🟢 Lower | 6.1 GPG-signed packages | Medium | Security/trust |
-| 🟢 Lower | 3.4 debian/watch file | Low | Debian tracker |
+| 🟢 Lower | 3.4 debian/watch file | Low | ✅ Done |
 | 🟢 Lower | 5.1 OSRA image OCR | High | Very useful but large |
