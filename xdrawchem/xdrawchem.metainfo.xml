@@ -70,12 +70,18 @@
   </screenshots>
 
   <releases>
-    <release version="2.1rc0" type="development">
+    <release version="2.1.0" date="2026-05-25" type="stable">
       <description>
-        <p>XDrawChem 2.1rc0 — first release candidate of the 2.1 series.</p>
+        <p>XDrawChem 2.1.0 — first stable release of the Qt6-based series.</p>
         <ul>
           <li>3D structure generation restored using OpenBabel (no network call required)</li>
-          <li>Flatpak: appstreamcli compose accepts the build (bare-name copies cleaned up in sandbox)</li>
+          <li>MDL MOL/SDF file I/O via OpenBabel (replaces previous no-op stubs)</li>
+          <li>SDF multi-record browser dialog for browsing and importing records</li>
+          <li>CIP R/S and E/Z stereochemistry labels (toggle via Tools menu)</li>
+          <li>All SIGNAL/SLOT macros converted to pointer-to-member syntax</li>
+          <li>qDebug() noise gated behind QLoggingCategory</li>
+          <li>Memory leaks fixed in OBNewLoad/OBNewSave and convertToOBMol()</li>
+          <li>Flatpak: appstreamcli compose accepts the build</li>
           <li>Repository cleanup: legacy Qt3/Qt4 trees removed; source dir renamed xdrawchem-qt5 → xdrawchem</li>
         </ul>
       </description>

@@ -5,7 +5,7 @@ Entries are derived from the Debian changelog and commit history.
 
 ---
 
-## 2.1rc0 — UNRELEASED (target: 2026-05-25)
+## 2.1.0 — 2026-05-25
 
 ### New Features
 - **3D structure generation restored** — Tools → "Build 3D model of molecule" now
