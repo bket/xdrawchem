@@ -710,6 +710,25 @@ ApplicationWindow::ApplicationWindow()
             break;
         }
     }
+
+    /**
+     * help menu
+     */
+    QMenu *help = menuBar()->addMenu( tr( "&Help" ) );
+
+    { auto *_a = new QAction( tr( "&Manual" ), this ); _a->setShortcut( Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &ApplicationWindow::NewManual ); help->addAction( _a ); }
+    help->addAction( tr( "&Did You Know?" ), this, &ApplicationWindow::showDYK );
+    help->addAction( tr( "&About" ), this, &ApplicationWindow::about );
+    help->addAction( tr( "&Support" ), this, &ApplicationWindow::support );
+    help->addAction( tr( "&References" ), this, &ApplicationWindow::Refs );
+
+    help->addSeparator();
+
+    { auto *_a = new QAction( tr( "What's &This" ), this ); _a->setShortcut( Qt::SHIFT | Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &QWidget::whatsThis ); help->addAction( _a ); }
+
+    /**
+     * create data system
+     */
     m_chemData->setClipboard( 0 );
 
     /// connect (non-Qt) data center and render widget
