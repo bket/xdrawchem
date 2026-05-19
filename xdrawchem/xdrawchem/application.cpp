@@ -680,6 +680,26 @@ ApplicationWindow::ApplicationWindow()
 
     tools->addAction( tr( "Build 3D model of molecule" ), this, &ApplicationWindow::To3D );
 
+    /**
+     * help menu
+     */
+    QMenu *help = menuBar()->addMenu( tr( "&Help" ) );
+
+    { auto *_a = new QAction( tr( "&Manual" ), this ); _a->setShortcut( Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &ApplicationWindow::NewManual ); help->addAction( _a ); }
+    help->addAction( tr( "&Did You Know?" ), this, &ApplicationWindow::showDYK );
+    help->addAction( tr( "&About" ), this, &ApplicationWindow::about );
+    help->addAction( tr( "&Support" ), this, &ApplicationWindow::support );
+    help->addAction( tr( "&References" ), this, &ApplicationWindow::Refs );
+
+    help->addSeparator();
+
+    { auto *_a = new QAction( tr( "What's &This" ), this ); _a->setShortcut( Qt::SHIFT | Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &QWidget::whatsThis ); help->addAction( _a ); }
+
+    /**
+     * create data system
+     */
+    m_chemData = new ChemData;
+
     // ── Property panel ────────────────────────────────────────────────────
     m_propertyPanel = new PropertyPanel( this );
     addDockWidget( Qt::RightDockWidgetArea, m_propertyPanel );
@@ -699,10 +719,7 @@ ApplicationWindow::ApplicationWindow()
                     QAction *cipToggle = new QAction( tr( "Show CIP labels" ), this );
                     cipToggle->setCheckable( true );
                     cipToggle->setChecked( preferences.showCIPLabels );
-                    connect( cipToggle, &QAction::toggled, this, [this]( bool checked ) {
-                        preferences.showCIPLabels = checked;
-                        m_renderer->update();
-                    } );
+                    connect( cipToggle, SIGNAL(toggled(bool)), this, SLOT(toggleCIPLabels(bool)) );
                     menu->insertAction( a, cipToggle );
                     break;
                 }
@@ -710,25 +727,6 @@ ApplicationWindow::ApplicationWindow()
             break;
         }
     }
-
-    /**
-     * help menu
-     */
-    QMenu *help = menuBar()->addMenu( tr( "&Help" ) );
-
-    { auto *_a = new QAction( tr( "&Manual" ), this ); _a->setShortcut( Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &ApplicationWindow::NewManual ); help->addAction( _a ); }
-    help->addAction( tr( "&Did You Know?" ), this, &ApplicationWindow::showDYK );
-    help->addAction( tr( "&About" ), this, &ApplicationWindow::about );
-    help->addAction( tr( "&Support" ), this, &ApplicationWindow::support );
-    help->addAction( tr( "&References" ), this, &ApplicationWindow::Refs );
-
-    help->addSeparator();
-
-    { auto *_a = new QAction( tr( "What's &This" ), this ); _a->setShortcut( Qt::SHIFT | Qt::Key_F1 ); connect( _a, &QAction::triggered, this, &QWidget::whatsThis ); help->addAction( _a ); }
-
-    /**
-     * create data system
-     */
     m_chemData->setClipboard( 0 );
 
     /// connect (non-Qt) data center and render widget
@@ -2043,6 +2041,13 @@ void ApplicationWindow::DrawRegularArrow()
 
 // ── Live property panel ───────────────────────────────────────────────────
 // Called via ChemData::SignalMoleculeChanged after every structural edit.
+void ApplicationWindow::toggleCIPLabels( bool checked )
+{
+    preferences.showCIPLabels = checked;
+    if ( m_renderer )
+        m_renderer->update();
+}
+
 void ApplicationWindow::updatePropertyPanel()
 {
     if ( !m_propertyPanel || !m_propertyPanel->isVisible() )

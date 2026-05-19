@@ -151,6 +151,8 @@ public slots:
     void XDCSettings();
     void InsertSymbol();
 
+    void toggleCIPLabels(bool);  // Tools → Show CIP labels
+
     void OBGetFilters();
     void OBImport();
     void OBNewLoad(QString, QString);
