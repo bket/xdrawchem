@@ -145,10 +145,13 @@ public:
                 rulerFont.fromString( line.mid(10) );
             }
             if (line.toUpper().contains("SHOW_CIP_LABELS") > 0) {
-                if (line.toUpper().contains("TRUE"))
+                if (line.toUpper().contains("TRUE")) {
                     showCIPLabels = true;
-                else
+                    qDebug() << "CIP: Loaded SHOW_CIP_LABELS = true";
+                } else {
                     showCIPLabels = false;
+                    qDebug() << "CIP: Loaded SHOW_CIP_LABELS = false";
+                }
             }
         } while (!tin.atEnd());
 

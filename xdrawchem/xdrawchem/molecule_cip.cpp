@@ -30,7 +30,7 @@ OB_COMPAT_END
 
 void Molecule::ClearCIPCache()
 {
-    qCDebug(lcMolecule) << "CIP: ClearCIPCache called for molecule";
+    qDebug() << "CIP: ClearCIPCache called for molecule";
     m_cipPointLabels.clear();
     m_cipBondLabels.clear();
     m_cipLabelsValid = false;
@@ -38,7 +38,7 @@ void Molecule::ClearCIPCache()
 
 void Molecule::CalcCIPLabels()
 {
-    qCDebug(lcMolecule) << "CIP: CalcCIPLabels called, m_cipLabelsValid=" << m_cipLabelsValid;
+    qDebug() << "CIP: CalcCIPLabels called, m_cipLabelsValid=" << m_cipLabelsValid;
     if ( m_cipLabelsValid )
         return;
 
@@ -55,7 +55,7 @@ void Molecule::CalcCIPLabels()
         return;
     }
 
-    qCDebug(lcMolecule) << "CIP: OBMol has" << obmol->NumAtoms() << "atoms,"
+    qDebug() << "CIP: OBMol has" << obmol->NumAtoms() << "atoms,"
                       << obmol->NumBonds() << "bonds";
 
     // Build a map from OB atom ID → DPoint* so we can route results back to
@@ -75,7 +75,7 @@ void Molecule::CalcCIPLabels()
     for ( unsigned int i = 1; i <= obmol->NumAtoms(); ++i ) {
         OpenBabel::OBAtom *a = obmol->GetAtom(i);
         if ( a ) {
-            qCDebug(lcMolecule) << "CIP: atom" << i << "id=" << a->GetId()
+            qDebug() << "CIP: atom" << i << "id=" << a->GetId()
                                 << "elem=" << a->GetAtomicNum()
                                 << "coords=" << a->GetX() << a->GetY();
         }
@@ -83,7 +83,7 @@ void Molecule::CalcCIPLabels()
     for ( unsigned int i = 0; i < obmol->NumBonds(); ++i ) {
         OpenBabel::OBBond *b = obmol->GetBond(i);
         if ( b ) {
-            qCDebug(lcMolecule) << "CIP: bond" << i
+            qDebug() << "CIP: bond" << i
                                 << "begin=" << b->GetBeginAtomIdx() << "end=" << b->GetEndAtomIdx()
                                 << "order=" << b->GetBondOrder()
                                 << "flags=" << b->GetFlags();
@@ -147,7 +147,7 @@ void Molecule::CalcCIPLabels()
         int countMax2 = std::count_if( subs2.begin(), subs2.end(),
             [&]( DPoint *p ) { return cipPriority( p ) == maxPriority2; } );
         if ( countMax1 > 1 || countMax2 > 1 ) {
-            qCDebug(lcMolecule) << "CIP: skipping - multiple substituents with same priority";
+            qDebug() << "CIP: skipping - multiple substituents with same priority";
             continue;
         }
 
@@ -163,7 +163,7 @@ void Molecule::CalcCIPLabels()
         double dist1 = a * sub1->x + b * sub1->y + c;
         double dist2 = a * sub2->x + b * sub2->y + c;
 
-        qCDebug(lcMolecule) << "CIP: double bond" << c1->x << c1->y << "to" << c2->x << c2->y
+        qDebug() << "CIP: double bond" << c1->x << c1->y << "to" << c2->x << c2->y
                               << "sub1=" << sub1->x << sub1->y << "sub2=" << sub2->x << sub2->y
                               << "dist1=" << dist1 << "dist2=" << dist2;
 
@@ -175,13 +175,13 @@ void Molecule::CalcCIPLabels()
         else
             label = QStringLiteral( "E" );
 
-        qCDebug(lcMolecule) << "CIP: computed" << label << "for double bond";
+        qDebug() << "CIP: computed" << label << "for double bond";
         m_cipBondLabels.insert( tmp_bond, label );
     }
 
     // Run stereo perception for R/S tetrahedral centers
     OpenBabel::OBStereoFacade facade( obmol, true ); // true = call PerceiveStereo
-    qCDebug(lcMolecule) << "CIP: tetrahedral count =" << facade.GetAllTetrahedralStereo().size();
+    qDebug() << "CIP: tetrahedral count =" << facade.GetAllTetrahedralStereo().size();
 
     // --- Tetrahedral (R/S) ---
     std::vector<OpenBabel::OBTetrahedralStereo*> tetraList = facade.GetAllTetrahedralStereo();
@@ -213,7 +213,7 @@ void Molecule::CalcCIPLabels()
         if ( !label.isEmpty() )
             m_cipPointLabels.insert( centerPt, label );
     }
-    qCDebug(lcMolecule) << "CIP: R/S labels found:" << m_cipPointLabels.size();
+    qDebug() << "CIP: R/S labels found:" << m_cipPointLabels.size();
 
     delete obmol;
     m_cipLabelsValid = true;
@@ -221,6 +221,7 @@ void Molecule::CalcCIPLabels()
 
 void Molecule::DrawCIPLabels()
 {
+    qDebug() << "CIP: DrawCIPLabels called, m_cipLabelsValid=" << m_cipLabelsValid;
     if ( !m_cipLabelsValid )
         CalcCIPLabels();
 

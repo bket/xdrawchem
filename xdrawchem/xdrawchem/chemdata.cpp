@@ -299,6 +299,7 @@ void ChemData::Erase( Drawable * d )
 
 void ChemData::EraseSelected()
 {
+    qDebug() << "CIP: ChemData::EraseSelected() called";
     Molecule *m;
 
     QList < Drawable * >removelist;
@@ -340,6 +341,7 @@ void ChemData::EraseSelected()
 // Split Molecule's which hold multiple structures (e.g. after delete)
 void ChemData::DetectSplit()
 {
+    qDebug() << "CIP: DetectSplit called";
     QList< Drawable *> removelist;
     QList< Molecule *> split_list;
     Molecule *tmp_mol;
@@ -350,7 +352,7 @@ void ChemData::DetectSplit()
             tmp_mol = ( Molecule * ) tmp_draw;
             split_list = tmp_mol->MakeSplit();
             if ( split_list.count() > 1 ) {
-                qCDebug(lcChemData) << "Split needed";
+                qDebug() << "CIP: Split needed";
                 removelist.append( tmp_draw );
                 for (Drawable *td2 : split_list) {
                     drawlist.append( td2 );

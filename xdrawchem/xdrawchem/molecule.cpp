@@ -771,6 +771,7 @@ bool Molecule::Erase( Drawable * d )
 // Erase selected items
 void Molecule::EraseSelected()
 {
+    qDebug() << "CIP: Molecule::EraseSelected() called";
     QList < Bond * >removebonds;
     QList < Text * >removetext;
     QList < Symbol * >removesym;
@@ -1264,7 +1265,7 @@ void Molecule::FromXML( QString xml_tag )
 void Molecule::Changed()
 {
     // add hydrogens and correct labels
-    qCDebug(lcMolecule) << "CIP: Molecule::Changed() called, calling ClearCIPCache";
+    qDebug() << "CIP: Molecule::Changed() called, calling ClearCIPCache";
     AddHydrogens();
     ClearCIPCache();
     return;
