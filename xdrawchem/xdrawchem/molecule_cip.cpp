@@ -116,8 +116,14 @@ void Molecule::CalcCIPLabels()
             }
         }
 
-        if ( subs1.isEmpty() || subs2.isEmpty() )
+        // For E/Z isomerism to exist, each double-bond carbon must have exactly
+        // one non-double-bond substituent (i.e., exactly 2 total bonds).
+        // If a carbon has 2+ substituents, there's no cis/trans isomerism.
+        if ( subs1.count() != 1 || subs2.count() != 1 ) {
+            qCDebug(lcMolecule) << "CIP: skipping double bond - substituent count"
+                                << subs1.count() << subs2.count();
             continue;
+        }
 
         // Pick highest CIP priority substituent on each carbon.
         // For simplicity, use atomic number as priority (higher = more priority).
