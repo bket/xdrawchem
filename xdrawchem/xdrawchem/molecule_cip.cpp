@@ -247,7 +247,8 @@ void Molecule::DrawCIPLabels()
         QString label = it.value();
 
         // Midpoint of bond, offset slightly to avoid overlapping the bond line.
-        QPoint mid = b->midpoint().toPointF().toPoint();
+        QPointF midF = b->midpoint();
+        QPoint mid( qRound( midF.x() ), qRound( midF.y() ) );
         mid.rx() += 6;
         mid.ry() -= 6;
         r->drawString( label, mid, labelColor, labelFont );
