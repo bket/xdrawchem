@@ -751,6 +751,7 @@ bool Molecule::Erase( Drawable * d )
             if ( removed > 0 ) {
                 d->Start()->element = "C";
                 delete d;
+                Changed();
             }
             return removed;
         }
