@@ -5,8 +5,8 @@
 //   - Tetrahedral (R/S) stereocenters
 //   - Cis/trans (E/Z) double bonds
 //
-// Labels are computed on demand and cached in QMaps keyed by DPoint/Bond
-// pointers so repeated rendering is cheap.
+// Labels are computed on demand and cached in per-molecule QMaps keyed by
+// DPoint/Bond pointers so repeated rendering is cheap.
 
 #include "ob_compat.h"
 OB_COMPAT_BEGIN
@@ -28,26 +28,20 @@ OB_COMPAT_END
 #include "xdc_logging.h"
 #include <QLoggingCategory>
 
-// Static caches so labels persist across render passes without recomputation.
-// Cleared whenever the molecule structure changes (see Molecule::Changed()).
-static QMap<DPoint*, QString> s_cipPointLabels;
-static QMap<Bond*, QString>   s_cipBondLabels;
-static bool s_cipLabelsValid = false;
-
 void Molecule::ClearCIPCache()
 {
-    s_cipPointLabels.clear();
-    s_cipBondLabels.clear();
-    s_cipLabelsValid = false;
+    m_cipPointLabels.clear();
+    m_cipBondLabels.clear();
+    m_cipLabelsValid = false;
 }
 
 void Molecule::CalcCIPLabels()
 {
-    if ( s_cipLabelsValid )
+    if ( m_cipLabelsValid )
         return;
 
-    s_cipPointLabels.clear();
-    s_cipBondLabels.clear();
+    m_cipPointLabels.clear();
+    m_cipBondLabels.clear();
 
     // Need an OBMol to run stereo perception.  convertToOBMol() builds one
     // from the current molecule geometry.  This is a relatively expensive
@@ -55,7 +49,7 @@ void Molecule::CalcCIPLabels()
     OpenBabel::OBMol *obmol = convertToOBMol();
     if ( !obmol || obmol->NumAtoms() == 0 ) {
         delete obmol;
-        s_cipLabelsValid = true;
+        m_cipLabelsValid = true;
         return;
     }
 
@@ -162,7 +156,7 @@ void Molecule::CalcCIPLabels()
             label = QStringLiteral( "E" );
 
         qCDebug(lcMolecule) << "CIP: computed" << label << "for double bond";
-        s_cipBondLabels.insert( tmp_bond, label );
+        m_cipBondLabels.insert( tmp_bond, label );
     }
 
     // Run stereo perception for R/S tetrahedral centers
@@ -197,27 +191,27 @@ void Molecule::CalcCIPLabels()
             label = QString(); // UnknownWinding
 
         if ( !label.isEmpty() )
-            s_cipPointLabels.insert( centerPt, label );
+            m_cipPointLabels.insert( centerPt, label );
     }
-    qCDebug(lcMolecule) << "CIP: R/S labels found:" << s_cipPointLabels.size();
+    qCDebug(lcMolecule) << "CIP: R/S labels found:" << m_cipPointLabels.size();
 
     delete obmol;
-    s_cipLabelsValid = true;
+    m_cipLabelsValid = true;
 }
 
 void Molecule::DrawCIPLabels()
 {
-    if ( !s_cipLabelsValid )
+    if ( !m_cipLabelsValid )
         CalcCIPLabels();
 
-    if ( s_cipPointLabels.isEmpty() && s_cipBondLabels.isEmpty() )
+    if ( m_cipPointLabels.isEmpty() && m_cipBondLabels.isEmpty() )
         return;
 
     QFont labelFont( QStringLiteral( "Helvetica" ), 10, QFont::Bold );
     QColor labelColor( 0, 100, 200 ); // distinct blue
 
     // Draw R/S next to chiral centers
-    for ( auto it = s_cipPointLabels.constBegin(); it != s_cipPointLabels.constEnd(); ++it ) {
+    for ( auto it = m_cipPointLabels.constBegin(); it != m_cipPointLabels.constEnd(); ++it ) {
         DPoint *pt = it.key();
         QString label = it.value();
 
@@ -227,7 +221,7 @@ void Molecule::DrawCIPLabels()
     }
 
     // Draw E/Z at midpoint of double bonds
-    for ( auto it = s_cipBondLabels.constBegin(); it != s_cipBondLabels.constEnd(); ++it ) {
+    for ( auto it = m_cipBondLabels.constBegin(); it != m_cipBondLabels.constEnd(); ++it ) {
         Bond *b = it.key();
         QString label = it.value();
 
@@ -241,14 +235,14 @@ void Molecule::DrawCIPLabels()
 
 QString Molecule::GetCIPLabelForPoint( DPoint *dp )
 {
-    if ( !s_cipLabelsValid )
+    if ( !m_cipLabelsValid )
         CalcCIPLabels();
-    return s_cipPointLabels.value( dp, QString() );
+    return m_cipPointLabels.value( dp, QString() );
 }
 
 QString Molecule::GetCIPLabelForBond( Bond *b )
 {
-    if ( !s_cipLabelsValid )
+    if ( !m_cipLabelsValid )
         CalcCIPLabels();
-    return s_cipBondLabels.value( b, QString() );
+    return m_cipBondLabels.value( b, QString() );
 }

@@ -224,6 +224,11 @@ private:
     bool showPC;
     // reactivity info
     QStringList atomRxns, bondRxns;
+
+    // --- CIP stereochemistry cache (per-molecule) ---
+    bool m_cipLabelsValid = false;
+    QMap<DPoint*, QString> m_cipPointLabels;
+    QMap<Bond*, QString> m_cipBondLabels;
 };
 
 #endif
