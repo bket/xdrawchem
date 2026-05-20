@@ -7,6 +7,7 @@
 #include "text.h"
 #include "dpoint.h"
 #include "defs.h"
+#include "xdc_logging.h"
 
 Molecule::Molecule( Render2D * r1, QObject * parent )
     : Drawable( parent )
@@ -1263,7 +1264,7 @@ void Molecule::FromXML( QString xml_tag )
 void Molecule::Changed()
 {
     // add hydrogens and correct labels
-    //qDebug() << "changed" ;
+    qCDebug(lcMolecule) << "CIP: Molecule::Changed() called, calling ClearCIPCache";
     AddHydrogens();
     ClearCIPCache();
     return;

@@ -30,6 +30,7 @@ OB_COMPAT_END
 
 void Molecule::ClearCIPCache()
 {
+    qCDebug(lcMolecule) << "CIP: ClearCIPCache called for molecule";
     m_cipPointLabels.clear();
     m_cipBondLabels.clear();
     m_cipLabelsValid = false;
@@ -37,6 +38,7 @@ void Molecule::ClearCIPCache()
 
 void Molecule::CalcCIPLabels()
 {
+    qCDebug(lcMolecule) << "CIP: CalcCIPLabels called, m_cipLabelsValid=" << m_cipLabelsValid;
     if ( m_cipLabelsValid )
         return;
 
@@ -134,6 +136,20 @@ void Molecule::CalcCIPLabels()
             [&]( DPoint *a, DPoint *b ) { return cipPriority( a ) < cipPriority( b ); } );
         DPoint *sub2 = *std::max_element( subs2.begin(), subs2.end(),
             [&]( DPoint *a, DPoint *b ) { return cipPriority( a ) < cipPriority( b ); } );
+
+        // Check that the highest-priority substituent is unique on each carbon.
+        // If there are multiple substituents with the same highest priority,
+        // there's no E/Z isomerism (e.g., (CH3)2C=CH-CH3).
+        int maxPriority1 = cipPriority( sub1 );
+        int maxPriority2 = cipPriority( sub2 );
+        int countMax1 = std::count_if( subs1.begin(), subs1.end(),
+            [&]( DPoint *p ) { return cipPriority( p ) == maxPriority1; } );
+        int countMax2 = std::count_if( subs2.begin(), subs2.end(),
+            [&]( DPoint *p ) { return cipPriority( p ) == maxPriority2; } );
+        if ( countMax1 > 1 || countMax2 > 1 ) {
+            qCDebug(lcMolecule) << "CIP: skipping - multiple substituents with same priority";
+            continue;
+        }
 
         // Determine if sub1 and sub2 are on the same side of the double bond.
         // Vector from c1 to c2:

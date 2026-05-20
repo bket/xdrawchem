@@ -43,7 +43,7 @@ public:
         mainFont = QFont( "Helvetica", 10 );
         rulerFont = QFont( "Courier", 8 );
         bondcenter = false;
-        show_cip_labels = false;
+        showCIPLabels = false;
     }
 
     void setFile( QString fn, bool fb )
@@ -146,9 +146,9 @@ public:
             }
             if (line.toUpper().contains("SHOW_CIP_LABELS") > 0) {
                 if (line.toUpper().contains("TRUE"))
-                    show_cip_labels = true;
+                    showCIPLabels = true;
                 else
-                    show_cip_labels = false;
+                    showCIPLabels = false;
             }
         } while (!tin.atEnd());
 
@@ -202,7 +202,7 @@ public:
         tout << "GRIDSPACE " << gridspace << Qt::endl;
         tout << "MAINFONT " << mainFont.toString() << Qt::endl;
         tout << "RULERFONT " << rulerFont.toString() << Qt::endl;
-        if (show_cip_labels)
+        if (showCIPLabels)
             tout << "SHOW_CIP_LABELS true" << Qt::endl;
         else
             tout << "SHOW_CIP_LABELS false" << Qt::endl;
@@ -277,8 +277,8 @@ public:
     bool getBondCenter() { return bondcenter; }
     void setDpi(int d1) { paper_dpi = d1; }
     int getDpi() { return paper_dpi; }
-    bool getShowCIPLabels() { return show_cip_labels; }
-    void setShowCIPLabels( bool b ) { show_cip_labels = b; }
+    bool getShowCIPLabels() { return showCIPLabels; }
+    void setShowCIPLabels( bool b ) { showCIPLabels = b; }
 
 private:
     bool fixed_arrow, fixed_bond, fix_hydrogens;
@@ -299,7 +299,6 @@ private:
     int units;  // PIXELS, ENGLISH, METRIC - see defs.h
     int gridmode, gridspace, drawgrid, snapgrid;
     int zoom;  // not saved.
-    bool show_cip_labels;  // show CIP R/S, E/Z labels
     QFont mainFont, rulerFont;  // added at user request
     bool bondcenter;
 };
