@@ -42,6 +42,9 @@ void Molecule::CalcCIPLabels()
     if ( m_cipLabelsValid )
         return;
 
+    // Ensure ring data is available so we can detect double bonds inside rings.
+    MakeSSSR();
+
     m_cipPointLabels.clear();
     m_cipBondLabels.clear();
 
@@ -93,12 +96,27 @@ void Molecule::CalcCIPLabels()
     // --- Compute E/Z from 2D coordinates directly ---
     // For each double bond, find the two highest-priority substituents on each end
     // and determine if they're on the same side (Z/cis) or opposite sides (E/trans).
+    // Skip double bonds that lie entirely within a ring because the ring constrains
+    // the geometry to cis-like configurations, so E/Z labels are not meaningful.
     for ( Bond *tmp_bond : bonds ) {
         if ( tmp_bond->Order() != 2 )
             continue;  // skip non-double bonds
 
         DPoint *c1 = tmp_bond->Start();
         DPoint *c2 = tmp_bond->End();
+
+        // If both atoms of the double bond belong to a common ring, skip E/Z labeling
+        bool bothInSameRing = false;
+        for ( QList<DPoint *> *ring : this_sssr.sssr ) {
+            if ( ring->contains( c1 ) && ring->contains( c2 ) ) {
+                bothInSameRing = true;
+                break;
+            }
+        }
+        if ( bothInSameRing ) {
+            qDebug() << "CIP: skipping E/Z for ring double bond";
+            continue;
+        }
 
         // Find substituents on each carbon
         QList<DPoint*> subs1;  // substituents on c1 (excluding c2)
