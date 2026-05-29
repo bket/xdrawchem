@@ -431,11 +431,22 @@ void Molecule::MakeTomoveList()
                 tomove.append( tmp_pt );
         }
     }
+    // Fallback: include directly highlighted atoms (from NewSelectRect).
+    // This enables partial-molecule moves when atoms are selected but
+    // bonds are not highlighted (e.g. functional group selection).
+    for (DPoint *tmp_pt : AllPoints()) {
+        if ( tmp_pt->isHighlighted() && tomove.contains( tmp_pt ) == 0 )
+            tomove.append( tmp_pt );
+    }
 }
 
 void Molecule::Move( double dx, double dy )
 {
-    MakeTomoveList();
+    // Only call MakeTomoveList() if tomove is empty.
+    // This preserves the tomove list populated by Rotate() during
+    // SmartPlace ring placement, preventing atoms from being left behind.
+    if ( tomove.size() == 0 )
+        MakeTomoveList();
 
     for (DPoint *tmp_pt : tomove) {
         tmp_pt->x += dx;
@@ -446,6 +457,15 @@ void Molecule::Move( double dx, double dy )
 void Molecule::Rotate( DPoint * origin, double angle )
 {
     MakeTomoveList();
+
+    // Fallback: if nothing is highlighted (e.g. during SmartPlace ring
+    // placement where bonds aren't selected yet), rotate all atoms.
+    if ( tomove.size() == 0 ) {
+        for (DPoint *tmp_pt : AllPoints()) {
+            if ( tomove.contains( tmp_pt ) == 0 )
+                tomove.append( tmp_pt );
+        }
+    }
 
     for (DPoint *tmp_pt : tomove) {
         double thisx = tmp_pt->x - origin->x;
@@ -463,6 +483,15 @@ void Molecule::Rotate( DPoint * origin, double angle )
 void Molecule::Rotate( double angle )
 {
     MakeTomoveList();
+
+    // Fallback: if nothing is highlighted (e.g. during SmartPlace ring
+    // placement where bonds aren't selected yet), rotate all atoms.
+    if ( tomove.size() == 0 ) {
+        for (DPoint *tmp_pt : AllPoints()) {
+            if ( tomove.contains( tmp_pt ) == 0 )
+                tomove.append( tmp_pt );
+        }
+    }
 
     double centerx = 0.0, centery = 0.0;
     int n = 0;

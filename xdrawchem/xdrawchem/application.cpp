@@ -708,6 +708,10 @@ ApplicationWindow::ApplicationWindow()
              this,       &ApplicationWindow::updatePropertyPanel );
     connect( m_chemData, &ChemData::SignalSelectionChanged,
              this,       &ApplicationWindow::updatePropertyPanel );
+    // Fallback: update panel after every mouse operation completes.
+    // This catches code paths that forget to emit SignalMoleculeChanged.
+    connect( m_renderer, &Render2D::SignalMouseOperationFinished,
+             this,       &ApplicationWindow::updatePropertyPanel );
 
     // Now insert the property panel toggle and CIP labels toggle into Tools menu.
     for ( QMenu *menu : menuBar()->findChildren<QMenu *>() ) {

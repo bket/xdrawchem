@@ -206,6 +206,10 @@ signals:
     void XDCEventSignal(XDC_Event *);
     void textOn( QFont );
     void TextOff();
+    // Emitted at the end of every mouse interaction (on release).
+    // ApplicationWindow uses this to refresh the property panel so it
+    // always reflects the current selection / last-edited molecule.
+    void SignalMouseOperationFinished();
 
 protected:
     // defined in render2d_event.cpp

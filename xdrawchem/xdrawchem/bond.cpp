@@ -88,7 +88,13 @@ void Bond::Render()
     double myangle, x1, y1, x2, y2, lx, ly, cf = 0.02;
     QColor c1;
 
-    if ( highlighted )
+    // effectiveHighlighted: bond renders red if directly highlighted,
+    // OR if both endpoint atoms are highlighted (covers partial selection
+    // and whole-molecule selection via NewSelectRect atom highlighting).
+    bool effectiveHighlighted = highlighted ||
+        (start->isHighlighted() && end->isHighlighted());
+
+    if ( effectiveHighlighted )
         c1 = QColor( 255, 0, 0 );
     else
         c1 = color;

@@ -40,6 +40,7 @@ void ChemData::FinishMove()
     }
 
     notSaved = true;
+    emit SignalMoleculeChanged();
 }
 
 Molecule *ChemData::firstMolecule()
@@ -74,6 +75,7 @@ void ChemData::addMolecule( Molecule * m1 )
 {
     drawlist.append( m1 );
     notSaved = true;
+    emit SignalMoleculeChanged();
 }
 
 Molecule* ChemData::findMolecule(DPoint* p) {
@@ -98,6 +100,7 @@ void ChemData::addArrow( DPoint * s, DPoint * e, QColor c, int t, int p2, bool h
         a1->Highlight( true );
     drawlist.append( a1 );
     notSaved = true;
+    emit SignalMoleculeChanged();
 }
 
 void ChemData::addCurveArrow( DPoint * s, DPoint * e, QColor c, QString s1, bool hl )
@@ -151,6 +154,7 @@ void ChemData::addGraphicObject( GraphicObject * t )
 {
     drawlist.append( t );
     notSaved = true;
+    emit SignalMoleculeChanged();
 }
 
 void ChemData::addBond( DPoint * s, DPoint * e, int thick, int order, QColor c, bool hl )
@@ -173,6 +177,7 @@ void ChemData::addBond( DPoint * s, DPoint * e, int thick, int order, QColor c, 
         m->addBond( s, e, thick, order, c, hl );
         drawlist.append( m );
         notSaved = true;
+        emit SignalMoleculeChanged();
         return;
     }
     // one point exists, or both in same molecule
@@ -184,6 +189,7 @@ void ChemData::addBond( DPoint * s, DPoint * e, int thick, int order, QColor c, 
         //qInfo() << "one point exists, or both in same molecule";
         m1->addBond( s, e, thick, order, c, hl );
         notSaved = true;
+        emit SignalMoleculeChanged();
         return;
     }
     // both points exist in different molecules
@@ -195,6 +201,7 @@ void ChemData::addBond( DPoint * s, DPoint * e, int thick, int order, QColor c, 
         delete m2;
     }
     notSaved = true;
+    emit SignalMoleculeChanged();
 }
 
 void ChemData::addSymbol( DPoint * a, QString symbolfile, bool hl )
@@ -211,11 +218,13 @@ void ChemData::addSymbol( DPoint * a, QString symbolfile, bool hl )
         if ( ( tmp_draw->Find( a ) == true ) && ( tmp_draw->Type() == TYPE_MOLECULE ) ) {
             m1 = ( Molecule * ) tmp_draw;
             m1->addSymbol( s1 );
+            emit SignalMoleculeChanged();
             return;
         }
     }
     drawlist.append( s1 );
     notSaved = true;
+    emit SignalMoleculeChanged();
 }
 
 Molecule *ChemData::insideMolecule( DPoint * t1 )
@@ -479,6 +488,28 @@ void ChemData::NewSelectRect( QRect n, bool shiftdown )
     for (Drawable *tmp_draw : drawlist) {
         tmp_draw->isWithinRect( n, shiftdown );
     }
+
+    // Fallback: if any atom in a molecule is highlighted but no bond is,
+    // select all bonds in that molecule (user wants whole-molecule select).
+    // Bond::isWithinRect only highlights when BOTH endpoints are strictly
+    // inside the box, which misses atoms whose bonds cross the boundary.
+    for (Drawable *tmp_draw : drawlist) {
+        if (tmp_draw->Type() != TYPE_MOLECULE)
+            continue;
+        Molecule *m = (Molecule *) tmp_draw;
+        bool anyAtomHighlighted = false;
+        for (DPoint *tmp_pt : m->AllPoints()) {
+            if (tmp_pt->isHighlighted()) {
+                anyAtomHighlighted = true;
+                break;
+            }
+        }
+        if (anyAtomHighlighted && !m->Highlighted()) {
+            for (Bond *tmp_bond : m->getBonds())
+                tmp_bond->Highlight(true);
+        }
+    }
+
     emit SignalSelectionChanged();
 }
 

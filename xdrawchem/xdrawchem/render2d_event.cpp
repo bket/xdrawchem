@@ -1219,6 +1219,9 @@ void Render2D::mouseReleaseEvent( QMouseEvent *e1 )
         smartplace = 0;
         return;
     }
+    // After any mouse operation completes, notify listeners so the property
+    // panel can refresh regardless of which code path was taken.
+    emit SignalMouseOperationFinished();
 }
 
 void Render2D::mouseMoveEvent( QMouseEvent * e1 )
