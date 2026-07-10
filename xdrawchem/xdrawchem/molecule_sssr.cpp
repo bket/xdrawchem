@@ -107,6 +107,10 @@ void SSSR::BuildSSSR( QList < DPoint * >alist )
     sssr.clear();
     sssr_data.clear();
 
+    for (DPoint *pt : alist) {
+        if (pt) pt->inring = false;
+    }
+
     int atomsRemoved;
 
     structureAtoms = alist;
