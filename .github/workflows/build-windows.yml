@@ -101,6 +101,9 @@ jobs:
             Write-Host "WARNING: could not find xml section boundaries"
           }
 
+          # CMake 4.0+ no longer supports cmake_minimum_required(VERSION < 3.5)
+          # used by OpenBabel 3.1.1. Force a compatibility minimum via the
+          # command line so the existing upstream CMakeLists.txt still works.
           cmake -S ob-src -B ob-build `
             -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
@@ -114,7 +117,8 @@ jobs:
             -DCMAKE_DISABLE_FIND_PACKAGE_LibXml2=TRUE `
             -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=TRUE `
             -DCMAKE_DISABLE_FIND_PACKAGE_Cairo=TRUE `
-            -DCMAKE_DISABLE_FIND_PACKAGE_Boost=TRUE
+            -DCMAKE_DISABLE_FIND_PACKAGE_Boost=TRUE `
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
           cmake --build ob-build --config Release -j $env:NUMBER_OF_PROCESSORS
           if ($LASTEXITCODE -ne 0) { throw "OpenBabel build failed" }
