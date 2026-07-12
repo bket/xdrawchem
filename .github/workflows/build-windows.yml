@@ -89,7 +89,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "OpenBabel install failed" }
 
           Write-Host "=== ob-build artifacts (*.dll, *.lib) ==="
-          Get-ChildItem ob-build -Recurse -Filter "*.dll","*.lib" | Select-Object FullName
+          Get-ChildItem ob-build -Recurse -Include "*.dll","*.lib" | Select-Object FullName
 
           Write-Host "=== Installed C:\OpenBabel listing (depth 3) ==="
           Get-ChildItem C:\OpenBabel -Depth 3 | Select-Object FullName
