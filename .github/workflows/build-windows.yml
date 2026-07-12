@@ -74,7 +74,7 @@ jobs:
             -DWITH_COORDGEN=OFF `
             -DBUILD_SHARED=ON `
             -DBUILD_SHARED_LIBS=ON `
-            -DBUILD_STATIC=OFF `
+            -DBUILD_STATIC=ON `
             -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON `
             -DCMAKE_DISABLE_FIND_PACKAGE_LibXml2=TRUE `
             -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=TRUE `
