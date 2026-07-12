@@ -62,9 +62,7 @@ jobs:
           git clone --depth 1 --branch openbabel-3-2-1 `
             https://github.com/openbabel/openbabel.git ob-src
 
-          # CMake 4.0+ no longer supports cmake_minimum_required(VERSION < 3.5)
-          # used by OpenBabel 3.1.1. Force a compatibility minimum via the
-          # command line so the existing upstream CMakeLists.txt still works.
+          # Configure with explicit flags to force EXPORTS and shared libraries
           cmake -S ob-src -B ob-build `
             -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
@@ -75,18 +73,26 @@ jobs:
             -DWITH_MAEPARSER=OFF `
             -DWITH_COORDGEN=OFF `
             -DBUILD_SHARED=ON `
+            -DBUILD_SHARED_LIBS=ON `
+            -DBUILD_STATIC=OFF `
+            -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON `
             -DCMAKE_DISABLE_FIND_PACKAGE_LibXml2=TRUE `
             -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=TRUE `
             -DCMAKE_DISABLE_FIND_PACKAGE_Cairo=TRUE `
             -DCMAKE_DISABLE_FIND_PACKAGE_Boost=TRUE
 
-          cmake --build ob-build --config Release -j $env:NUMBER_OF_PROCESSORS
+          # Build (verbose) and install
+          cmake --build ob-build --config Release -j $env:NUMBER_OF_PROCESSORS --verbose
           if ($LASTEXITCODE -ne 0) { throw "OpenBabel build failed" }
-          cmake --install ob-build --config Release
+
+          cmake --install ob-build --config Release --verbose
           if ($LASTEXITCODE -ne 0) { throw "OpenBabel install failed" }
 
-          Write-Host "OpenBabel installed to C:\OpenBabel"
-          Get-ChildItem C:\OpenBabel -Depth 2 | Select-Object FullName
+          Write-Host "=== ob-build artifacts (*.dll, *.lib) ==="
+          Get-ChildItem ob-build -Recurse -Filter "*.dll","*.lib" | Select-Object FullName
+
+          Write-Host "=== Installed C:\OpenBabel listing (depth 3) ==="
+          Get-ChildItem C:\OpenBabel -Depth 3 | Select-Object FullName
 
       - name: Export OpenBabel path
         shell: pwsh
@@ -99,31 +105,50 @@ jobs:
           $QT_DIR = "C:\Qt\${{ env.QT_VERSION }}\msvc2019_64"
 
           $OB_ROOT = $env:OB_ROOT
-          # Determine the correct lib name (may be openbabel or openbabel3)
-          # OB on Windows puts import libs in lib\ or bin\ depending on build
-          # Dump all .lib files to identify the correct name
-          Write-Host "All .lib files in OB_ROOT:"
+          # Dump all .lib files to help debugging
+          Write-Host "All .lib files in OB_ROOT (recursive):"
           Get-ChildItem $OB_ROOT -Recurse -Filter "*.lib" | Select-Object FullName
-          $OB_LIB = @(
-            "$OB_ROOT\lib\openbabel-3.lib",
-            "$OB_ROOT\lib\openbabel3.lib",
-            "$OB_ROOT\lib\openbabel.lib",
-            "$OB_ROOT\bin\openbabel-3.lib",
-            "$OB_ROOT\bin\openbabel3.lib",
-            "$OB_ROOT\bin\openbabel.lib"
-          ) | Where-Object { Test-Path $_ } | Select-Object -First 1
-          if (-not $OB_LIB) {
-            throw "OpenBabel import lib not found in OB_ROOT (see lib listing above)"
+
+          # Prefer import libs that contain 'openbabel' in the filename (case-insensitive)
+          $foundLib = Get-ChildItem $OB_ROOT -Recurse -Filter "*.lib" `
+            -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match '(?i)openbabel' } |
+            Select-Object -First 1
+
+          # Fallback: use the first .lib found under OB_ROOT if no openbabel-named lib exists
+          if (-not $foundLib) {
+            Write-Warning "No import lib with 'openbabel' in the filename found — falling back to first .lib"
+            $foundLib = Get-ChildItem $OB_ROOT -Recurse -Filter "*.lib" -ErrorAction SilentlyContinue | Select-Object -First 1
           }
+
+          if (-not $foundLib) {
+            throw "OpenBabel import lib not found in OB_ROOT (no .lib files found under $OB_ROOT). See lib listing above."
+          }
+
+          $OB_LIB = $foundLib.FullName
           Write-Host "Using OB lib: $OB_LIB"
+
+          # Try to locate include dir dynamically (openbabel3 or openbabel)
+          $incCandidate = Get-ChildItem "$OB_ROOT\include" -Directory -Recurse -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match '(?i)openbabel' } |
+            Select-Object -First 1
+
+          if ($incCandidate) {
+            $OB_INCLUDE = $incCandidate.FullName
+          } else {
+            $OB_INCLUDE = "$OB_ROOT\include\openbabel3"
+            Write-Warning "Include dir with 'openbabel' not found under $OB_ROOT\include. Falling back to $OB_INCLUDE"
+          }
+          Write-Host "Using OB include: $OB_INCLUDE"
+
           cmake -S xdrawchem -B build `
             -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_PREFIX_PATH="$QT_DIR" `
             -DRINGHOME="ring" `
             -DOpenBabel_FOUND=TRUE `
-            "-DOpenBabel_INCLUDE_DIR=$OB_ROOT\include\openbabel3" `
-            "-DOpenBabel_INCLUDE_DIRS=$OB_ROOT\include\openbabel3" `
+            "-DOpenBabel_INCLUDE_DIR=$OB_INCLUDE" `
+            "-DOpenBabel_INCLUDE_DIRS=$OB_INCLUDE" `
             "-DOpenBabel_LIBRARY=$OB_LIB" `
             "-DOpenBabel_LIBRARIES=$OB_LIB"
 
@@ -194,9 +219,9 @@ jobs:
           !define APPURL      "https://github.com/bryanherger/xdrawchem"
           !define INSTALLEREXE "XDrawChem-$VERSION-windows-x64.exe"
 
-          Name "`${APPNAME} `${APPVERSION}"
-          OutFile "`${INSTALLEREXE}"
-          InstallDir "`$PROGRAMFILES64\XDrawChem"
+          Name "${APPNAME} ${APPVERSION}"
+          OutFile "${INSTALLEREXE}"
+          InstallDir "$PROGRAMFILES64\XDrawChem"
           InstallDirRegKey HKLM "Software\XDrawChem" "InstallDir"
           RequestExecutionLevel admin
           SetCompressor /SOLID lzma
@@ -211,48 +236,48 @@ jobs:
           !insertmacro MUI_LANGUAGE "English"
 
           Section "XDrawChem" SecMain
-            SetOutPath "`$INSTDIR"
+            SetOutPath "$INSTDIR"
             File /r "dist\xdrawchem\*.*"
 
             ; Registry entries
-            WriteRegStr HKLM "Software\XDrawChem" "InstallDir" "`$INSTDIR"
+            WriteRegStr HKLM "Software\XDrawChem" "InstallDir" "$INSTDIR"
             WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem" \
-              "DisplayName"          "XDrawChem `${APPVERSION}"
+              "DisplayName"          "XDrawChem ${APPVERSION}"
             WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem" \
-              "UninstallString"      "`$INSTDIR\uninstall.exe"
+              "UninstallString"      "$INSTDIR\uninstall.exe"
             WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem" \
-              "Publisher"            "`${PUBLISHER}"
+              "Publisher"            "${PUBLISHER}"
             WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem" \
-              "URLInfoAbout"         "`${APPURL}"
+              "URLInfoAbout"         "${APPURL}"
             WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem" \
-              "DisplayVersion"       "`${APPVERSION}"
+              "DisplayVersion"       "${APPVERSION}"
 
             ; Uninstaller
-            WriteUninstaller "`$INSTDIR\uninstall.exe"
+            WriteUninstaller "$INSTDIR\uninstall.exe"
 
             ; Start Menu shortcut
-            CreateDirectory "`$SMPROGRAMS\XDrawChem"
-            CreateShortCut  "`$SMPROGRAMS\XDrawChem\XDrawChem.lnk" \
-              "`$INSTDIR\xdrawchem.exe"
-            CreateShortCut  "`$SMPROGRAMS\XDrawChem\Uninstall.lnk" \
-              "`$INSTDIR\uninstall.exe"
+            CreateDirectory "$SMPROGRAMS\XDrawChem"
+            CreateShortCut  "$SMPROGRAMS\XDrawChem\XDrawChem.lnk" \
+              "$INSTDIR\xdrawchem.exe"
+            CreateShortCut  "$SMPROGRAMS\XDrawChem\Uninstall.lnk" \
+              "$INSTDIR\uninstall.exe"
 
             ; Desktop shortcut
-            CreateShortCut "`$DESKTOP\XDrawChem.lnk" "`$INSTDIR\xdrawchem.exe"
+            CreateShortCut "$DESKTOP\XDrawChem.lnk" "$INSTDIR\xdrawchem.exe"
 
             ; File associations
             WriteRegStr HKCR ".mol"  "" "XDrawChem.molfile"
             WriteRegStr HKCR "XDrawChem.molfile" "" "Chemical Structure (MDL Molfile)"
             WriteRegStr HKCR "XDrawChem.molfile\shell\open\command" "" \
-              '"`$INSTDIR\xdrawchem.exe" "%1"'
+              '"$INSTDIR\xdrawchem.exe" "%1"'
           SectionEnd
 
           Section "Uninstall"
-            RMDir /r "`$INSTDIR"
-            Delete "`$SMPROGRAMS\XDrawChem\XDrawChem.lnk"
-            Delete "`$SMPROGRAMS\XDrawChem\Uninstall.lnk"
-            RMDir  "`$SMPROGRAMS\XDrawChem"
-            Delete "`$DESKTOP\XDrawChem.lnk"
+            RMDir /r "$INSTDIR"
+            Delete "$SMPROGRAMS\XDrawChem\XDrawChem.lnk"
+            Delete "$SMPROGRAMS\XDrawChem\Uninstall.lnk"
+            RMDir  "$SMPROGRAMS\XDrawChem"
+            Delete "$DESKTOP\XDrawChem.lnk"
             DeleteRegKey HKLM "Software\XDrawChem"
             DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XDrawChem"
             DeleteRegKey HKCR ".mol"
