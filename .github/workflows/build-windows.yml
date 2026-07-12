@@ -118,7 +118,7 @@ jobs:
             -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=TRUE `
             -DCMAKE_DISABLE_FIND_PACKAGE_Cairo=TRUE `
             -DCMAKE_DISABLE_FIND_PACKAGE_Boost=TRUE `
-            -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+            -DCMAKE_POLICY_VERSION_MINIMUM="3.5"
 
           cmake --build ob-build --config Release -j $env:NUMBER_OF_PROCESSORS
           if ($LASTEXITCODE -ne 0) { throw "OpenBabel build failed" }
